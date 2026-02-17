@@ -1,0 +1,19 @@
+import { Request, Response } from 'express';
+import { query, queryOne, execute } from '../models/database';
+import type {
+  RouteTemplate,
+  RouteTemplateStep,
+  CreateRouteTemplateRequest,
+  UpdateRouteTemplateRequest,
+  CreateRouteTemplateStepRequest,
+  UpdateRouteTemplateStepRequest,
+  ReorderStepsRequest,
+} from '../../../shared/types';
+
+function mapTemplate(row: any): RouteTemplate {
+  return { id: row.id, name: row.name, description: row.description, stepCount: row.stepCount, createdAt: row.created_at, updatedAt: row.updated_at };
+}
+
+function mapStep(row: any): RouteTemplateStep {
+  return { id: row.id, routeTemplateId: row.route_template_id, stepOrder: row.step_order, stationName: row.station_name, machineId: row.machine_id, machineName: row.machine_name, estimatedMinutes: row.estimated_minutes, notes: row.notes, createdAt: row.created_at, updatedAt: row.updated_at };
+}

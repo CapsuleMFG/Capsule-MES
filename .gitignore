@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files (contain secrets)
+.env
+.env.*
+!.env.example
+
+# Database files
+*.db
+
+# MCP config (local tool config)
+.mcp.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Claude Code local config
+.claude/
+
+# Windows artifact
+nul

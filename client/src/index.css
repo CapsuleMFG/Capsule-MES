@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-rivian-black text-white antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+  }
+
+  input,
+  textarea,
+  select {
+    @apply bg-rivian-soft-black text-white border-gray-700 rounded px-3 py-2;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply outline-none ring-2 ring-rivian-accent border-rivian-accent;
+  }
+
+  button {
+    @apply rounded px-4 py-2 font-medium transition-colors;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-rivian-soft-black rounded-lg shadow-lg;
+  }
+
+  .card-hover {
+    @apply hover:bg-rivian-hover transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-rivian-accent text-white hover:bg-blue-600;
+  }
+
+  .btn-secondary {
+    @apply bg-rivian-soft-black text-white border border-gray-600 hover:bg-rivian-hover;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-critical {
+    @apply bg-priority-critical/20 text-priority-critical border border-priority-critical;
+  }
+
+  .badge-high {
+    @apply bg-priority-high/20 text-priority-high border border-priority-high;
+  }
+
+  .badge-medium {
+    @apply bg-priority-medium/20 text-priority-medium border border-priority-medium;
+  }
+
+  .badge-low {
+    @apply bg-priority-low/20 text-priority-low border border-priority-low;
+  }
+
+  .badge-stage {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-not-started {
+    @apply bg-status-not-started/20 text-status-not-started border border-status-not-started;
+  }
+
+  .badge-in-progress {
+    @apply bg-status-in-progress/20 text-status-in-progress border border-status-in-progress;
+  }
+
+  .badge-completed {
+    @apply bg-status-completed/20 text-status-completed border border-status-completed;
+  }
+
+  .badge-blocked {
+    @apply bg-status-blocked/20 text-status-blocked border border-status-blocked;
+  }
+}
