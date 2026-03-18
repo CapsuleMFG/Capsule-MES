@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../../contexts/ToastContext';
 import * as engineeringService from '../../services/engineering.service';
 import Button from '../ui/Button';
-import { Upload, FileSpreadsheet, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { UploadSimple, FileXls, X, CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import type { WorkOrder } from '../../types';
 
 interface BomImportProps {
@@ -60,9 +60,9 @@ export default function BomImport({ jobId }: BomImportProps) {
 
     return (
         <div className="space-y-2">
-            <div className="flex items-center gap-3 rounded-lg border border-gray-800/60 bg-rivian-black/30 px-4 py-3">
-                <FileSpreadsheet className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                <span className="text-xs text-gray-500 flex-shrink-0">BOM</span>
+            <div className="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50/50 px-4 py-3">
+                <FileXls size={16} className="text-gray-400 flex-shrink-0" />
+                <span className="text-xs text-gray-400 flex-shrink-0">BOM</span>
 
                 <input
                     ref={fileInputRef}
@@ -75,13 +75,13 @@ export default function BomImport({ jobId }: BomImportProps) {
 
                 {selectedFile ? (
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <div className="flex items-center gap-2 py-1 px-3 bg-rivian-soft-black border border-gray-700 rounded text-sm flex-1 min-w-0">
-                            <span className="text-white truncate">{selectedFile.name}</span>
-                            <span className="text-xs text-gray-600 flex-shrink-0">
+                        <div className="flex items-center gap-2 py-1 px-3 bg-white border border-gray-100 rounded text-sm flex-1 min-w-0">
+                            <span className="text-gray-900 truncate">{selectedFile.name}</span>
+                            <span className="text-xs text-gray-400 flex-shrink-0">
                                 {(selectedFile.size / 1024).toFixed(0)} KB
                             </span>
-                            <button onClick={handleClear} className="text-gray-500 hover:text-gray-300 flex-shrink-0 ml-auto">
-                                <X className="w-3.5 h-3.5" />
+                            <button onClick={handleClear} className="text-gray-400 hover:text-gray-600 flex-shrink-0 ml-auto">
+                                <X size={14} />
                             </button>
                         </div>
                         <Button
@@ -94,8 +94,8 @@ export default function BomImport({ jobId }: BomImportProps) {
                         </Button>
                     </div>
                 ) : (
-                    <label htmlFor="bom-file-input" className="flex items-center gap-2 py-1 px-3 bg-rivian-soft-black border border-dashed border-gray-600 rounded text-sm text-gray-500 hover:border-gray-500 hover:text-gray-400 cursor-pointer transition-colors flex-1">
-                        <Upload className="w-3.5 h-3.5 flex-shrink-0" />
+                    <label htmlFor="bom-file-input" className="flex items-center gap-2 py-1 px-3 bg-white border border-dashed border-gray-200 rounded text-sm text-gray-400 hover:border-gray-400 hover:text-gray-600 cursor-pointer transition-colors flex-1">
+                        <UploadSimple size={14} className="flex-shrink-0" />
                         <span>Choose CSV or Excel file</span>
                     </label>
                 )}
@@ -104,12 +104,12 @@ export default function BomImport({ jobId }: BomImportProps) {
             {importResult && (
                 <div className={`rounded-lg px-4 py-2.5 flex items-center gap-2.5 text-xs ${
                     importResult.success
-                        ? 'bg-green-500/10 text-green-400'
-                        : 'bg-red-500/10 text-red-400'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                        : 'bg-red-50 text-red-700 border border-red-100'
                 }`}>
                     {importResult.success
-                        ? <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                        : <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        ? <CheckCircle size={14} className="flex-shrink-0" />
+                        : <WarningCircle size={14} className="flex-shrink-0" />
                     }
                     {importResult.message}
                 </div>

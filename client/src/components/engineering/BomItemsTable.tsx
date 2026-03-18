@@ -8,7 +8,7 @@ import Button from '../ui/Button';
 import AddBomItemModal from './AddBomItemModal';
 import EditBomItemModal from './EditBomItemModal';
 import GeneratePartsModal from './GeneratePartsModal';
-import { Plus, Edit2, Trash2, Download, FileSpreadsheet, ScanLine, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, PencilSimple, Trash, DownloadSimple, FileXls, Barcode, CheckCircle } from '@phosphor-icons/react';
 import type { BomItem } from '../../types';
 
 interface BomItemsTableProps {
@@ -109,11 +109,6 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
         }
     };
 
-    const formatNumber = (num: number | undefined) => {
-        if (num === undefined || num === null) return '-';
-        return num.toFixed(2);
-    };
-
     if (isLoading) {
         return (
             <Card className="p-6">
@@ -128,7 +123,7 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
                 <div>
                     <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider">Bill of Materials</h3>
                     {bomItems && bomItems.length > 0 && (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-400 mt-1">
                             {bomItems.length} items
                         </p>
                     )}
@@ -142,7 +137,7 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
                                 onClick={handleDeleteAll}
                                 disabled={deleteAllMutation.isPending}
                             >
-                                <Trash2 className="w-4 h-4 mr-2" />
+                                <Trash size={16} className="mr-2" />
                                 Clear All
                             </Button>
                             <Button
@@ -151,7 +146,7 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
                                 onClick={handleExport}
                                 disabled={exporting}
                             >
-                                <Download className="w-4 h-4 mr-2" />
+                                <DownloadSimple size={16} className="mr-2" />
                                 {exporting ? 'Exporting...' : 'Export CSV'}
                             </Button>
                         </>
@@ -161,39 +156,39 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
                         size="sm"
                         onClick={() => setShowAddModal(true)}
                     >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus size={16} className="mr-2" />
                         Add Item
                     </Button>
                 </div>
             </div>
 
             {!bomItems || bomItems.length === 0 ? (
-                <Card className="text-center py-12 border border-gray-800">
-                    <FileSpreadsheet className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-400 text-sm font-medium">No BOM items yet</p>
-                    <p className="text-gray-500 text-xs mt-1">
+                <Card className="text-center py-12 border border-gray-100">
+                    <FileXls size={48} className="text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm font-medium">No BOM items yet</p>
+                    <p className="text-gray-400 text-xs mt-1">
                         Upload an Excel file or add items manually
                     </p>
                 </Card>
             ) : (
-                <Card className="overflow-hidden border border-gray-800">
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-gray-800">
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Part Number</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Qty</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Unit</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Material</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Thickness</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Powdercoat</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Route</th>
-                                    <th className="text-center py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Parts</th>
+                                <tr className="border-b border-gray-100">
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Part Number</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Qty</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Unit</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Material</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Thickness</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Powdercoat</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Route</th>
+                                    <th className="text-center py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Parts</th>
                                     <th className="w-32"></th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-800">
+                            <tbody className="divide-y divide-gray-50">
                                 {bomItems.map((item) => {
                                     const partsCount = partsCountByBomItem[item.id] || 0;
                                     const allGenerated = partsCount >= item.quantity && item.quantity > 0;
@@ -201,44 +196,44 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
                                     return (
                                         <tr
                                             key={item.id}
-                                            className="hover:bg-gray-800/50 transition-colors"
+                                            className="text-sm text-gray-600 border-b border-gray-50 hover:bg-gray-50 transition-colors"
                                         >
-                                            <td className="py-3 px-4 text-sm font-medium text-white">
+                                            <td className="py-3 px-4 text-sm font-medium text-gray-900">
                                                 {item.partNumber}
                                             </td>
-                                            <td className="py-3 px-4 text-sm text-gray-300">
-                                                {item.description || <span className="text-gray-500">-</span>}
+                                            <td className="py-3 px-4 text-sm text-gray-600">
+                                                {item.description || <span className="text-gray-400">-</span>}
                                             </td>
-                                            <td className="py-3 px-4 text-sm text-right text-white">
+                                            <td className="py-3 px-4 text-sm text-right text-gray-900">
                                                 {item.quantity}
                                             </td>
-                                            <td className="py-3 px-4 text-sm text-gray-300">
+                                            <td className="py-3 px-4 text-sm text-gray-600">
                                                 {item.unit}
                                             </td>
-                                            <td className="py-3 px-4 text-sm text-gray-300">
-                                                {item.material || <span className="text-gray-500">-</span>}
+                                            <td className="py-3 px-4 text-sm text-gray-600">
+                                                {item.material || <span className="text-gray-400">-</span>}
                                             </td>
-                                            <td className="py-3 px-4 text-sm text-gray-300">
-                                                {item.thickness || <span className="text-gray-500">-</span>}
+                                            <td className="py-3 px-4 text-sm text-gray-600">
+                                                {item.thickness || <span className="text-gray-400">-</span>}
                                             </td>
-                                            <td className="py-3 px-4 text-sm text-gray-300">
-                                                {item.powdercoat || <span className="text-gray-500">-</span>}
+                                            <td className="py-3 px-4 text-sm text-gray-600">
+                                                {item.powdercoat || <span className="text-gray-400">-</span>}
                                             </td>
-                                            <td className="py-3 px-4 text-sm text-gray-300">
-                                                {item.routeTemplateName || <span className="text-gray-500">-</span>}
+                                            <td className="py-3 px-4 text-sm text-gray-600">
+                                                {item.routeTemplateName || <span className="text-gray-400">-</span>}
                                             </td>
                                             <td className="py-3 px-4 text-sm text-center">
                                                 {partsCount > 0 ? (
-                                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                    <span className={`inline-flex items-center gap-1 text-xs font-medium ${
                                                         allGenerated
-                                                            ? 'bg-green-500/20 text-green-400'
-                                                            : 'bg-blue-500/20 text-blue-400'
+                                                            ? 'text-emerald-500'
+                                                            : 'text-blue-500'
                                                     }`}>
-                                                        {allGenerated && <CheckCircle className="w-3 h-3" />}
+                                                        {allGenerated && <CheckCircle size={12} />}
                                                         {partsCount}/{item.quantity}
                                                     </span>
                                                 ) : (
-                                                    <span className="text-gray-500">-</span>
+                                                    <span className="text-gray-400">-</span>
                                                 )}
                                             </td>
                                             <td className="py-3 px-4">
@@ -246,26 +241,26 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
                                                     {item.routeTemplateId && !allGenerated && (
                                                         <button
                                                             onClick={() => setGeneratingItem(item)}
-                                                            className="p-1.5 text-green-400 hover:text-green-300 hover:bg-green-500/10 rounded transition-colors"
+                                                            className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
                                                             title="Generate Tracked Parts"
                                                         >
-                                                            <ScanLine className="w-4 h-4" />
+                                                            <Barcode size={16} />
                                                         </button>
                                                     )}
                                                     <button
                                                         onClick={() => setEditingItem(item)}
-                                                        className="p-1.5 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded transition-colors"
+                                                        className="p-1.5 text-gray-400 hover:text-gray-700 transition-colors"
                                                         title="Edit"
                                                     >
-                                                        <Edit2 className="w-4 h-4" />
+                                                        <PencilSimple size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(item)}
-                                                        className="p-1.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
+                                                        className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
                                                         disabled={deleteMutation.isPending}
                                                         title="Delete"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Trash size={16} />
                                                     </button>
                                                 </div>
                                             </td>
@@ -275,7 +270,7 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
                             </tbody>
                         </table>
                     </div>
-                </Card>
+                </div>
             )}
 
             {/* Add BOM Item Modal */}

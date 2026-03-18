@@ -70,7 +70,7 @@ export default function AddPbomItemModal({ jobId, isOpen, onClose }: AddPbomItem
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Description */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Description <span className="text-red-400">*</span>
                     </label>
                     <Input
@@ -84,7 +84,7 @@ export default function AddPbomItemModal({ jobId, isOpen, onClose }: AddPbomItem
 
                 {/* Quantity Required */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Quantity Required <span className="text-red-400">*</span>
                     </label>
                     <Input
@@ -100,8 +100,8 @@ export default function AddPbomItemModal({ jobId, isOpen, onClose }: AddPbomItem
 
                 {/* Mfr/Vendor (Optional) */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Manufacturer/Vendor <span className="text-gray-500 text-xs">(Optional)</span>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Manufacturer/Vendor <span className="text-gray-400 text-xs">(Optional)</span>
                     </label>
                     <Input
                         value={formData.mfrVendor}
@@ -113,8 +113,8 @@ export default function AddPbomItemModal({ jobId, isOpen, onClose }: AddPbomItem
 
                 {/* Mfr/Vendor Part (Optional) */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Manufacturer Part # <span className="text-gray-500 text-xs">(Optional)</span>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Manufacturer Part # <span className="text-gray-400 text-xs">(Optional)</span>
                     </label>
                     <Input
                         value={formData.mfrVendorPart}
@@ -126,8 +126,8 @@ export default function AddPbomItemModal({ jobId, isOpen, onClose }: AddPbomItem
 
                 {/* Category (Optional) */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Category <span className="text-gray-500 text-xs">(Optional)</span>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Category <span className="text-gray-400 text-xs">(Optional)</span>
                     </label>
                     <Input
                         value={formData.category}
@@ -137,9 +137,9 @@ export default function AddPbomItemModal({ jobId, isOpen, onClose }: AddPbomItem
                     />
                 </div>
 
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-                    <p className="text-xs text-gray-400">
-                        <strong className="text-blue-400">Note:</strong> Supply Chain will complete additional fields (Req #, PO, Notes) when procuring materials.
+                <div className="bg-gray-50 border border-gray-100 rounded-lg p-3">
+                    <p className="text-xs text-gray-600">
+                        <strong className="text-gray-700">Note:</strong> Supply Chain will complete additional fields (Req #, PO, Notes) when procuring materials.
                     </p>
                 </div>
 

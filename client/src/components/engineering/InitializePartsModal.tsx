@@ -147,8 +147,8 @@ export default function InitializePartsModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Recut WO banner */}
         {isRecut && (
-          <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
-            <p className="text-sm text-orange-400">
+          <div className="bg-gray-50 border border-gray-100 rounded-lg p-3">
+            <p className="text-sm text-orange-500">
               <strong>Recut Work Order</strong> — New parts will be linked to their original scrapped parts automatically.
               {rows.filter(r => r.scrappedPartIds && r.scrappedPartIds.length > 0).length > 0 && (
                 <span className="ml-2">
@@ -161,12 +161,12 @@ export default function InitializePartsModal({
 
         {/* PDF match summary */}
         {pdfMatches && pdfMatches.length > 0 && (
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-            <p className="text-sm text-blue-400">
+          <div className="bg-gray-50 border border-gray-100 rounded-lg p-3">
+            <p className="text-sm text-gray-600">
               PDF parsed: {pdfMatches.filter(m => m.matched).length} of {pdfMatches.length} parts matched to BOM.
               Only matched parts are shown below.
               {unmatchedPdfParts.length > 0 && (
-                <span className="text-yellow-400 ml-2">
+                <span className="text-amber-600 ml-2">
                   Not in BOM: {unmatchedPdfParts.map(p => p.pdfPartName).join(', ')}
                 </span>
               )}
@@ -176,67 +176,67 @@ export default function InitializePartsModal({
 
         {/* BOM Items Checklist */}
         {bomItems.length === 0 ? (
-          <p className="text-gray-400 text-center py-4">
+          <p className="text-gray-500 text-center py-4">
             No BOM items found for this job. Add BOM items first.
           </p>
         ) : (
-          <div className="border border-gray-700 rounded-lg overflow-x-auto">
+          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
             <table className="w-full text-sm min-w-[700px]">
               <thead>
-                <tr className="bg-rivian-hover border-b border-gray-700">
+                <tr className="border-b border-gray-100">
                   <th className="p-3 text-left w-10">
                     <input
                       type="checkbox"
                       checked={checkedCount === rows.length && rows.length > 0}
                       onChange={(e) => toggleAll(e.target.checked)}
-                      className="rounded border-gray-600"
+                      className="rounded border-gray-200"
                     />
                   </th>
-                  <th className="p-3 text-left text-gray-300">Part Number</th>
-                  <th className="p-3 text-left text-gray-300">Description</th>
-                  <th className="p-3 text-center text-gray-300 w-20">BOM Qty</th>
-                  <th className="p-3 text-center text-gray-300 w-20">WO Qty</th>
-                  <th className="p-3 text-center text-gray-300 w-24">Parts to Create</th>
-                  <th className="p-3 text-left text-gray-300 min-w-[200px]">Route Template</th>
+                  <th className="p-3 text-left text-[11px] uppercase tracking-wider font-medium text-gray-400">Part Number</th>
+                  <th className="p-3 text-left text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                  <th className="p-3 text-center text-[11px] uppercase tracking-wider font-medium text-gray-400 w-20">BOM Qty</th>
+                  <th className="p-3 text-center text-[11px] uppercase tracking-wider font-medium text-gray-400 w-20">WO Qty</th>
+                  <th className="p-3 text-center text-[11px] uppercase tracking-wider font-medium text-gray-400 w-24">Parts to Create</th>
+                  <th className="p-3 text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 min-w-[200px]">Route Template</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row, index) => (
                   <tr
                     key={row.bomItem.id}
-                    className={`border-b border-gray-800 ${row.checked ? 'bg-rivian-accent/5' : ''}`}
+                    className={`border-b border-gray-50 ${row.checked ? 'bg-blue-50/30' : ''}`}
                   >
                     <td className="p-3">
                       <input
                         type="checkbox"
                         checked={row.checked}
                         onChange={(e) => updateRow(index, { checked: e.target.checked })}
-                        className="rounded border-gray-600"
+                        className="rounded border-gray-200"
                       />
                     </td>
-                    <td className="p-3 text-white font-mono">
+                    <td className="p-3 text-gray-900 font-mono">
                       {row.bomItem.partNumber}
                       {row.pdfMatched && (
-                        <span className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded">
+                        <span className="ml-2 text-[10px] font-medium text-blue-500">
                           PDF
                         </span>
                       )}
                       {row.scrappedPartIds && row.scrappedPartIds.length > 0 && (
-                        <span className="ml-2 px-1.5 py-0.5 text-[10px] font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded">
+                        <span className="ml-2 text-[10px] font-medium text-orange-500">
                           {row.scrappedPartIds.length} recut{row.scrappedPartIds.length !== 1 ? 's' : ''}
                         </span>
                       )}
                     </td>
-                    <td className="p-3 text-gray-400">
+                    <td className="p-3 text-gray-500">
                       {row.bomItem.description || '-'}
                     </td>
-                    <td className="p-3 text-center text-gray-300">{row.bomItem.quantity}</td>
+                    <td className="p-3 text-center text-gray-600">{row.bomItem.quantity}</td>
                     <td className="p-3 text-center">
                       {row.pdfMatched && row.pdfQuantity !== undefined ? (
                         <span className={`inline-flex items-center gap-1 font-medium ${
                           row.pdfQuantity === row.bomItem.quantity
-                            ? 'text-green-400'
-                            : 'text-yellow-400'
+                            ? 'text-emerald-500'
+                            : 'text-amber-500'
                         }`}>
                           {row.pdfQuantity}
                           {row.pdfQuantity === row.bomItem.quantity ? (
@@ -246,7 +246,7 @@ export default function InitializePartsModal({
                           )}
                         </span>
                       ) : (
-                        <span className="text-gray-500">-</span>
+                        <span className="text-gray-400">-</span>
                       )}
                     </td>
                     <td className="p-3 text-center">
@@ -257,7 +257,7 @@ export default function InitializePartsModal({
                         value={row.quantity}
                         onChange={(e) => updateRow(index, { quantity: Number(e.target.value) })}
                         disabled={!row.checked}
-                        className="w-20 text-center bg-rivian-black border border-gray-600 rounded px-2 py-1 text-white focus:outline-none focus:border-rivian-accent disabled:opacity-40"
+                        className="w-20 text-center bg-white border border-gray-100 rounded px-2 py-1 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 disabled:opacity-40"
                       />
                     </td>
                     <td className="p-3">
@@ -265,7 +265,7 @@ export default function InitializePartsModal({
                         value={row.routeTemplateId}
                         onChange={(e) => updateRouteForChecked(index, e.target.value)}
                         disabled={!row.checked}
-                        className="w-full bg-rivian-black border border-gray-600 rounded px-2 py-1 text-white text-sm focus:outline-none focus:border-rivian-accent disabled:opacity-40"
+                        className="w-full bg-white border border-gray-100 rounded px-2 py-1 text-gray-900 text-sm focus:outline-none focus:ring-1 focus:ring-gray-900 disabled:opacity-40"
                       >
                         <option value="">-- No route --</option>
                         {templates?.map((t) => (
@@ -286,11 +286,11 @@ export default function InitializePartsModal({
         {bomItems.length > 0 && (
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">ID Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">ID Type</label>
               <select
                 value={identificationType}
                 onChange={(e) => setIdentificationType(e.target.value as IdentificationType)}
-                className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+                className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
               >
                 <option value="QR">QR Code</option>
                 <option value="Engraved">Engraved</option>
@@ -299,23 +299,23 @@ export default function InitializePartsModal({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Tracking ID Prefix</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tracking ID Prefix</label>
               <input
                 type="text"
                 value={trackingIdPrefix}
                 onChange={(e) => setTrackingIdPrefix(e.target.value)}
-                className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+                className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
                 placeholder="e.g., WO-001 (optional)"
               />
             </div>
           </div>
         )}
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+            className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             Cancel
           </button>

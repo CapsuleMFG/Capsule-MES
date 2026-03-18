@@ -6,7 +6,7 @@ import Card from '../ui/Card';
 import Button from '../ui/Button';
 import AddPbomItemModal from './AddPbomItemModal';
 import EditPbomItemModal from './EditPbomItemModal';
-import { Plus, Edit2, Trash2, Send, FileSpreadsheet } from 'lucide-react';
+import { Plus, PencilSimple, Trash, PaperPlaneTilt, FileXls } from '@phosphor-icons/react';
 import type { PbomItem } from '../../types';
 
 interface PbomTableEngineeringProps {
@@ -64,7 +64,7 @@ export default function PbomTableEngineering({ jobId }: PbomTableEngineeringProp
         onSuccess: async (data) => {
             // Force immediate refetch to show auto-matched inventory data
             await queryClient.refetchQueries({ queryKey: ['pbomItems', jobId] });
-            toast.success(`PBOM sent to Supply Chain! (${data.itemCount} items${data.matchedCount ? `, ${data.matchedCount} auto-linked to inventory` : ''})`);
+            toast.success(`PBOM sent to Supply Chain! (${data.itemCount} items${(data as any).matchedCount ? `, ${(data as any).matchedCount} auto-linked to inventory` : ''})`);
         },
         onError: (error: any) => {
             toast.error(error.response?.data?.error || 'Failed to send PBOM to Supply Chain');
@@ -100,11 +100,11 @@ export default function PbomTableEngineering({ jobId }: PbomTableEngineeringProp
         <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
                 <div>
-                    <h3 className="text-lg font-semibold">Production Bill of Materials (PBOM)</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Production Bill of Materials (PBOM)</h3>
                     {pbomItems && pbomItems.length > 0 && (
                         <p className="text-sm text-gray-400 mt-1">
                             {pbomItems.length} items
-                            {isSentToSc && <span className="ml-2 text-green-400">• Sent to Supply Chain</span>}
+                            {isSentToSc && <span className="ml-2 text-emerald-500">• Sent to Supply Chain</span>}
                         </p>
                     )}
                 </div>
@@ -117,7 +117,7 @@ export default function PbomTableEngineering({ jobId }: PbomTableEngineeringProp
                                 onClick={handleDeleteAll}
                                 disabled={deleteAllMutation.isPending}
                             >
-                                <Trash2 className="w-4 h-4 mr-2" />
+                                <Trash size={16} className="mr-2" />
                                 Clear All
                             </Button>
                             <Button
@@ -127,7 +127,7 @@ export default function PbomTableEngineering({ jobId }: PbomTableEngineeringProp
                                 disabled={sendToScMutation.isPending}
                                 className="bg-green-600 hover:bg-green-700"
                             >
-                                <Send className="w-4 h-4 mr-2" />
+                                <PaperPlaneTilt size={16} className="mr-2" />
                                 {sendToScMutation.isPending ? 'Sending...' : isSentToSc ? 'Resend to Supply Chain' : 'Send to Supply Chain'}
                             </Button>
                         </>
@@ -137,74 +137,74 @@ export default function PbomTableEngineering({ jobId }: PbomTableEngineeringProp
                         size="sm"
                         onClick={() => setShowAddModal(true)}
                     >
-                        <Plus className="w-4 h-4 mr-2" />
+                        <Plus size={16} className="mr-2" />
                         Add Item
                     </Button>
                 </div>
             </div>
 
             {isSentToSc && (
-                <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <p className="text-sm text-green-400">
+                <div className="mb-4 p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
+                    <p className="text-sm text-emerald-600">
                         ✓ This PBOM has been sent to Supply Chain. You can still make changes if needed.
                     </p>
                 </div>
             )}
 
             {!pbomItems || pbomItems.length === 0 ? (
-                <div className="text-center py-12 bg-rivian-hover rounded-lg">
-                    <FileSpreadsheet className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                    <p className="text-gray-400 text-sm">No PBOM items yet</p>
-                    <p className="text-gray-500 text-xs mt-2">
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                    <FileXls size={48} className="text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">No PBOM items yet</p>
+                    <p className="text-gray-400 text-xs mt-2">
                         Add items to create a Production Bill of Materials
                     </p>
                 </div>
             ) : (
-                <div className="overflow-x-auto">
+                <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-gray-700">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Description</th>
-                                <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Qty Req'd</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Mfr/Vendor</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Part #</th>
-                                <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
+                            <tr className="border-b border-gray-100">
+                                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                                <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Qty Req'd</th>
+                                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Mfr/Vendor</th>
+                                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Part #</th>
+                                <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {pbomItems.map((item) => (
                                 <tr
                                     key={item.id}
-                                    className="border-b border-gray-800 hover:bg-rivian-hover"
+                                    className="text-sm text-gray-600 border-b border-gray-50 hover:bg-gray-50"
                                 >
-                                    <td className="py-3 px-4 text-sm text-white">
+                                    <td className="py-3 px-4 text-sm text-gray-900">
                                         {item.description}
                                     </td>
-                                    <td className="py-3 px-4 text-sm text-right text-white">
+                                    <td className="py-3 px-4 text-sm text-right text-gray-900">
                                         {item.qtyRequired}
                                     </td>
-                                    <td className="py-3 px-4 text-sm text-gray-300">
+                                    <td className="py-3 px-4 text-sm text-gray-600">
                                         {item.mfrVendor || '-'}
                                     </td>
-                                    <td className="py-3 px-4 text-sm text-gray-300">
+                                    <td className="py-3 px-4 text-sm text-gray-600">
                                         {item.mfrVendorPart || '-'}
                                     </td>
                                     <td className="py-3 px-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <button
                                                 onClick={() => setEditingItem(item)}
-                                                className="p-1 text-blue-400 hover:text-blue-300 transition-colors"
+                                                className="p-1 text-gray-400 hover:text-gray-700 transition-colors"
                                                 title="Edit"
                                             >
-                                                <Edit2 className="w-4 h-4" />
+                                                <PencilSimple size={16} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(item)}
-                                                className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                                                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
                                                 disabled={deleteMutation.isPending}
                                                 title="Delete"
                                             >
-                                                <Trash2 className="w-4 h-4" />
+                                                <Trash size={16} />
                                             </button>
                                         </div>
                                     </td>

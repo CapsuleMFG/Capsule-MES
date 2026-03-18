@@ -90,7 +90,7 @@ export default function EditPbomItemModal({ jobId, pbomItem, isOpen, onClose }: 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Description */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Description <span className="text-red-400">*</span>
                     </label>
                     <Input
@@ -104,7 +104,7 @@ export default function EditPbomItemModal({ jobId, pbomItem, isOpen, onClose }: 
 
                 {/* Quantity Required */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Quantity Required <span className="text-red-400">*</span>
                     </label>
                     <Input
@@ -120,7 +120,7 @@ export default function EditPbomItemModal({ jobId, pbomItem, isOpen, onClose }: 
 
                 {/* Mfr/Vendor */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Manufacturer/Vendor
                     </label>
                     <Input
@@ -133,7 +133,7 @@ export default function EditPbomItemModal({ jobId, pbomItem, isOpen, onClose }: 
 
                 {/* Mfr/Vendor Part */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Manufacturer Part #
                     </label>
                     <Input
@@ -146,7 +146,7 @@ export default function EditPbomItemModal({ jobId, pbomItem, isOpen, onClose }: 
 
                 {/* Category */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Category
                     </label>
                     <Input
@@ -159,7 +159,7 @@ export default function EditPbomItemModal({ jobId, pbomItem, isOpen, onClose }: 
 
                 {/* Status */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Status
                     </label>
                     <Select

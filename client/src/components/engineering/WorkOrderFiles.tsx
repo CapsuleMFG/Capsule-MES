@@ -5,7 +5,7 @@ import * as jobsService from '../../services/jobs.service';
 import * as engineeringService from '../../services/engineering.service';
 import Button from '../ui/Button';
 import Select from '../ui/Select';
-import { Upload, FileText, X } from 'lucide-react';
+import { UploadSimple, FileText, X } from '@phosphor-icons/react';
 import type { WorkOrder } from '../../types';
 
 interface WorkOrderFilesProps {
@@ -88,8 +88,8 @@ export default function WorkOrderFiles({ jobId }: WorkOrderFilesProps) {
     };
 
     return (
-        <div className="rounded-lg border border-gray-800/60 bg-rivian-black/30 p-4 space-y-3">
-            <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">New Work Order</h4>
+        <div className="rounded-lg border border-gray-100 bg-gray-50/50 p-4 space-y-3">
+            <h4 className="text-xs font-medium text-gray-400 uppercase tracking-wider">New Work Order</h4>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {/* Machine */}
@@ -116,7 +116,7 @@ export default function WorkOrderFiles({ jobId }: WorkOrderFilesProps) {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         disabled={createWoMutation.isPending}
-                        className="w-full py-1.5 px-3 text-sm bg-rivian-soft-black border border-gray-700 rounded text-white placeholder:text-gray-600"
+                        className="w-full py-1.5 px-3 text-sm bg-white border border-gray-100 rounded text-gray-900 placeholder:text-gray-400"
                     />
                 </div>
 
@@ -133,19 +133,19 @@ export default function WorkOrderFiles({ jobId }: WorkOrderFilesProps) {
                         disabled={createWoMutation.isPending}
                     />
                     {selectedFile ? (
-                        <div className="flex items-center gap-2 py-1.5 px-3 bg-rivian-soft-black border border-gray-700 rounded text-sm">
-                            <FileText className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                            <span className="text-white truncate flex-1">{selectedFile.name}</span>
+                        <div className="flex items-center gap-2 py-1.5 px-3 bg-white border border-gray-100 rounded text-sm">
+                            <FileText size={14} className="text-gray-400 flex-shrink-0" />
+                            <span className="text-gray-900 truncate flex-1">{selectedFile.name}</span>
                             <button
                                 onClick={handleClearFile}
-                                className="text-gray-500 hover:text-gray-300 flex-shrink-0"
+                                className="text-gray-400 hover:text-gray-600 flex-shrink-0"
                             >
-                                <X className="w-3.5 h-3.5" />
+                                <X size={14} />
                             </button>
                         </div>
                     ) : (
-                        <label htmlFor="wo-pdf-input" className="flex items-center gap-2 py-1.5 px-3 bg-rivian-soft-black border border-dashed border-gray-600 rounded text-sm text-gray-500 hover:border-gray-500 hover:text-gray-400 cursor-pointer transition-colors">
-                            <Upload className="w-3.5 h-3.5 flex-shrink-0" />
+                        <label htmlFor="wo-pdf-input" className="flex items-center gap-2 py-1.5 px-3 bg-white border border-dashed border-gray-200 rounded text-sm text-gray-400 hover:border-gray-400 hover:text-gray-600 cursor-pointer transition-colors">
+                            <UploadSimple size={14} className="flex-shrink-0" />
                             <span>Choose PDF file</span>
                         </label>
                     )}
@@ -154,17 +154,17 @@ export default function WorkOrderFiles({ jobId }: WorkOrderFilesProps) {
 
             {/* Bottom row: recut + submit */}
             <div className="flex items-center justify-between gap-4 pt-1">
-                <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
                     <input
                         type="checkbox"
                         checked={isRecut}
                         onChange={(e) => setIsRecut(e.target.checked)}
                         disabled={createWoMutation.isPending}
-                        className="rounded border-gray-600 w-3.5 h-3.5"
+                        className="rounded border-gray-200 w-3.5 h-3.5"
                     />
                     Recut work order
                     {isRecut && (
-                        <span className="px-1.5 py-px rounded text-[10px] font-medium bg-orange-500/15 text-orange-400">
+                        <span className="text-[10px] font-medium text-orange-500">
                             Recut
                         </span>
                     )}
@@ -181,7 +181,7 @@ export default function WorkOrderFiles({ jobId }: WorkOrderFilesProps) {
             </div>
 
             {isRecut && (
-                <p className="text-xs text-orange-400/80">
+                <p className="text-xs text-orange-500/80">
                     Scrapped parts will be cross-referenced when parsing the PDF.
                 </p>
             )}

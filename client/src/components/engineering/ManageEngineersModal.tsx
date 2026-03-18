@@ -4,7 +4,7 @@ import { useToast } from '../../contexts/ToastContext';
 import Modal from '../ui/Modal';
 import Button from '../ui/Button';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { Plus, Pencil, Trash2, Check, X } from 'lucide-react';
+import { Plus, PencilSimple, Trash, Check, X } from '@phosphor-icons/react';
 import type { Engineer } from '../../types';
 
 interface ManageEngineersModalProps {
@@ -69,24 +69,24 @@ export default function ManageEngineersModal({ isOpen, onClose }: ManageEngineer
           {/* Add new engineer */}
           <div className="flex items-end gap-2">
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-400 mb-1">Name *</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Name *</label>
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 placeholder="Engineer name"
-                className="w-full bg-rivian-soft-black text-white border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-stage-engineering/50"
+                className="w-full bg-white text-gray-900 border border-gray-100 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-900"
                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               />
             </div>
             <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-400 mb-1">Email</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Email</label>
               <input
                 type="email"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
                 placeholder="Email (optional)"
-                className="w-full bg-rivian-soft-black text-white border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-stage-engineering/50"
+                className="w-full bg-white text-gray-900 border border-gray-100 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-900"
                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
               />
             </div>
@@ -97,14 +97,14 @@ export default function ManageEngineersModal({ isOpen, onClose }: ManageEngineer
               disabled={!newName.trim() || createMutation.isPending}
               className="!px-3 !py-2"
             >
-              <Plus className="w-4 h-4" />
+              <Plus size={16} />
             </Button>
           </div>
 
           {/* Engineers list */}
-          <div className="border border-gray-800 rounded-lg overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
             {engineers && engineers.length > 0 ? (
-              <div className="divide-y divide-gray-800">
+              <div className="divide-y divide-gray-100">
                 {engineers.map((eng) => (
                   <EngineerRow
                     key={eng.id}
@@ -121,7 +121,7 @@ export default function ManageEngineersModal({ isOpen, onClose }: ManageEngineer
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-sm text-gray-500">
+              <div className="text-center py-8 text-sm text-gray-400">
                 No engineers added yet
               </div>
             )}
@@ -186,7 +186,7 @@ function EngineerRow({
           type="text"
           value={editName}
           onChange={(e) => onEditNameChange(e.target.value)}
-          className="flex-1 bg-rivian-black text-white border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-stage-engineering/50"
+          className="flex-1 bg-white text-gray-900 border border-gray-100 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gray-900"
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
         />
         <input
@@ -194,21 +194,21 @@ function EngineerRow({
           value={editEmail}
           onChange={(e) => onEditEmailChange(e.target.value)}
           placeholder="Email"
-          className="flex-1 bg-rivian-black text-white border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-stage-engineering/50"
+          className="flex-1 bg-white text-gray-900 border border-gray-100 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gray-900"
           onKeyDown={(e) => e.key === 'Enter' && handleSave()}
         />
         <button
           onClick={handleSave}
           disabled={!editName.trim() || updateMutation.isPending}
-          className="p-1.5 text-green-400 hover:bg-green-500/10 rounded transition-colors disabled:opacity-50"
+          className="p-1.5 text-emerald-500 hover:bg-gray-50 rounded transition-colors disabled:opacity-50"
         >
-          <Check className="w-4 h-4" />
+          <Check size={16} />
         </button>
         <button
           onClick={onCancelEdit}
-          className="p-1.5 text-gray-400 hover:bg-gray-700 rounded transition-colors"
+          className="p-1.5 text-gray-400 hover:bg-gray-50 rounded transition-colors"
         >
-          <X className="w-4 h-4" />
+          <X size={16} />
         </button>
       </div>
     );
@@ -218,15 +218,15 @@ function EngineerRow({
     <div className="flex items-center gap-3 px-4 py-3 group">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`text-sm font-medium ${engineer.active ? 'text-white' : 'text-gray-500 line-through'}`}>
+          <span className={`text-sm font-medium ${engineer.active ? 'text-gray-900' : 'text-gray-400 line-through'}`}>
             {engineer.name}
           </span>
           {!engineer.active && (
-            <span className="text-[10px] px-1.5 py-px rounded bg-gray-800 text-gray-500">Inactive</span>
+            <span className="text-[10px] px-1.5 py-px rounded bg-gray-100 text-gray-400">Inactive</span>
           )}
         </div>
         {engineer.email && (
-          <span className="text-xs text-gray-500">{engineer.email}</span>
+          <span className="text-xs text-gray-400">{engineer.email}</span>
         )}
       </div>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -234,23 +234,23 @@ function EngineerRow({
           onClick={handleToggleActive}
           className={`px-2 py-1 text-[10px] rounded font-medium transition-colors ${
             engineer.active
-              ? 'text-yellow-400 hover:bg-yellow-500/10'
-              : 'text-green-400 hover:bg-green-500/10'
+              ? 'text-amber-600 hover:bg-gray-50'
+              : 'text-emerald-600 hover:bg-gray-50'
           }`}
         >
           {engineer.active ? 'Deactivate' : 'Activate'}
         </button>
         <button
           onClick={onStartEdit}
-          className="p-1.5 text-gray-500 hover:text-white hover:bg-gray-700 rounded transition-colors"
+          className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-50 rounded transition-colors"
         >
-          <Pencil className="w-3.5 h-3.5" />
+          <PencilSimple size={14} />
         </button>
         <button
           onClick={onDelete}
-          className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-gray-50 rounded transition-colors"
         >
-          <Trash2 className="w-3.5 h-3.5" />
+          <Trash size={14} />
         </button>
       </div>
     </div>

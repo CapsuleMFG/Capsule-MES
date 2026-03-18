@@ -67,43 +67,43 @@ export default function GeneratePartsModal({ jobId, bomItem, isOpen, onClose }: 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Generate Tracked Parts">
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="bg-rivian-hover rounded-lg p-4">
-                    <p className="text-sm text-gray-300">
-                        Generate <span className="text-white font-semibold">{quantity}</span> tracked parts for{' '}
-                        <span className="text-white font-semibold">{bomItem.partNumber}</span>{' '}
-                        using route: <span className="text-rivian-accent font-semibold">{bomItem.routeTemplateName}</span>
+                <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-sm text-gray-600">
+                        Generate <span className="text-gray-900 font-semibold">{quantity}</span> tracked parts for{' '}
+                        <span className="text-gray-900 font-semibold">{bomItem.partNumber}</span>{' '}
+                        using route: <span className="text-gray-900 font-semibold">{bomItem.routeTemplateName}</span>
                     </p>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Quantity</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
                     <input
                         type="number"
                         min="1"
                         max="1000"
                         value={quantity}
                         onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                        className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+                        className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
                     />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">Tracking ID Prefix</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tracking ID Prefix</label>
                         <input
                             type="text"
                             value={trackingIdPrefix}
                             onChange={(e) => setTrackingIdPrefix(e.target.value)}
-                            className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+                            className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
                             placeholder="e.g., PRT-001"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">ID Type</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">ID Type</label>
                         <select
                             value={identificationType}
                             onChange={(e) => setIdentificationType(e.target.value as IdentificationType)}
-                            className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+                            className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
                         >
                             <option value="QR">QR Code</option>
                             <option value="Engraved">Engraved</option>

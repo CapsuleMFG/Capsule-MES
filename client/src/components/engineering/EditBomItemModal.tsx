@@ -101,7 +101,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Part Number */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Part Number <span className="text-red-400">*</span>
                     </label>
                     <Input
@@ -115,7 +115,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
 
                 {/* Description */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Description
                     </label>
                     <Input
@@ -129,7 +129,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
                 {/* Quantity and Unit */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Quantity <span className="text-red-400">*</span>
                         </label>
                         <Input
@@ -143,7 +143,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Unit
                         </label>
                         <Input
@@ -157,7 +157,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
 
                 {/* Material */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Material
                     </label>
                     <Input
@@ -171,7 +171,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
                 {/* Thickness and Surface Area */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Thickness
                         </label>
                         <Input
@@ -182,7 +182,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Surface Area (sqft)
                         </label>
                         <Input
@@ -201,7 +201,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
 
                 {/* Powdercoat */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Powdercoat / Finish
                     </label>
                     <Input
@@ -214,7 +214,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
 
                 {/* Route Template */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Route Template
                     </label>
                     <select
@@ -224,7 +224,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
                             routeTemplateId: e.target.value ? parseInt(e.target.value) : null
                         })}
                         disabled={updateMutation.isPending}
-                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     >
                         <option value="">None</option>
                         {routeTemplates?.map((rt) => (
@@ -235,7 +235,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
 
                 {/* Notes */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                         Notes
                     </label>
                     <textarea
@@ -244,7 +244,7 @@ export default function EditBomItemModal({ jobId, bomItem, isOpen, onClose }: Ed
                         placeholder="Additional notes or specifications"
                         disabled={updateMutation.isPending}
                         rows={3}
-                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                     />
                 </div>
 

@@ -5,7 +5,7 @@ import * as engineeringService from '../../services/engineering.service';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
-import { CheckCircle2, Circle, Clock, Plus, Trash2, AlertCircle } from 'lucide-react';
+import { CheckCircle, Clock, Plus, Trash, WarningCircle, Circle } from '@phosphor-icons/react';
 import type { DesignMilestone, DesignMilestoneStatus } from '../../types';
 
 interface DesignMilestonesProps {
@@ -115,22 +115,22 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
     const getStatusIcon = (status: DesignMilestoneStatus) => {
         switch (status) {
             case 'Completed':
-                return <CheckCircle2 className="w-5 h-5 text-green-500" />;
+                return <CheckCircle size={20} className="text-emerald-500" />;
             case 'In Progress':
-                return <Clock className="w-5 h-5 text-blue-500" />;
+                return <Clock size={20} className="text-amber-500" />;
             default:
-                return <Circle className="w-5 h-5 text-gray-400" />;
+                return <Circle size={20} className="text-gray-400" />;
         }
     };
 
     const getStatusColor = (status: DesignMilestoneStatus) => {
         switch (status) {
             case 'Completed':
-                return 'bg-green-100 text-green-800';
+                return 'text-emerald-500';
             case 'In Progress':
-                return 'bg-blue-100 text-blue-800';
+                return 'text-amber-500';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'text-gray-400';
         }
     };
 
@@ -147,12 +147,12 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
         return (
             <Card className="p-6">
                 <div className="text-center">
-                    <h3 className="text-lg font-semibold mb-2">Design Milestones</h3>
-                    <p className="text-gray-400 mb-4">No milestones set up for this job yet.</p>
-                    
+                    <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-2">Design Milestones</h3>
+                    <p className="text-gray-500 mb-4">No milestones set up for this job yet.</p>
+
                     {/* Add new milestone form */}
                     <div className="text-left">
-                        <h4 className="text-sm font-medium text-gray-300 mb-3">Add First Milestone</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Add First Milestone</h4>
                         <div className="flex gap-3">
                             <div className="flex-1">
                                 <Input
@@ -167,7 +167,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                     type="date"
                                     value={newTargetDate}
                                     onChange={(e) => setNewTargetDate(e.target.value)}
-                                    className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white text-sm"
+                                    className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 text-sm"
                                     placeholder="Target date"
                                 />
                             </div>
@@ -176,7 +176,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                 onClick={handleAdd}
                                 disabled={!newMilestoneName.trim() || createMutation.isPending}
                             >
-                                <Plus className="w-4 h-4" />
+                                <Plus size={16} />
                             </Button>
                         </div>
                     </div>
@@ -187,7 +187,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
 
     return (
         <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Design Milestones</h3>
+            <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Design Milestones</h3>
 
             <div className="space-y-4">
                 {milestones.map((milestone, index) => (
@@ -197,7 +197,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                     >
                         {/* Vertical line */}
                         {index < milestones.length - 1 && (
-                            <div className="absolute left-2 top-6 bottom-0 w-0.5 bg-gray-700" />
+                            <div className="absolute left-2 top-6 bottom-0 w-0.5 bg-gray-100" />
                         )}
 
                         {/* Status icon */}
@@ -207,9 +207,9 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
 
                         {editingId === milestone.id ? (
                             // Edit mode
-                            <div className="bg-rivian-hover rounded-lg p-4 space-y-3">
+                            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Milestone Name *
                                     </label>
                                     <input
@@ -218,11 +218,11 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                         onChange={(e) =>
                                             setEditForm({ ...editForm, milestoneName: e.target.value })
                                         }
-                                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white"
+                                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Status
                                     </label>
                                     <select
@@ -230,7 +230,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                         onChange={(e) =>
                                             setEditForm({ ...editForm, status: e.target.value as DesignMilestoneStatus })
                                         }
-                                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white"
+                                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900"
                                     >
                                         <option value="Not Started">Not Started</option>
                                         <option value="In Progress">In Progress</option>
@@ -238,7 +238,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Target Date
                                     </label>
                                     <input
@@ -247,11 +247,11 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                         onChange={(e) =>
                                             setEditForm({ ...editForm, targetDate: e.target.value })
                                         }
-                                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white"
+                                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Completed Date
                                     </label>
                                     <input
@@ -260,11 +260,11 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                         onChange={(e) =>
                                             setEditForm({ ...editForm, completedDate: e.target.value })
                                         }
-                                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white"
+                                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Notes
                                     </label>
                                     <textarea
@@ -273,7 +273,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                             setEditForm({ ...editForm, notes: e.target.value })
                                         }
                                         rows={2}
-                                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white"
+                                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900"
                                     />
                                 </div>
                                 <div className="flex gap-2 justify-end">
@@ -293,20 +293,20 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                             // View mode
                             <div className="flex items-start gap-3">
                                 <div
-                                    className="flex-1 cursor-pointer hover:bg-rivian-hover rounded-lg p-3 transition-colors"
+                                    className="flex-1 cursor-pointer hover:bg-gray-50 rounded-lg p-3 transition-colors"
                                     onClick={() => handleEdit(milestone)}
                                 >
                                     <div className="flex items-center justify-between mb-2">
-                                        <h4 className="font-medium text-white">{milestone.milestoneName}</h4>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(milestone.status)}`}>
+                                        <h4 className="font-medium text-gray-900">{milestone.milestoneName}</h4>
+                                        <span className={`text-xs font-medium ${getStatusColor(milestone.status)}`}>
                                             {milestone.status}
                                         </span>
                                     </div>
                                     {milestone.targetDate && (
                                         <p className={`text-sm mb-1 ${
-                                            isOverdue(milestone) ? 'text-red-400 font-medium' : 'text-gray-400'
+                                            isOverdue(milestone) ? 'text-red-500 font-medium' : 'text-gray-400'
                                         }`}>
-                                            {isOverdue(milestone) && <AlertCircle className="w-3.5 h-3.5 inline mr-1" />}
+                                            {isOverdue(milestone) && <WarningCircle size={14} className="inline mr-1" />}
                                             Target: {new Date(milestone.targetDate).toLocaleDateString()}
                                             {isOverdue(milestone) && ' (Overdue)'}
                                         </p>
@@ -317,15 +317,15 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                                         </p>
                                     )}
                                     {milestone.notes && (
-                                        <p className="text-sm text-gray-300 mt-1">{milestone.notes}</p>
+                                        <p className="text-sm text-gray-600 mt-1">{milestone.notes}</p>
                                     )}
                                 </div>
                                 <button
                                     onClick={() => handleDelete(milestone)}
-                                    className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
+                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                                     title="Delete milestone"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash size={16} />
                                 </button>
                             </div>
                         )}
@@ -334,8 +334,8 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
             </div>
 
             {/* Add new milestone form */}
-            <div className="mt-6 pt-6 border-t border-gray-700">
-                <h4 className="text-sm font-medium text-gray-300 mb-3">Add Custom Milestone</h4>
+            <div className="mt-6 pt-6 border-t border-gray-100">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">Add Custom Milestone</h4>
                 <div className="flex gap-3">
                     <div className="flex-1">
                         <Input
@@ -350,7 +350,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                             type="date"
                             value={newTargetDate}
                             onChange={(e) => setNewTargetDate(e.target.value)}
-                            className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white text-sm"
+                            className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 text-sm"
                             placeholder="Target date"
                         />
                     </div>
@@ -359,7 +359,7 @@ export default function DesignMilestones({ jobId }: DesignMilestonesProps) {
                         onClick={handleAdd}
                         disabled={!newMilestoneName.trim() || createMutation.isPending}
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus size={16} />
                     </Button>
                 </div>
             </div>

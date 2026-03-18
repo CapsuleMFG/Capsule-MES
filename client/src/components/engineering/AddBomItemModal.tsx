@@ -82,7 +82,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                     <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wider">Basic Information</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Part Number <span className="text-red-400">*</span>
                             </label>
                             <Input
@@ -94,7 +94,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Quantity <span className="text-red-400">*</span>
                             </label>
                             <div className="grid grid-cols-3 gap-2">
@@ -119,7 +119,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
                             Description
                         </label>
                         <Input
@@ -132,11 +132,11 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                 </div>
 
                 {/* Material Specifications */}
-                <div className="space-y-4 pt-4 border-t border-gray-800">
+                <div className="space-y-4 pt-4 border-t border-gray-100">
                     <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wider">Material Specifications</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Material
                             </label>
                             <Input
@@ -147,7 +147,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Thickness
                             </label>
                             <Input
@@ -161,7 +161,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Surface Area (sqft)
                             </label>
                             <Input
@@ -177,7 +177,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Powdercoat / Finish
                             </label>
                             <Input
@@ -191,10 +191,10 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                 </div>
 
                 {/* Manufacturing */}
-                <div className="space-y-4 pt-4 border-t border-gray-800">
+                <div className="space-y-4 pt-4 border-t border-gray-100">
                     <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wider">Manufacturing</h3>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
                             Route Template
                         </label>
                         <select
@@ -204,7 +204,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                                 routeTemplateId: e.target.value ? parseInt(e.target.value) : undefined
                             })}
                             disabled={createMutation.isPending}
-                            className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent"
+                            className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                         >
                             <option value="">None</option>
                             {routeTemplates?.map((rt) => (
@@ -214,7 +214,7 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1.5">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
                             Notes
                         </label>
                         <textarea
@@ -223,13 +223,13 @@ export default function AddBomItemModal({ jobId, isOpen, onClose }: AddBomItemMo
                             placeholder="Additional notes or specifications"
                             disabled={createMutation.isPending}
                             rows={3}
-                            className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent resize-none"
+                            className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
                         />
                     </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 pt-4 border-t border-gray-800">
+                <div className="flex gap-3 pt-4 border-t border-gray-100">
                     <Button
                         type="button"
                         variant="secondary"
