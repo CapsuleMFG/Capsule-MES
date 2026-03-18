@@ -26,6 +26,12 @@ Use **Supabase Auth** (already the project's database provider). Email/password 
 - Backend validates JWTs on every API request via middleware
 - Frontend stores session via Supabase client SDK (handles refresh automatically)
 
+**New dependencies required:**
+- `@supabase/supabase-js` in both `client/` and `server/` packages
+- Backend uses `@supabase/supabase-js` to verify JWTs against the project's JWT secret (available in Supabase dashboard under Settings > API)
+
+**Note on database syntax:** The existing migrations use SQLite-style syntax (e.g., `INTEGER PRIMARY KEY AUTOINCREMENT`, `datetime('now')`) that was manually translated for PostgreSQL. New migrations in this spec use native PostgreSQL syntax (`BIGSERIAL`, `TIMESTAMPTZ`, `gen_random_uuid()`). Do not copy syntax from older migration files.
+
 ### 1.2 Roles
 
 Four roles with hierarchical permissions:
@@ -39,12 +45,13 @@ Four roles with hierarchical permissions:
 
 ### 1.3 Database Schema
 
-**`users` table** (managed by Supabase Auth + custom fields):
+**`profiles` table** (extends Supabase `auth.users` — standard Supabase pattern):
+
+Supabase Auth owns `auth.users` (email, password hash, sessions). The `profiles` table stores app-specific fields and references `auth.users.id` as its primary key. Email is NOT duplicated here — it lives in `auth.users`.
 
 | Column | Type | Notes |
 |--------|------|-------|
-| id | uuid | Primary key (Supabase auth.users.id) |
-| email | text | Unique, used for web login |
+| id | uuid | Primary key, FK to `auth.users(id)` |
 | name | text | Display name (shown in audit trail, kiosk, etc.) |
 | role | text | One of: admin, manager, engineer, operator |
 | pin | text | bcrypt-hashed PIN for kiosk login (operators) |
@@ -52,12 +59,14 @@ Four roles with hierarchical permissions:
 | created_at | timestamptz | Auto-set |
 | updated_at | timestamptz | Auto-updated |
 
+A database trigger or Supabase webhook auto-creates a `profiles` row when a new `auth.users` record is created (via admin user creation flow).
+
 **`audit_log` table** (append-only):
 
 | Column | Type | Notes |
 |--------|------|-------|
 | id | bigserial | Primary key |
-| user_id | uuid | FK to users |
+| user_id | uuid | FK to profiles |
 | user_name | text | Denormalized for fast display |
 | action | text | CREATE, UPDATE, DELETE |
 | table_name | text | Which table was affected |
@@ -88,14 +97,22 @@ Four roles with hierarchical permissions:
 | `POST/PUT /api/jobs/:id/workflow/*` | admin, manager, engineer |
 | `POST/PUT /api/tracked-parts/*/checkin`, `/checkout` | All authenticated (operators included) |
 | `POST /api/kiosk/auth` | Public (PIN-based, returns limited session) |
-| `GET/POST/PUT /api/users/*` | admin only |
+| `GET/POST/PUT /api/profiles/*` | admin only |
 | `GET /api/audit-log` | admin, manager |
 | All other write endpoints | admin, manager |
 
 **Audit logging** (`server/src/middleware/audit.ts`):
-- Wraps controller methods to capture before/after state
+- For UPDATE operations: performs a SELECT before the update within the same transaction to capture `old_values`
+- For CREATE operations: logs `new_values` only (no `old_values`)
+- For DELETE operations: performs a SELECT before delete to capture `old_values` (no `new_values`)
 - Writes to `audit_log` on every CREATE, UPDATE, DELETE
-- Runs asynchronously (non-blocking — fire and forget, errors logged but don't fail the request)
+- Runs asynchronously (non-blocking — fire and forget, errors logged to `console.error` but don't fail the request). Silent audit failures are acceptable for an internal tool; if this becomes a concern, we can add a retry queue later.
+
+**Auth rollout strategy:**
+- Add `AUTH_REQUIRED=true|false` environment variable (default `false` during development)
+- When `AUTH_REQUIRED=false`, auth middleware passes all requests through with a default dev user
+- When `AUTH_REQUIRED=true`, all endpoints require valid JWT except `POST /api/kiosk/auth`
+- This allows gradual rollout: deploy code first, enable auth when ready
 
 ### 1.5 Frontend Implementation
 
@@ -129,10 +146,12 @@ Four roles with hierarchical permissions:
 ### 1.6 Kiosk Integration
 
 Upgrade existing PIN-based kiosk:
-- PINs now resolve to a `users` record (not standalone `station_kiosks`)
+- PINs now resolve to a `profiles` record (not standalone `station_kiosks`)
 - `POST /api/kiosk/auth` accepts PIN → returns user name, role, and limited kiosk session token
 - All part check-in/out/quality actions include `user_id` from the kiosk session
-- Existing `station_kiosks` table is deprecated (migrate data to `users` table)
+- The `station_kiosks` table is **kept** for station-to-machine mapping (which physical terminal maps to which machine), but PIN authentication moves to the `profiles` table
+- Kiosk flow becomes: operator enters PIN → `profiles` lookup validates identity → kiosk UI then uses `station_kiosks` to determine which machine the terminal is configured for
+- Existing `operator_name` fields on `part_station_logs` are kept for backward compatibility with historical data; new entries populate both `operator_name` (from `profiles.name`) and `user_id`
 
 ---
 
@@ -183,7 +202,7 @@ Both tabs auto-refresh. No manual refresh button needed.
 **Visual treatment:**
 - Running machines: standard `border-gray-700`
 - Idle machines: standard border, amber status dot
-- Down machines: `border-red-500` border, red status dot, reason text
+- Down machines: standard `border-gray-700` border, large red status dot, reason text displayed in `text-red-400` (no colored card borders per design system rule 9)
 
 **Full-screen mode:** Button to hide sidebar and header for TV display. Uses CSS to maximize grid area. Persists via localStorage.
 
@@ -230,10 +249,12 @@ Both tabs auto-refresh. No manual refresh button needed.
 }
 ```
 
-**Machine status derivation** (no new table needed):
-- **Running:** Machine has a work order assigned with status 'In Progress' and a part currently checked in
-- **Idle:** Machine exists and is active but has no in-progress work order, or work order is assigned but no part checked in
-- **Down:** New `is_down` boolean + `down_reason` text on `machines` table (set manually by managers via a toggle)
+**Machine status derivation** (simplified — no deep join chains):
+- **Down:** `machines.is_down = true` (manually set by managers via toggle). Takes priority over other statuses.
+- **Running:** Machine has at least one work order with `assigned_machine_id = machine.id` AND `production_status = 'In Progress'`. No need to check part-level check-ins — an in-progress work order on a machine means it's running.
+- **Idle:** Machine is active (`is_active = true`, `is_down = false`) but has no in-progress work orders assigned to it.
+
+**Note on `currentPart`:** If multiple parts are associated with a machine's active work order, show aggregate counts (total completed / total tracked for that work order), not a single part. The `description` field shows the work order description rather than individual part names.
 
 ### 2.5 Frontend Components
 
@@ -308,11 +329,10 @@ New page at `/admin/audit-log` (accessible by admin, manager):
 
 All migrations are additive (no drops, no renames).
 
-### Migration 027: Users table
+### Migration 027: Profiles table
 ```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT UNIQUE NOT NULL,
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('admin', 'manager', 'engineer', 'operator')),
   pin TEXT,
@@ -320,13 +340,27 @@ CREATE TABLE users (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Auto-create profile when a new auth user is created
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO profiles (id, name, role)
+  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'name', NEW.email), 'operator');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 ```
 
 ### Migration 028: Audit log table
 ```sql
 CREATE TABLE audit_log (
   id BIGSERIAL PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
+  user_id UUID REFERENCES profiles(id),
   user_name TEXT NOT NULL,
   action TEXT NOT NULL CHECK (action IN ('CREATE', 'UPDATE', 'DELETE')),
   table_name TEXT NOT NULL,
@@ -347,11 +381,12 @@ ALTER TABLE machines ADD COLUMN down_reason TEXT;
 ALTER TABLE machines ADD COLUMN down_since TIMESTAMPTZ;
 ```
 
-### Migration 030: Link tracked parts and labor to users
+### Migration 030: Link tracked parts and labor to profiles
 ```sql
-ALTER TABLE part_station_logs ADD COLUMN user_id UUID REFERENCES users(id);
-ALTER TABLE job_labor ADD COLUMN user_id UUID REFERENCES users(id);
+ALTER TABLE part_station_logs ADD COLUMN user_id UUID REFERENCES profiles(id);
+ALTER TABLE job_labor ADD COLUMN user_id UUID REFERENCES profiles(id);
 ```
+Note: `part_station_logs.operator_name` is kept for historical data. New entries populate both `operator_name` and `user_id`.
 
 ---
 
@@ -364,7 +399,7 @@ ALTER TABLE job_labor ADD COLUMN user_id UUID REFERENCES users(id);
 | Machine status | Derived from work orders + manual `is_down` flag | No need for a separate status table; real-time derivation is accurate enough at 15-30s refresh |
 | CSV export | Client-side generation | No backend needed; operates on already-loaded data; fast for table sizes under 10k rows |
 | Audit logging | Async middleware | Non-blocking; audit failures don't break business operations |
-| Kiosk migration | PIN on users table | Consolidates identity; one user record = one person across web + kiosk |
+| Kiosk migration | PIN on profiles table, station_kiosks kept for machine mapping | Consolidates identity; one profile = one person across web + kiosk; station hardware config stays separate |
 
 ---
 
