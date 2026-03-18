@@ -1261,10 +1261,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // If Supabase is not configured (missing env vars), skip auth
+    if (!supabase) {
+      setIsLoading(false);
+      return;
+    }
+
     // Check for existing session on mount
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase!.auth.getSession();
         if (session?.user) {
           const profile = await getMyProfile();
           setUser({
@@ -1284,7 +1290,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth();
 
     // Listen for auth state changes (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = supabase!.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
           try {
@@ -1308,13 +1314,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (!supabase) throw new Error('Auth not configured');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     // onAuthStateChange will handle setting user
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    if (supabase) await supabase.auth.signOut();
     setUser(null);
   };
 
@@ -1990,7 +1997,7 @@ git commit -m "fix: address auth integration test findings"
 
 ## Phase 2: Production Dashboard
 
-### Task 18: Machine status and user link migrations
+### Task 19: Machine status and user link migrations
 
 **Files:**
 - Create: `server/database/migrations/029_machine_status.sql`
@@ -2045,7 +2052,7 @@ git commit -m "feat: add machine status fields and user_id links"
 
 ---
 
-### Task 19: Production dashboard types
+### Task 20: Production dashboard types
 
 **Files:**
 - Modify: `shared/types/index.ts`
@@ -2120,7 +2127,7 @@ git commit -m "feat: add production dashboard types"
 
 ---
 
-### Task 20: Production dashboard backend
+### Task 21: Production dashboard backend
 
 **Files:**
 - Create: `server/src/controllers/production-dashboard.controller.ts`
@@ -2429,7 +2436,7 @@ git commit -m "feat: add production dashboard API endpoint"
 
 ---
 
-### Task 21: Production dashboard frontend — hooks and service
+### Task 22: Production dashboard frontend — hooks and service
 
 **Files:**
 - Modify: `client/src/hooks/useDashboard.ts`
@@ -2504,7 +2511,7 @@ git commit -m "feat: add production dashboard hook and service"
 
 ---
 
-### Task 22: Production Dashboard page with Command Center and Machine Grid
+### Task 23: Production Dashboard page with Command Center and Machine Grid
 
 **Files:**
 - Create: `client/src/pages/ProductionDashboard.tsx`
@@ -2642,7 +2649,7 @@ git commit -m "feat: add production dashboard with Command Center and Machine Gr
 
 ## Phase 3: Reporting & Export
 
-### Task 23: CSV export utility
+### Task 24: CSV export utility
 
 **Files:**
 - Create: `client/src/utils/exportCsv.ts`
@@ -2700,7 +2707,7 @@ git commit -m "feat: add CSV export utility"
 
 ---
 
-### Task 24: Add export buttons to existing pages
+### Task 25: Add export buttons to existing pages
 
 **Files:**
 - Modify: `client/src/pages/Jobs.tsx`
@@ -2774,7 +2781,7 @@ git commit -m "feat: add CSV export buttons to all major data tables"
 
 ---
 
-### Task 25: Reports KPI backend endpoint
+### Task 26: Reports KPI backend endpoint
 
 **Files:**
 - Create: `server/src/controllers/reports.controller.ts`
@@ -2928,7 +2935,7 @@ git commit -m "feat: add KPI reports endpoint with date range filtering"
 
 ---
 
-### Task 26: Reports types, service, and hook
+### Task 27: Reports types, service, and hook
 
 **Files:**
 - Modify: `shared/types/index.ts`
@@ -3007,7 +3014,7 @@ git commit -m "feat: add reports types, service, and hook"
 
 ---
 
-### Task 27: Reports page
+### Task 28: Reports page
 
 **Files:**
 - Create: `client/src/pages/Reports.tsx`
@@ -3067,7 +3074,7 @@ git commit -m "feat: add KPI reports page with date range filtering"
 
 ---
 
-### Task 28: Add export to Audit Log page
+### Task 29: Add export to Audit Log page
 
 **Files:**
 - Modify: `client/src/pages/AuditLog.tsx`
@@ -3103,7 +3110,7 @@ git commit -m "feat: add CSV export to audit log page"
 
 ---
 
-### Task 29: Update CLAUDE.md to fix stale SQLite references
+### Task 30: Update CLAUDE.md to fix stale SQLite references
 
 **Files:**
 - Modify: `CLAUDE.md`
@@ -3126,7 +3133,7 @@ git commit -m "docs: fix stale SQLite references in CLAUDE.md, update to Postgre
 
 ---
 
-### Task 30: Final integration verification
+### Task 31: Final integration verification
 
 - [ ] **Step 1: Full build check**
 
