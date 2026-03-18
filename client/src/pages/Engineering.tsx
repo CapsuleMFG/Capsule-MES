@@ -562,7 +562,7 @@ function EngineeringJobRow({ job, isExpanded, onToggle, onNavigate, onDelete }: 
               <span className="text-gray-600">{job.clientName}</span>
               {job.description && (
                 <>
-                  <span className="text-gray-300">&middot;</span>
+                  <span className="text-gray-400">&middot;</span>
                   <span className="truncate">{job.description}</span>
                 </>
               )}
