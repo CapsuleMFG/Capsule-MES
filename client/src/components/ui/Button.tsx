@@ -1,5 +1,5 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   as?: 'button' | 'span';
   children: React.ReactNode;
@@ -26,12 +26,15 @@ export default function Button({
     case 'danger':
       variantClasses = 'btn-danger';
       break;
+    case 'ghost':
+      variantClasses = 'btn-ghost';
+      break;
   }
 
   return (
     <Component
       className={`${variantClasses} ${className}`}
-      {...(props as any)}
+      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
     >
       {children}
     </Component>

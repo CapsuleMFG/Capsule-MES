@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react';
-import { X } from 'lucide-react';
+import { X } from '@phosphor-icons/react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -23,27 +23,25 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'md
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" aria-hidden="true" />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm animate-fadeIn" aria-hidden="true" />
 
-      {/* Modal Container */}
       <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-        <Dialog.Panel className={`${maxWidthClasses[maxWidth]} w-full bg-rivian-soft-black rounded-xl shadow-2xl border border-gray-800 my-8 max-h-[calc(100vh-4rem)] flex flex-col`}>
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-gray-800 flex-shrink-0">
-            <Dialog.Title className="text-lg font-semibold text-white">
+        <Dialog.Panel
+          className={`${maxWidthClasses[maxWidth]} w-full bg-white rounded-2xl shadow-xl my-8 max-h-[calc(100vh-4rem)] flex flex-col animate-modalIn`}
+        >
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+            <Dialog.Title className="text-sm font-semibold text-gray-900">
               {title}
             </Dialog.Title>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-300 transition-colors p-1 hover:bg-gray-800 rounded-lg"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1"
             >
-              <X className="w-5 h-5" />
+              <X size={16} />
             </button>
           </div>
 
-          {/* Content */}
-          <div className="p-6 overflow-y-auto flex-1">
+          <div className="p-5 overflow-y-auto flex-1">
             {children}
           </div>
         </Dialog.Panel>

@@ -18,19 +18,18 @@ export default function Tabs({ tabs, defaultTab }: TabsProps) {
 
   return (
     <div>
-      {/* Tab Headers */}
-      <div className="border-b border-gray-700 mb-6">
-        <nav className="flex gap-6">
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex gap-0">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                px-4 py-3 font-medium transition-colors border-b-2
+                px-3 pb-3 pt-0 text-sm transition-colors border-b-2
                 ${
                   activeTab === tab.id
-                    ? 'border-rivian-accent text-rivian-accent'
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                    ? 'border-gray-900 text-gray-900 font-medium'
+                    : 'border-transparent text-gray-500 hover:text-gray-900'
                 }
               `}
             >
@@ -40,7 +39,6 @@ export default function Tabs({ tabs, defaultTab }: TabsProps) {
         </nav>
       </div>
 
-      {/* Tab Content */}
       <div>{activeTabContent}</div>
     </div>
   );
