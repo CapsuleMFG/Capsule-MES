@@ -5,7 +5,7 @@ import * as jobsService from '../../../services/jobs.service';
 import Card from '../../ui/Card';
 import Button from '../../ui/Button';
 import LoadingSpinner from '../../ui/LoadingSpinner';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash } from '@phosphor-icons/react';
 
 interface ProductionTabProps {
   jobId: number;
@@ -90,13 +90,13 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-xl font-semibold">Labor Tracking</h3>
+          <h3 className="text-xl font-semibold text-gray-900">Labor Tracking</h3>
           <p className="text-sm text-gray-400 mt-1">
-            Total Hours Logged: <span className="text-white font-semibold">{totalHours.toFixed(1)}</span>
+            Total Hours Logged: <span className="text-gray-900 font-semibold">{totalHours.toFixed(1)}</span>
           </p>
         </div>
         <Button variant="primary" onClick={() => setIsAdding(!isAdding)} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
+          <Plus size={16} />
           Add Labor Entry
         </Button>
       </div>
@@ -104,10 +104,10 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
       {/* Add Labor Form */}
       {isAdding && (
         <Card className="mb-6">
-          <h4 className="text-lg font-semibold mb-4">Add Labor Entry</h4>
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">Add Labor Entry</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Employee Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Employee Name *</label>
               <input
                 type="text"
                 placeholder="e.g., John Smith"
@@ -116,7 +116,7 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Hours *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Hours *</label>
               <input
                 type="number"
                 step="0.5"
@@ -127,7 +127,7 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Date *</label>
               <input
                 type="date"
                 value={newLabor.date}
@@ -135,7 +135,7 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Workflow Stage</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Workflow Stage</label>
               <select
                 value={newLabor.stageId}
                 onChange={(e) => setNewLabor({ ...newLabor, stageId: e.target.value })}
@@ -149,7 +149,7 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Notes</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
               <input
                 type="text"
                 placeholder="e.g., Welding work"
@@ -174,37 +174,37 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
       )}
 
       {/* Labor Entries Table */}
-      <Card>
+      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
         {labor && labor.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Employee</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Hours</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Stage</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Notes</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
+                <tr>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Date</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Employee</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Hours</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Stage</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Notes</th>
+                  <th className="text-right text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {labor.map((entry: any) => (
-                  <tr key={entry.id} className="border-b border-gray-800">
-                    <td className="py-3 px-4 text-white">
+                  <tr key={entry.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="text-sm text-gray-900 px-5 py-3">
                       {new Date(entry.date).toLocaleDateString()}
                     </td>
-                    <td className="py-3 px-4 text-gray-300">{entry.employee_name}</td>
-                    <td className="py-3 px-4 text-white font-semibold">{entry.hours}h</td>
-                    <td className="py-3 px-4 text-gray-300">{entry.stage_name || '-'}</td>
-                    <td className="py-3 px-4 text-gray-300">{entry.notes || '-'}</td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="text-sm text-gray-600 px-5 py-3">{entry.employee_name}</td>
+                    <td className="text-sm text-gray-900 font-semibold px-5 py-3">{entry.hours}h</td>
+                    <td className="text-sm text-gray-600 px-5 py-3">{entry.stage_name || '-'}</td>
+                    <td className="text-sm text-gray-600 px-5 py-3">{entry.notes || '-'}</td>
+                    <td className="px-5 py-3 text-right">
                       <button
                         onClick={() => deleteLaborMutation.mutate(entry.id)}
-                        className="text-red-500 hover:text-red-400"
+                        className="text-gray-400 hover:text-gray-700 transition-colors"
                         disabled={deleteLaborMutation.isPending}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash size={16} />
                       </button>
                     </td>
                   </tr>
@@ -213,12 +213,12 @@ export default function ProductionTab({ jobId }: ProductionTabProps) {
             </table>
           </div>
         ) : (
-          <div className="text-center py-12 text-gray-400">
-            <p>No labor entries yet</p>
-            <p className="text-sm mt-2">Click "Add Labor Entry" to track work hours</p>
+          <div className="text-center py-12">
+            <p className="text-sm text-gray-400">No labor entries yet</p>
+            <p className="text-sm text-gray-400 mt-2">Click "Add Labor Entry" to track work hours</p>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

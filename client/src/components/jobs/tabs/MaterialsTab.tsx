@@ -5,7 +5,7 @@ import * as jobsService from '../../../services/jobs.service';
 import Card from '../../ui/Card';
 import Button from '../../ui/Button';
 import LoadingSpinner from '../../ui/LoadingSpinner';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash } from '@phosphor-icons/react';
 import type { MaterialStatus } from '../../../types';
 
 interface MaterialsTabProps {
@@ -110,15 +110,15 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-xl font-semibold">Bill of Materials</h3>
+          <h3 className="text-xl font-semibold text-gray-900">Bill of Materials</h3>
           {totalCost > 0 && (
             <p className="text-sm text-gray-400 mt-1">
-              Total Material Cost: <span className="text-white font-semibold">${totalCost.toFixed(2)}</span>
+              Total Material Cost: <span className="text-gray-900 font-semibold">${totalCost.toFixed(2)}</span>
             </p>
           )}
         </div>
         <Button variant="primary" onClick={() => setIsAdding(!isAdding)} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
+          <Plus size={16} />
           Add Material
         </Button>
       </div>
@@ -126,10 +126,10 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
       {/* Add Material Form */}
       {isAdding && (
         <Card className="mb-6">
-          <h4 className="text-lg font-semibold mb-4">Add New Material</h4>
+          <h4 className="text-lg font-semibold text-gray-900 mb-4">Add New Material</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Material Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Material Name *</label>
               <input
                 type="text"
                 placeholder="e.g., Steel Sheet 4x8"
@@ -138,7 +138,7 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Quantity *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
               <input
                 type="number"
                 step="0.01"
@@ -148,7 +148,7 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Unit *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
               <input
                 type="text"
                 placeholder="e.g., sheets"
@@ -157,7 +157,7 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Unit Cost ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Unit Cost ($)</label>
               <input
                 type="number"
                 step="0.01"
@@ -168,7 +168,7 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
               <select
                 value={newMaterial.status}
                 onChange={(e) => setNewMaterial({ ...newMaterial, status: e.target.value as MaterialStatus })}
@@ -180,7 +180,7 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Supplier</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Supplier</label>
               <input
                 type="text"
                 placeholder="e.g., BuildPro Supply"
@@ -205,40 +205,40 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
       )}
 
       {/* Materials Table */}
-      <Card>
+      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
         {materials && materials.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Material</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Quantity</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Unit Cost</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Total Cost</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Supplier</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Status</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
+                <tr>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Material</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Quantity</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Unit Cost</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Total Cost</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Supplier</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Status</th>
+                  <th className="text-right text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3 border-b border-gray-100">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {materials.map((material: any) => (
-                  <tr key={material.id} className="border-b border-gray-800">
-                    <td className="py-3 px-4 text-white">{material.material_name}</td>
-                    <td className="py-3 px-4 text-gray-300">
+                  <tr key={material.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="text-sm text-gray-900 px-5 py-3">{material.material_name}</td>
+                    <td className="text-sm text-gray-600 px-5 py-3">
                       {material.quantity} {material.unit}
                     </td>
-                    <td className="py-3 px-4 text-gray-300">
+                    <td className="text-sm text-gray-600 px-5 py-3">
                       {material.cost ? `$${parseFloat(material.cost).toFixed(2)}` : '-'}
                     </td>
-                    <td className="py-3 px-4 text-white font-semibold">
+                    <td className="text-sm text-gray-900 font-semibold px-5 py-3">
                       {material.cost ? `$${(parseFloat(material.cost) * material.quantity).toFixed(2)}` : '-'}
                     </td>
-                    <td className="py-3 px-4 text-gray-300">{material.supplier || '-'}</td>
-                    <td className="py-3 px-4">
+                    <td className="text-sm text-gray-600 px-5 py-3">{material.supplier || '-'}</td>
+                    <td className="text-sm text-gray-600 px-5 py-3">
                       <select
                         value={material.status}
                         onChange={(e) => handleStatusChange(material.id, e.target.value as MaterialStatus)}
-                        className="bg-transparent text-sm"
+                        className="bg-transparent text-sm text-gray-600"
                         disabled={updateMaterialMutation.isPending}
                       >
                         <option value="Needed">Needed</option>
@@ -247,13 +247,13 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
                         <option value="Issued">Issued</option>
                       </select>
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="px-5 py-3 text-right">
                       <button
                         onClick={() => deleteMaterialMutation.mutate(material.id)}
-                        className="text-red-500 hover:text-red-400"
+                        className="text-gray-400 hover:text-gray-700 transition-colors"
                         disabled={deleteMaterialMutation.isPending}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash size={16} />
                       </button>
                     </td>
                   </tr>
@@ -262,12 +262,12 @@ export default function MaterialsTab({ jobId }: MaterialsTabProps) {
             </table>
           </div>
         ) : (
-          <div className="text-center py-12 text-gray-400">
-            <p>No materials added yet</p>
-            <p className="text-sm mt-2">Click "Add Material" to get started</p>
+          <div className="text-center py-12">
+            <p className="text-sm text-gray-400">No materials added yet</p>
+            <p className="text-sm text-gray-400 mt-2">Click "Add Material" to get started</p>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

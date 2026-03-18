@@ -8,7 +8,7 @@ import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import type { Job, JobStatus, UpdateWorkflowStageRequest } from '../../types';
+import type { Job, JobStatus } from '../../types';
 import * as jobsService from '../../services/jobs.service';
 
 interface EditJobModalProps {
@@ -128,17 +128,17 @@ export default function EditJobModal({ isOpen, onClose, job }: EditJobModalProps
       ) : (
         <form onSubmit={handleSubmit}>
           {errors.submit && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded text-red-500 text-sm">
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
               {errors.submit}
             </div>
           )}
 
           {/* Job Number - Read Only */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Job Number
             </label>
-            <div className="w-full bg-gray-800 text-gray-400 border border-gray-700 rounded px-3 py-2">
+            <div className="w-full bg-gray-50 text-gray-400 border border-gray-100 rounded px-3 py-2 text-sm">
               {job.jobNumber}
             </div>
           </div>
@@ -223,11 +223,11 @@ export default function EditJobModal({ isOpen, onClose, job }: EditJobModalProps
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Notes
             </label>
             <textarea
-              className="w-full bg-rivian-soft-black text-white border border-gray-700 rounded px-3 py-2 min-h-[100px] focus:outline-none focus:ring-2 focus:ring-rivian-accent"
+              className="w-full bg-white text-gray-900 border border-gray-200 rounded-lg px-3 py-2 min-h-[100px] focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900 text-sm"
               placeholder="Additional notes..."
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

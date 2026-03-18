@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Clock, Package, DollarSign, TruckIcon } from 'lucide-react';
+import { Clock, Package, CurrencyDollar, Truck } from '@phosphor-icons/react';
 import * as jobsService from '../../services/jobs.service';
 import type { Job } from '../../types';
 
@@ -43,57 +43,57 @@ export default function SupplyChainJobCard({ job }: SupplyChainJobCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Completed':
-        return 'bg-green-100 text-green-800';
+        return 'text-emerald-500';
       case 'In Progress':
-        return 'bg-blue-100 text-blue-800';
+        return 'text-amber-500';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'text-gray-400';
     }
   };
 
   return (
     <Link
       to={`/jobs/${job.id}`}
-      className="block bg-rivian-soft-black border border-gray-800 rounded-lg p-5 hover:border-rivian-accent transition-colors"
+      className="block bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-5 hover:shadow-md transition-shadow duration-200"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-white">{job.jobNumber}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{job.jobNumber}</h3>
           <p className="text-sm text-gray-400 mt-1">{job.clientName}</p>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-gray-300 text-sm mb-4 line-clamp-2">{job.description}</p>
+      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{job.description}</p>
 
       {/* Current Stage Status */}
       <div className="space-y-2 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">Current Stage:</span>
-          <span className="text-xs font-medium text-white">{activeStage?.stageName}</span>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(activeStage?.status || 'Not Started')}`}>
+          <span className="text-xs text-gray-400">Current Stage:</span>
+          <span className="text-xs font-medium text-gray-900">{activeStage?.stageName}</span>
+          <span className={`text-xs font-medium ${getStatusColor(activeStage?.status || 'Not Started')}`}>
             {activeStage?.status || 'Not Started'}
           </span>
         </div>
       </div>
 
       {/* Supply Chain Metrics */}
-      <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-800">
+      <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-100">
         <div className="flex items-center gap-2">
-          <TruckIcon className="w-4 h-4 text-gray-500" />
+          <Truck size={16} className="text-gray-400" />
           <div>
-            <p className="text-xs text-gray-500">Procurement</p>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-xs text-gray-400">Procurement</p>
+            <p className="text-sm font-semibold text-gray-900">
               {receivedItems}/{totalItems}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Package className="w-4 h-4 text-gray-500" />
+          <Package size={16} className="text-gray-400" />
           <div>
-            <p className="text-xs text-gray-500">Materials</p>
-            <p className="text-sm font-semibold text-white">{materials?.length || 0}</p>
+            <p className="text-xs text-gray-400">Materials</p>
+            <p className="text-sm font-semibold text-gray-900">{materials?.length || 0}</p>
           </div>
         </div>
       </div>
@@ -101,9 +101,9 @@ export default function SupplyChainJobCard({ job }: SupplyChainJobCardProps) {
       {/* Cost */}
       {totalProcurementCost > 0 && (
         <div className="flex items-center gap-2 mt-3 text-xs">
-          <DollarSign className="w-3 h-3 text-gray-400" />
+          <CurrencyDollar size={12} className="text-gray-400" />
           <span className="text-gray-400">
-            Procurement Cost: <span className="text-white font-semibold">${totalProcurementCost.toFixed(2)}</span>
+            Procurement Cost: <span className="text-gray-900 font-semibold">${totalProcurementCost.toFixed(2)}</span>
           </span>
         </div>
       )}
@@ -111,7 +111,7 @@ export default function SupplyChainJobCard({ job }: SupplyChainJobCardProps) {
       {/* Target Date */}
       {job.targetEndDate && (
         <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-          <Clock className="w-3 h-3" />
+          <Clock size={12} />
           <span>Target: {new Date(job.targetEndDate).toLocaleDateString()}</span>
         </div>
       )}

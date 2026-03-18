@@ -6,7 +6,7 @@ import Card from '../../ui/Card';
 import Button from '../../ui/Button';
 import LoadingSpinner from '../../ui/LoadingSpinner';
 import GlobalInventoryPanel from '../../supplychain/GlobalInventoryPanel';
-import { Plus, Edit, Trash2, Package, Truck } from 'lucide-react';
+import { Plus, PencilSimple, Trash, Package, Truck } from '@phosphor-icons/react';
 import type { ProcurementStatus } from '../../../types';
 
 interface SupplyChainTabProps {
@@ -110,13 +110,13 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
   const getProcurementStatusBadgeColor = (status: string) => {
     switch (status) {
       case 'Received':
-        return 'bg-green-100 text-green-800';
+        return 'bg-emerald-50 text-emerald-700';
       case 'Ordered':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-50 text-blue-700';
       case 'Partial':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-600';
     }
   };
 
@@ -134,7 +134,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
 
           onClick={() => setActiveView('boms')}
         >
-          <Package className="h-4 w-4 mr-2" />
+          <Package size={16} className="mr-2" />
           BOMs from Engineering
         </Button>
         <Button
@@ -142,7 +142,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
 
           onClick={() => setActiveView('procurement')}
         >
-          <Truck className="h-4 w-4 mr-2" />
+          <Truck size={16} className="mr-2" />
           Job Procurement
         </Button>
         <Button
@@ -150,7 +150,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
 
           onClick={() => setActiveView('inventory')}
         >
-          <Package className="h-4 w-4 mr-2" />
+          <Package size={16} className="mr-2" />
           Global Inventory
         </Button>
       </div>
@@ -158,48 +158,48 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
       {/* BOMs View (Read-only from Engineering) */}
       {activeView === 'boms' && (
         <Card>
-          <h3 className="text-lg font-semibold mb-4">Bill of Materials from Engineering</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Bill of Materials from Engineering</h3>
           {workOrders && workOrders.length > 0 ? (
             <div className="space-y-6">
               {workOrders.map((wo) => (
-                <div key={wo.id} className="border-b border-gray-200 last:border-0 pb-4 last:pb-0">
-                  <h4 className="font-semibold mb-2">{wo.woNumber}</h4>
+                <div key={wo.id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
+                  <h4 className="font-semibold text-gray-900 mb-2">{wo.woNumber}</h4>
                   {wo.bomItems && wo.bomItems.length > 0 ? (
                     <div className="overflow-x-auto">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      <table className="min-w-full">
+                        <thead>
+                          <tr className="border-b border-gray-100">
+                            <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                               Part Number
                             </th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                               Description
                             </th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                               Quantity
                             </th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                               Unit Cost
                             </th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                               Supplier
                             </th>
-                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                            <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                               Actions
                             </th>
                           </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody>
                           {wo.bomItems.map((item) => (
-                            <tr key={item.id}>
-                              <td className="px-4 py-2 text-sm font-medium">{item.partNumber}</td>
+                            <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                              <td className="px-4 py-2 text-sm font-medium text-gray-900">{item.partNumber}</td>
                               <td className="px-4 py-2 text-sm text-gray-600">
                                 {item.description || '-'}
                               </td>
-                              <td className="px-4 py-2 text-sm">
+                              <td className="px-4 py-2 text-sm text-gray-600">
                                 {item.quantity} {item.unit}
                               </td>
-                              <td className="px-4 py-2 text-sm">
+                              <td className="px-4 py-2 text-sm text-gray-600">
                                 -
                               </td>
                               <td className="px-4 py-2 text-sm text-gray-600">
@@ -231,13 +231,13 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 italic">No BOM items for this work order</p>
+                    <p className="text-sm text-gray-400 italic">No BOM items for this work order</p>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-center text-gray-500 py-4">
+            <p className="text-center text-sm text-gray-400 py-4">
               No work orders with BOMs yet. Create them in the Engineering tab.
             </p>
           )}
@@ -250,13 +250,13 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
           <Card>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-semibold">Job Procurement</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 className="text-lg font-semibold text-gray-900">Job Procurement</h3>
+                <p className="text-sm text-gray-400 mt-1">
                   Total Cost: ${calculateTotalProcurementCost().toFixed(2)}
                 </p>
               </div>
               <Button variant="primary" onClick={() => setIsAddingProcurement(true)}>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus size={16} className="mr-2" />
                 Add Procurement Item
               </Button>
             </div>
@@ -267,35 +267,35 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
               </div>
             ) : procurement && procurement.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                         Status
                       </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                         Quantity
                       </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                         Supplier
                       </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                         PO Number
                       </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                         Expected
                       </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                         Cost
                       </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-4 py-2">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody>
                     {procurement.map((item) => (
-                      <tr key={item.id}>
+                      <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                         <td className="px-4 py-2">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${getProcurementStatusBadgeColor(item.status)}`}
@@ -303,24 +303,23 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                             {item.status}
                           </span>
                         </td>
-                        <td className="px-4 py-2 text-sm">
+                        <td className="px-4 py-2 text-sm text-gray-600">
                           {item.quantityReceived}/{item.quantityNeeded}
                         </td>
-                        <td className="px-4 py-2 text-sm">{item.supplierName || '-'}</td>
-                        <td className="px-4 py-2 text-sm">{item.poNumber || '-'}</td>
-                        <td className="px-4 py-2 text-sm">
+                        <td className="px-4 py-2 text-sm text-gray-600">{item.supplierName || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-gray-600">{item.poNumber || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-gray-600">
                           {item.expectedDeliveryDate
                             ? new Date(item.expectedDeliveryDate).toLocaleDateString()
                             : '-'}
                         </td>
-                        <td className="px-4 py-2 text-sm">
+                        <td className="px-4 py-2 text-sm text-gray-600">
                           {item.cost ? `$${(item.cost * item.quantityNeeded).toFixed(2)}` : '-'}
                         </td>
                         <td className="px-4 py-2">
                           <div className="flex gap-1">
-                            <Button
-                              variant="secondary"
-
+                            <button
+                              className="text-gray-400 hover:text-gray-700 transition-colors p-1"
                               onClick={() => {
                                 setIsEditingProcurement(item.id);
                                 setProcurementForm({
@@ -333,19 +332,18 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                                 });
                               }}
                             >
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              variant="danger"
-
+                              <PencilSimple size={14} />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-red-500 transition-colors p-1"
                               onClick={() => {
                                 if (confirm('Delete this procurement item?')) {
                                   deleteProcurementMutation.mutate(item.id);
                                 }
                               }}
                             >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
+                              <Trash size={14} />
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -354,15 +352,15 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                 </table>
               </div>
             ) : (
-              <p className="text-center text-gray-500 py-4">No procurement items yet</p>
+              <p className="text-center text-sm text-gray-400 py-4">No procurement items yet</p>
             )}
           </Card>
 
           {/* Add/Edit Procurement Modal */}
           {(isAddingProcurement || isEditingProcurement !== null) && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
               <Card className="max-w-md w-full">
-                <h3 className="text-lg font-semibold mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
                   {isAddingProcurement ? 'Add Procurement Item' : 'Edit Procurement Item'}
                 </h3>
                 <div className="space-y-4">
@@ -375,7 +373,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                       onChange={(e) =>
                         setProcurementForm({ ...procurementForm, bomItemId: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                     >
                       <option value="">-- Select BOM Item --</option>
                       {allBomItems.map((item) => (
@@ -395,7 +393,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                       onChange={(e) =>
                         setProcurementForm({ ...procurementForm, quantityNeeded: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                       required
                     />
                   </div>
@@ -409,7 +407,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                       onChange={(e) =>
                         setProcurementForm({ ...procurementForm, supplierName: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                     />
                   </div>
                   <div>
@@ -423,7 +421,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                       onChange={(e) =>
                         setProcurementForm({ ...procurementForm, cost: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                     />
                   </div>
                   <div>
@@ -439,7 +437,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                           expectedDeliveryDate: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                     />
                   </div>
                   {isEditingProcurement !== null && (
@@ -456,7 +454,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                               data: { status: e.target.value as ProcurementStatus },
                             })
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                         >
                           <option value="Pending">Pending</option>
                           <option value="Ordered">Ordered</option>
@@ -471,7 +469,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                         <input
                           type="number"
                           placeholder="Enter quantity received"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                           onBlur={(e) => {
                             const qty = parseFloat(e.target.value);
                             if (qty > 0) {
@@ -493,7 +491,7 @@ export default function SupplyChainTab({ jobId }: SupplyChainTabProps) {
                         setProcurementForm({ ...procurementForm, notes: e.target.value })
                       }
                       rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
                     />
                   </div>
                   <div className="flex gap-2 justify-end">
