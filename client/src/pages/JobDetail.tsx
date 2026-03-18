@@ -107,7 +107,7 @@ export default function JobDetail() {
   const totalLaborHours = labor.reduce((sum: number, l: any) => sum + (l.hours ?? 0), 0);
   const uniqueEmployees = new Set(labor.map((l: any) => l.employee_name || l.employeeName)).size;
   const totalParts = partsSummary?.total || 0;
-  const completedParts = (partsSummary as any)?.byStatus?.Completed || 0;
+  const completedParts = partsSummary?.byStatus?.['Completed'] ?? 0;
 
   const formatCurrency = (val: number) =>
     `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
