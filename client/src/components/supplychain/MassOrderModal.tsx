@@ -198,7 +198,7 @@ export default function MassOrderModal({ inventoryItem, isOpen, onClose, onConfi
                             variant="primary"
                             onClick={() => onConfirm(parsedQty)}
                             disabled={isConfirming || isLoading || !data?.demandItems.length || parsedQty <= 0}
-                            className="bg-orange-600 hover:bg-orange-700 disabled:bg-gray-700"
+                            className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-200"
                         >
                             {isConfirming ? 'Ordering...' : `Order ${parsedQty > 0 ? parsedQty : 0} ${inventoryItem.unit}`}
                         </Button>

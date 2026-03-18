@@ -238,12 +238,12 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
                                             <span className="text-gray-400 text-xs">0 in stock</span>
                                         )}
                                     </td>
-                                    <td className="py-3 px-3 text-right bg-gray-900/30">
+                                    <td className="py-3 px-3 text-right bg-gray-50">
                                         {(() => {
                                             const toOrder = Math.max(0, item.qtyRequired - item.qtyAllocated);
-                                            if (toOrder === 0) return <span className="text-green-400 font-medium text-xs">0</span>;
-                                            if (item.qtyAllocated > 0) return <span className="text-yellow-400 font-medium text-xs">{toOrder}</span>;
-                                            return <span className="text-red-400 font-medium text-xs">{toOrder}</span>;
+                                            if (toOrder === 0) return <span className="text-emerald-500 font-medium text-xs">0</span>;
+                                            if (item.qtyAllocated > 0) return <span className="text-amber-500 font-medium text-xs">{toOrder}</span>;
+                                            return <span className="text-red-500 font-medium text-xs">{toOrder}</span>;
                                         })()}
                                     </td>
                                     <td className="py-3 px-3 text-right bg-gray-50">
