@@ -252,7 +252,9 @@ Both tabs auto-refresh. No manual refresh button needed.
 **Machine status derivation** (simplified — no deep join chains):
 - **Down:** `machines.is_down = true` (manually set by managers via toggle). Takes priority over other statuses.
 - **Running:** Machine has at least one work order with `assigned_machine_id = machine.id` AND `production_status = 'In Progress'`. No need to check part-level check-ins — an in-progress work order on a machine means it's running.
-- **Idle:** Machine is active (`is_active = true`, `is_down = false`) but has no in-progress work orders assigned to it.
+- **Idle:** Machine is active (`active = 1`, `is_down = false`) but has no in-progress work orders assigned to it.
+
+**Note on `profiles` table operations:** The `profiles` table uses a UUID primary key (from `auth.users`), not a serial integer. Use `query()` (raw SQL returning rows) for profile inserts/updates instead of the `execute()` helper, which expects numeric `lastID` return values.
 
 **Note on `currentPart`:** If multiple parts are associated with a machine's active work order, show aggregate counts (total completed / total tracked for that work order), not a single part. The `description` field shows the work order description rather than individual part names.
 
@@ -340,6 +342,8 @@ CREATE TABLE profiles (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX idx_profiles_pin ON profiles(pin) WHERE pin IS NOT NULL;
 
 -- Auto-create profile when a new auth user is created
 CREATE OR REPLACE FUNCTION handle_new_user()
