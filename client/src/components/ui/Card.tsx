@@ -9,8 +9,8 @@ export default function Card({ children, className = '', hover = false, onClick 
   return (
     <div
       className={`
-        card p-6
-        ${hover ? 'card-hover cursor-pointer' : ''}
+        card p-4
+        ${hover ? 'card-hover' : ''}
         ${className}
       `}
       onClick={onClick}
