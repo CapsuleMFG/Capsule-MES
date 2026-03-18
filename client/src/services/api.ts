@@ -12,7 +12,6 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
     // Attach Supabase JWT if available
     if (supabase) {
       const { data: { session } } = await supabase.auth.getSession();
