@@ -6,31 +6,27 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        'rivian': {
-          black: '#1C2422',
-          'soft-black': '#2A3230',
-          hover: '#353D3B',
-          accent: '#2D9CFF',
+      fontFamily: {
+        sans: ['Geist', 'system-ui', '-apple-system', 'sans-serif'],
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        'priority': {
-          critical: '#EF4444',
-          high: '#F97316',
-          medium: '#EAB308',
-          low: '#9CA3AF',
+        modalIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
-        'stage': {
-          engineering: '#3B82F6',
-          'wo-release': '#8B5CF6',
-          materials: '#F59E0B',
-          production: '#10B981',
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
         },
-        'status': {
-          'not-started': '#6B7280',
-          'in-progress': '#EAB308',
-          completed: '#10B981',
-          blocked: '#EF4444',
-        }
+      },
+      animation: {
+        fadeIn: 'fadeIn 300ms ease-out',
+        modalIn: 'modalIn 200ms ease-out',
+        slideInRight: 'slideInRight 300ms ease-out',
       },
     },
   },

@@ -4,87 +4,55 @@
 
 @layer base {
   body {
-    @apply bg-rivian-black text-white antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
+    @apply bg-gray-100 text-gray-900 antialiased;
+    font-family: 'Geist', system-ui, -apple-system, sans-serif;
   }
 
   input,
   textarea,
   select {
-    @apply bg-rivian-soft-black text-white border-gray-700 rounded px-3 py-2;
+    @apply bg-white text-gray-900 ring-1 ring-gray-200 rounded-[10px] px-3 py-2 text-sm;
   }
 
   input:focus,
   textarea:focus,
   select:focus {
-    @apply outline-none ring-2 ring-rivian-accent border-rivian-accent;
+    @apply outline-none ring-2 ring-gray-900;
   }
 
-  button {
-    @apply rounded px-4 py-2 font-medium transition-colors;
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-400;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-rivian-soft-black rounded-lg shadow-lg;
+    @apply bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02];
   }
 
   .card-hover {
-    @apply hover:bg-rivian-hover transition-colors;
+    @apply hover:shadow-md transition-shadow duration-200 cursor-pointer;
   }
 
   .btn-primary {
-    @apply bg-rivian-accent text-white hover:bg-blue-600;
+    @apply bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-[10px] active:scale-[0.98] transition-all;
   }
 
   .btn-secondary {
-    @apply bg-rivian-soft-black text-white border border-gray-600 hover:bg-rivian-hover;
+    @apply bg-white ring-1 ring-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-2 rounded-[10px] active:scale-[0.98] transition-all;
   }
 
   .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700;
+    @apply bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium px-4 py-2 rounded-[10px] active:scale-[0.98] transition-all;
   }
 
+  .btn-ghost {
+    @apply text-gray-500 hover:text-gray-900 text-sm transition-colors;
+  }
+
+  /* Legacy badge classes — kept for any components that reference them directly */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-
-  .badge-critical {
-    @apply bg-priority-critical/20 text-priority-critical border border-priority-critical;
-  }
-
-  .badge-high {
-    @apply bg-priority-high/20 text-priority-high border border-priority-high;
-  }
-
-  .badge-medium {
-    @apply bg-priority-medium/20 text-priority-medium border border-priority-medium;
-  }
-
-  .badge-low {
-    @apply bg-priority-low/20 text-priority-low border border-priority-low;
-  }
-
-  .badge-stage {
-    @apply px-3 py-1 rounded-full text-sm font-medium;
-  }
-
-  .badge-not-started {
-    @apply bg-status-not-started/20 text-status-not-started border border-status-not-started;
-  }
-
-  .badge-in-progress {
-    @apply bg-status-in-progress/20 text-status-in-progress border border-status-in-progress;
-  }
-
-  .badge-completed {
-    @apply bg-status-completed/20 text-status-completed border border-status-completed;
-  }
-
-  .badge-blocked {
-    @apply bg-status-blocked/20 text-status-blocked border border-status-blocked;
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium;
   }
 }
