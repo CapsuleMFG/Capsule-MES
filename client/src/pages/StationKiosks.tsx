@@ -166,7 +166,7 @@ export default function StationKiosks() {
         <div className="text-gray-400 text-center py-12">Loading kiosks...</div>
       ) : kiosks.length === 0 ? (
         <div className="text-center py-12">
-          <Monitor className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <Monitor size={48} className="text-gray-400 mx-auto mb-3" />
           <p className="text-gray-400">No station kiosks configured</p>
           <p className="text-gray-400 text-sm mt-1">Create a kiosk to assign a PIN code to a station</p>
         </div>
