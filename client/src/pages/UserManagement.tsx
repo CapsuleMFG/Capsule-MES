@@ -69,7 +69,7 @@ function AddUserModal({ onClose }: AddUserModalProps) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Kiosk PIN <span className="text-gray-400 font-normal">(optional, operators only)</span></label>
-            <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={form.pin || ''} onChange={e => setForm(f => ({ ...f, pin: e.target.value }))}
+            <input type="password" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={form.pin || ''} onChange={e => setForm(f => ({ ...f, pin: e.target.value }))}
               placeholder="4–6 digits"
               className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
           </div>
@@ -136,7 +136,7 @@ function EditUserModal({ profile, onClose }: EditUserModalProps) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Set new PIN <span className="text-gray-400 font-normal">(leave blank to keep current)</span></label>
-            <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={form.pin} onChange={e => setForm(f => ({ ...f, pin: e.target.value }))}
+            <input type="password" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={form.pin} onChange={e => setForm(f => ({ ...f, pin: e.target.value }))}
               placeholder="4–6 digits"
               className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
           </div>

@@ -27,10 +27,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('[API Error]', error.response?.data || error.message);
-    if (error.response?.status === 401) console.error('Unauthorized access');
-    else if (error.response?.status === 404) console.error('Resource not found');
-    else if (error.response?.status === 500) console.error('Server error');
     return Promise.reject(error);
   }
 );

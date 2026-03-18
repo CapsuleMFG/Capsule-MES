@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/ui/ToastContainer';
@@ -44,9 +44,11 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
 
               {/* Kiosk routes — standalone, no sidebar, no auth required */}
-              <Route path="/kiosk" element={<KioskProvider><StationLogin /></KioskProvider>} />
-              <Route path="/kiosk/machine" element={<KioskProvider><MachineSelect /></KioskProvider>} />
-              <Route path="/kiosk/station" element={<KioskProvider><StationDashboard /></KioskProvider>} />
+              <Route element={<KioskProvider><Outlet /></KioskProvider>}>
+                <Route path="/kiosk" element={<StationLogin />} />
+                <Route path="/kiosk/machine" element={<MachineSelect />} />
+                <Route path="/kiosk/station" element={<StationDashboard />} />
+              </Route>
 
               {/* Main app routes — protected */}
               <Route path="/" element={

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuditLog } from '../hooks/useAuth';
 import { useProfiles } from '../hooks/useAuth';
 import type { AuditLogFilters } from '../../../shared/types';
@@ -106,8 +106,8 @@ export default function AuditLogPage() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {data.data.map(entry => (
-                  <>
-                    <tr key={entry.id} className="hover:bg-gray-50/50">
+                  <React.Fragment key={entry.id}>
+                    <tr className="hover:bg-gray-50/50">
                       <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{formatDate(entry.createdAt)}</td>
                       <td className="px-4 py-3 text-gray-900">{entry.userName}</td>
                       <td className="px-4 py-3">
@@ -152,7 +152,7 @@ export default function AuditLogPage() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
                 {data.data.length === 0 && (
                   <tr>

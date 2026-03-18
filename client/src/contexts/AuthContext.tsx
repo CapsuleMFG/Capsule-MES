@@ -23,33 +23,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase!.auth.getSession();
-        if (session?.user) {
-          const profile = await getMyProfile();
-          setUser({ id: profile.id, email: profile.email, name: profile.name, role: profile.role });
-        }
-      } catch (error) {
-        console.error('Auth init error:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initAuth();
-
-    const { data: { subscription } } = supabase!.auth.onAuthStateChange(
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
+        if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session?.user) {
           try {
             const profile = await getMyProfile();
             setUser({ id: profile.id, email: profile.email, name: profile.name, role: profile.role });
           } catch {
             setUser(null);
+          } finally {
+            setIsLoading(false);
           }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
+          setIsLoading(false);
+        } else if (event === 'INITIAL_SESSION' && !session) {
+          // No session on first check
+          setIsLoading(false);
         }
       }
     );
