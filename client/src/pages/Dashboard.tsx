@@ -1,7 +1,6 @@
 import { useDashboardMetrics } from '../hooks/useDashboard';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { Briefcase, Package, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Dashboard() {
@@ -27,87 +26,63 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-bold tracking-tight text-gray-900 mb-6">Dashboard</h1>
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Active Jobs */}
         <Card>
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Active Jobs</p>
-              <p className="text-4xl font-bold text-white">{metrics.activeJobs}</p>
-            </div>
-            <div className="p-3 bg-rivian-accent/20 rounded-lg">
-              <Briefcase className="w-6 h-6 text-rivian-accent" />
-            </div>
-          </div>
+          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Active Jobs</p>
+          <p className="text-3xl font-bold tracking-tighter text-gray-900 mt-1">{metrics.activeJobs}</p>
         </Card>
 
-        {/* Material Issues */}
         <Card>
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Material Issues</p>
-              <p className="text-4xl font-bold text-priority-high">{metrics.materialIssues}</p>
-            </div>
-            <div className="p-3 bg-priority-high/20 rounded-lg">
-              <Package className="w-6 h-6 text-priority-high" />
-            </div>
-          </div>
+          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Material Issues</p>
+          <p className="text-3xl font-bold tracking-tighter text-gray-900 mt-1">{metrics.materialIssues}</p>
         </Card>
 
-        {/* Total Labor Hours */}
         <Card>
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-gray-400 mb-1">Total Labor Hours</p>
-              <p className="text-4xl font-bold text-status-completed">{metrics.totalLaborHours.toFixed(1)}</p>
-            </div>
-            <div className="p-3 bg-status-completed/20 rounded-lg">
-              <Clock className="w-6 h-6 text-status-completed" />
-            </div>
-          </div>
+          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Total Labor Hours</p>
+          <p className="text-3xl font-bold tracking-tighter text-gray-900 mt-1">{metrics.totalLaborHours.toFixed(1)}</p>
         </Card>
       </div>
 
       {/* Recent Jobs Table */}
       <Card>
-        <h2 className="text-xl font-semibold mb-4">Recent Jobs</h2>
+        <h2 className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mb-4">Recent Jobs</h2>
 
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700">
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Job Number</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Client</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Description</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Status</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Target End</th>
+              <tr className="border-b border-gray-100">
+                <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Job Number</th>
+                <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Client</th>
+                <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Status</th>
+                <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Target End</th>
               </tr>
             </thead>
             <tbody>
               {metrics.recentJobs.map((job) => (
                 <tr
                   key={job.id}
-                  className="border-b border-gray-800 hover:bg-rivian-hover transition-colors"
+                  className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="py-3 px-4">
+                  <td className="py-2.5 px-3">
                     <Link
                       to={`/jobs/${job.id}`}
-                      className="text-rivian-accent hover:underline font-medium"
+                      className="text-blue-600 hover:text-blue-700 font-medium text-sm"
                     >
                       {job.jobNumber}
                     </Link>
                   </td>
-                  <td className="py-3 px-4 text-gray-300">{job.clientName}</td>
-                  <td className="py-3 px-4 text-gray-300">
+                  <td className="py-2.5 px-3 text-sm text-gray-600">{job.clientName}</td>
+                  <td className="py-2.5 px-3 text-sm text-gray-600">
                     {job.description.length > 50
                       ? `${job.description.substring(0, 50)}...`
                       : job.description}
                   </td>
-                  <td className="py-3 px-4 text-gray-300">{job.status}</td>
-                  <td className="py-3 px-4 text-gray-400">
+                  <td className="py-2.5 px-3 text-sm text-gray-600">{job.status}</td>
+                  <td className="py-2.5 px-3 text-sm text-gray-400">
                     {job.targetEndDate
                       ? new Date(job.targetEndDate).toLocaleDateString()
                       : '-'}

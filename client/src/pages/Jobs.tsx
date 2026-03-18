@@ -7,10 +7,7 @@ import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EditJobModal from '../components/jobs/EditJobModal';
-import {
-  Edit2, Trash2, ExternalLink, CheckCircle2, Clock, Circle,
-  TrendingUp, AlertTriangle, AlertOctagon, DollarSign, Timer, BarChart3,
-} from 'lucide-react';
+import { PencilSimple, Trash, ArrowSquareOut } from '@phosphor-icons/react';
 import type { Job, JobStatus } from '../types';
 
 export default function Jobs() {
@@ -51,35 +48,27 @@ export default function Jobs() {
 
   const getStageColor = (stage: string): string => {
     switch (stage) {
-      case 'Engineering': return 'text-blue-400';
-      case 'WO Release': return 'text-purple-400';
-      case 'Materials': return 'text-yellow-400';
-      case 'Production': return 'text-green-400';
-      case 'Completed': return 'text-emerald-400';
-      default: return 'text-gray-400';
+      case 'Completed': return 'text-emerald-600';
+      default: return 'text-gray-600';
     }
   };
 
   const getStatusBadgeClass = (status: string): string => {
     switch (status) {
-      case 'Active': return 'bg-green-500/20 text-green-400';
-      case 'On Hold': return 'bg-yellow-500/20 text-yellow-400';
-      case 'Completed': return 'bg-blue-500/20 text-blue-400';
-      case 'Cancelled': return 'bg-red-500/20 text-red-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      case 'Active': return 'text-emerald-600';
+      case 'On Hold': return 'text-amber-600';
+      case 'Completed': return 'text-blue-600';
+      case 'Cancelled': return 'text-red-600';
+      default: return 'text-gray-400';
     }
   };
 
-  const getWorkflowStatusIcon = (status: string) => {
+  const getWorkflowDotColor = (status: string): string => {
     switch (status) {
-      case 'Completed':
-        return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />;
-      case 'In Progress':
-        return <Clock className="w-3.5 h-3.5 text-blue-400" />;
-      case 'Blocked':
-        return <Circle className="w-3.5 h-3.5 text-red-400" />;
-      default:
-        return <Circle className="w-3.5 h-3.5 text-gray-600" />;
+      case 'Completed': return 'bg-emerald-500';
+      case 'In Progress': return 'bg-amber-500';
+      case 'Blocked': return 'bg-red-500';
+      default: return 'bg-gray-300';
     }
   };
 
@@ -105,7 +94,7 @@ export default function Jobs() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Jobs</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Jobs</h1>
         <p className="text-gray-400 text-sm mt-1">{jobs?.length || 0} total jobs</p>
       </div>
 
@@ -116,92 +105,47 @@ export default function Jobs() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {analytics.pipeline.map((stage) => (
               <Card key={stage.stageName}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wide">{stage.stageName}</p>
-                    <p className="text-3xl font-bold mt-1" style={{ color: stage.color }}>{stage.count}</p>
-                  </div>
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: `${stage.color}20` }}
-                  >
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
-                  </div>
-                </div>
+                <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">{stage.stageName}</p>
+                <p className="text-3xl font-bold tracking-tighter text-gray-900 mt-1">{stage.count}</p>
               </Card>
             ))}
           </div>
 
           {/* Row 2: Schedule + Financial */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {/* Schedule Health */}
             <Card>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-500/20 rounded-lg">
-                  <TrendingUp className="w-4 h-4 text-green-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">On Track</p>
-                  <p className="text-xl font-bold text-green-400">{analytics.schedule.onTrack}</p>
-                </div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">On Track</p>
               </div>
+              <p className="text-3xl font-bold tracking-tighter text-gray-900">{analytics.schedule.onTrack}</p>
             </Card>
             <Card>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-500/20 rounded-lg">
-                  <AlertTriangle className="w-4 h-4 text-yellow-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">At Risk</p>
-                  <p className="text-xl font-bold text-yellow-400">{analytics.schedule.atRisk}</p>
-                </div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">At Risk</p>
               </div>
+              <p className="text-3xl font-bold tracking-tighter text-gray-900">{analytics.schedule.atRisk}</p>
             </Card>
             <Card>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-500/20 rounded-lg">
-                  <AlertOctagon className="w-4 h-4 text-red-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Overdue</p>
-                  <p className="text-xl font-bold text-red-400">{analytics.schedule.overdue}</p>
-                </div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Overdue</p>
               </div>
+              <p className="text-3xl font-bold tracking-tighter text-gray-900">{analytics.schedule.overdue}</p>
             </Card>
 
-            {/* Financial */}
             <Card>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-500/20 rounded-lg">
-                  <DollarSign className="w-4 h-4 text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Material Cost</p>
-                  <p className="text-lg font-bold text-blue-400">{formatCurrency(analytics.financial.totalMaterialCost)}</p>
-                </div>
-              </div>
+              <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Material Cost</p>
+              <p className="text-3xl font-bold tracking-tighter text-gray-900 mt-1">{formatCurrency(analytics.financial.totalMaterialCost)}</p>
             </Card>
             <Card>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-500/20 rounded-lg">
-                  <Timer className="w-4 h-4 text-purple-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Labor Hours</p>
-                  <p className="text-xl font-bold text-purple-400">{analytics.financial.totalLaborHours.toFixed(1)}</p>
-                </div>
-              </div>
+              <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Labor Hours</p>
+              <p className="text-3xl font-bold tracking-tighter text-gray-900 mt-1">{analytics.financial.totalLaborHours.toFixed(1)}</p>
             </Card>
             <Card>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/20 rounded-lg">
-                  <BarChart3 className="w-4 h-4 text-emerald-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Avg Cost/Job</p>
-                  <p className="text-lg font-bold text-emerald-400">{formatCurrency(analytics.financial.avgCostPerJob)}</p>
-                </div>
-              </div>
+              <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Avg Cost/Job</p>
+              <p className="text-3xl font-bold tracking-tighter text-gray-900 mt-1">{formatCurrency(analytics.financial.avgCostPerJob)}</p>
             </Card>
           </div>
         </div>
@@ -233,76 +177,78 @@ export default function Jobs() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Job #</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Client</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Description</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Stage</th>
-                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-400">Progress</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Target End</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Job #</th>
+                  <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Client</th>
+                  <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                  <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Status</th>
+                  <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Stage</th>
+                  <th className="text-center py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Progress</th>
+                  <th className="text-left py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Target End</th>
+                  <th className="text-right py-2.5 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {jobs.map((job) => (
                   <tr
                     key={job.id}
-                    className="border-b border-gray-800 hover:bg-rivian-hover transition-colors cursor-pointer"
+                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer"
                     onClick={() => navigate(`/jobs/${job.id}`)}
                   >
-                    <td className="py-3 px-4">
-                      <span className="text-rivian-accent font-semibold text-sm">{job.jobNumber}</span>
+                    <td className="py-2.5 px-3">
+                      <span className="text-blue-600 font-medium text-sm">{job.jobNumber}</span>
                     </td>
-                    <td className="py-3 px-4 text-gray-300 text-sm">{job.clientName || '-'}</td>
-                    <td className="py-3 px-4 text-gray-300 text-sm max-w-[200px] truncate">{job.description}</td>
-                    <td className="py-3 px-4">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${getStatusBadgeClass(job.status)}`}>
+                    <td className="py-2.5 px-3 text-gray-600 text-sm">{job.clientName || '-'}</td>
+                    <td className="py-2.5 px-3 text-gray-600 text-sm max-w-[200px] truncate">{job.description}</td>
+                    <td className="py-2.5 px-3">
+                      <span className={`text-sm font-medium ${getStatusBadgeClass(job.status)}`}>
                         {job.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
-                      <span className={`font-medium text-sm ${getStageColor(getCurrentStage(job))}`}>
+                    <td className="py-2.5 px-3">
+                      <span className={`text-sm ${getStageColor(getCurrentStage(job))}`}>
                         {getCurrentStage(job)}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center justify-center gap-1">
+                    <td className="py-2.5 px-3">
+                      <div className="flex items-center justify-center gap-1.5">
                         {job.workflowProgress
                           ?.sort((a, b) => (a.stageOrder || 0) - (b.stageOrder || 0))
                           .map((stage) => (
-                            <span key={stage.id} title={`${stage.stageName}: ${stage.status}`}>
-                              {getWorkflowStatusIcon(stage.status)}
-                            </span>
+                            <div
+                              key={stage.id}
+                              title={`${stage.stageName}: ${stage.status}`}
+                              className={`w-2 h-2 rounded-full ${getWorkflowDotColor(stage.status)}`}
+                            />
                           ))}
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-gray-400 text-sm">
+                    <td className="py-2.5 px-3 text-gray-400 text-sm">
                       {job.targetEndDate ? new Date(job.targetEndDate).toLocaleDateString() : '-'}
                     </td>
-                    <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                    <td className="py-2.5 px-3 text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => navigate(`/jobs/${job.id}`)}
-                          className="text-gray-400 hover:text-white transition-colors"
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
                           title="View details"
                         >
-                          <ExternalLink className="w-4 h-4" />
+                          <ArrowSquareOut size={16} />
                         </button>
                         <button
                           onClick={() => setEditingJob(job)}
-                          className="text-rivian-accent hover:text-blue-400 transition-colors"
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
                           title="Edit job"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <PencilSimple size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(job)}
-                          className="text-red-500 hover:text-red-400 transition-colors"
+                          className="text-gray-400 hover:text-red-500 transition-colors"
                           title="Delete job"
                           disabled={deleteJobMutation.isPending}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash size={16} />
                         </button>
                       </div>
                     </td>
@@ -313,8 +259,8 @@ export default function Jobs() {
           </div>
         ) : (
           <div className="text-center py-12 text-gray-400">
-            <p className="text-lg">No jobs found</p>
-            <p className="text-sm mt-2">
+            <p className="text-sm">No jobs found</p>
+            <p className="text-sm text-gray-400 mt-2">
               {search || statusFilter
                 ? 'Try adjusting your filters'
                 : 'Click "New Job" in the header to get started'}
