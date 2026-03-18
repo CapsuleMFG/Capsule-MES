@@ -24,7 +24,7 @@ import OrderTrackingPanel from '../components/supplychain/OrderTrackingPanel';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
-import { LayoutGrid, List, TruckIcon, Package, Warehouse, ClipboardList, PackageCheck } from 'lucide-react';
+import { SquaresFour, List, Truck, Warehouse, Package } from '@phosphor-icons/react';
 
 function ProcurementSummary({ jobId }: { jobId: number }) {
   const { data: procurement, isLoading } = useQuery({
@@ -32,12 +32,12 @@ function ProcurementSummary({ jobId }: { jobId: number }) {
     queryFn: () => jobsService.getProcurementItems(jobId),
   });
 
-  const getProcurementStatusBadgeColor = (status: string) => {
+  const getProcurementStatusColor = (status: string) => {
     switch (status) {
-      case 'Received': return 'bg-green-500/20 text-green-400';
-      case 'Ordered': return 'bg-blue-500/20 text-blue-400';
-      case 'Partial': return 'bg-yellow-500/20 text-yellow-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      case 'Received': return 'text-emerald-500';
+      case 'Ordered': return 'text-blue-500';
+      case 'Partial': return 'text-amber-500';
+      default: return 'text-gray-400';
     }
   };
 
@@ -51,7 +51,7 @@ function ProcurementSummary({ jobId }: { jobId: number }) {
 
   if (!procurement || procurement.length === 0) {
     return (
-      <div className="text-center py-4 text-gray-500 text-sm">
+      <div className="text-center py-4 text-gray-400 text-sm">
         No procurement items for this job
       </div>
     );
@@ -61,34 +61,34 @@ function ProcurementSummary({ jobId }: { jobId: number }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-700">
-            <th className="text-left py-2 px-3 text-xs font-medium text-gray-400 uppercase">Status</th>
-            <th className="text-left py-2 px-3 text-xs font-medium text-gray-400 uppercase">Qty (Recv/Need)</th>
-            <th className="text-left py-2 px-3 text-xs font-medium text-gray-400 uppercase">Supplier</th>
-            <th className="text-left py-2 px-3 text-xs font-medium text-gray-400 uppercase">PO #</th>
-            <th className="text-left py-2 px-3 text-xs font-medium text-gray-400 uppercase">Expected</th>
-            <th className="text-right py-2 px-3 text-xs font-medium text-gray-400 uppercase">Cost</th>
+          <tr className="border-b border-gray-100">
+            <th className="text-left py-2 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Status</th>
+            <th className="text-left py-2 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Qty (Recv/Need)</th>
+            <th className="text-left py-2 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Supplier</th>
+            <th className="text-left py-2 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">PO #</th>
+            <th className="text-left py-2 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Expected</th>
+            <th className="text-right py-2 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Cost</th>
           </tr>
         </thead>
         <tbody>
           {procurement.map((item) => (
-            <tr key={item.id} className="border-b border-gray-800 hover:bg-rivian-hover">
+            <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50">
               <td className="py-2 px-3">
-                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getProcurementStatusBadgeColor(item.status)}`}>
+                <span className={`text-xs font-medium ${getProcurementStatusColor(item.status)}`}>
                   {item.status}
                 </span>
               </td>
-              <td className="py-2 px-3 text-white">
+              <td className="py-2 px-3 text-gray-900">
                 {item.quantityReceived}/{item.quantityNeeded}
               </td>
-              <td className="py-2 px-3 text-gray-300">{item.supplierName || '-'}</td>
-              <td className="py-2 px-3 text-gray-300">{item.poNumber || '-'}</td>
-              <td className="py-2 px-3 text-gray-300">
+              <td className="py-2 px-3 text-gray-600">{item.supplierName || '-'}</td>
+              <td className="py-2 px-3 text-gray-600">{item.poNumber || '-'}</td>
+              <td className="py-2 px-3 text-gray-600">
                 {item.expectedDeliveryDate
                   ? new Date(item.expectedDeliveryDate).toLocaleDateString()
                   : '-'}
               </td>
-              <td className="py-2 px-3 text-right text-gray-300">
+              <td className="py-2 px-3 text-right text-gray-600">
                 {item.cost ? `$${(item.cost * item.quantityNeeded).toFixed(2)}` : '-'}
               </td>
             </tr>
@@ -243,45 +243,45 @@ export default function SupplyChain() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">Supply Chain</h1>
-        <p className="text-gray-400 mt-2">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Supply Chain</h1>
+        <p className="text-sm text-gray-400 mt-1">
           Project procurement tracking and global inventory management
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 mb-6 bg-rivian-soft-black rounded-lg p-1 w-fit">
+      <div className="flex gap-1 mb-6 bg-gray-100 rounded-xl p-1 w-fit">
         <button
           onClick={() => setActiveTab('procurement')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium transition-colors ${
             activeTab === 'procurement'
-              ? 'bg-rivian-accent text-white'
-              : 'text-gray-400 hover:text-white hover:bg-rivian-hover'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
         >
-          <TruckIcon className="w-4 h-4" />
+          <Truck size={16} />
           Project Procurement
         </button>
         <button
           onClick={() => setActiveTab('inventory')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium transition-colors ${
             activeTab === 'inventory'
-              ? 'bg-rivian-accent text-white'
-              : 'text-gray-400 hover:text-white hover:bg-rivian-hover'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
         >
-          <Warehouse className="w-4 h-4" />
+          <Warehouse size={16} />
           Global Inventory
         </button>
         <button
           onClick={() => setActiveTab('orders')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium transition-colors ${
             activeTab === 'orders'
-              ? 'bg-rivian-accent text-white'
-              : 'text-gray-400 hover:text-white hover:bg-rivian-hover'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-500 hover:text-gray-900'
           }`}
         >
-          <PackageCheck className="w-4 h-4" />
+          <Package size={16} />
           Order Tracking
         </button>
       </div>
@@ -292,42 +292,21 @@ export default function SupplyChain() {
           {/* Summary Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-blue-500/10 rounded-lg">
-                  <Package className="w-6 h-6 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">In Pipeline</p>
-                  <p className="text-2xl font-bold text-white">{totalJobs}</p>
-                  <p className="text-xs text-gray-500">{totalJobs === 1 ? '1 job' : `${totalJobs} jobs`} awaiting SC</p>
-                </div>
-              </div>
+              <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">In Pipeline</p>
+              <p className="text-xl font-semibold text-gray-900 mt-1">{totalJobs}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{totalJobs === 1 ? '1 job' : `${totalJobs} jobs`} awaiting SC</p>
             </Card>
 
             <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-purple-500/10 rounded-lg">
-                  <ClipboardList className="w-6 h-6 text-purple-500" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">WO Release</p>
-                  <p className="text-2xl font-bold text-white">{inWoRelease}</p>
-                  <p className="text-xs text-gray-500">{woReleaseActive} active, {inWoRelease - woReleaseActive} queued</p>
-                </div>
-              </div>
+              <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">WO Release</p>
+              <p className="text-xl font-semibold text-gray-900 mt-1">{inWoRelease}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{woReleaseActive} active, {inWoRelease - woReleaseActive} queued</p>
             </Card>
 
             <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-cyan-500/10 rounded-lg">
-                  <TruckIcon className="w-6 h-6 text-cyan-500" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Materials</p>
-                  <p className="text-2xl font-bold text-white">{inMaterials}</p>
-                  <p className="text-xs text-gray-500">{materialsActive} active, {inMaterials - materialsActive} queued</p>
-                </div>
-              </div>
+              <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Materials</p>
+              <p className="text-xl font-semibold text-gray-900 mt-1">{inMaterials}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{materialsActive} active, {inMaterials - materialsActive} queued</p>
             </Card>
 
           </div>
@@ -348,33 +327,33 @@ export default function SupplyChain() {
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'grid'
-                    ? 'bg-rivian-accent text-white'
-                    : 'bg-rivian-soft-black text-gray-400 hover:text-white'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white border border-gray-100 text-gray-400 hover:text-gray-600'
                 }`}
               >
-                <LayoutGrid className="w-5 h-5" />
+                <SquaresFour size={20} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'list'
-                    ? 'bg-rivian-accent text-white'
-                    : 'bg-rivian-soft-black text-gray-400 hover:text-white'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white border border-gray-100 text-gray-400 hover:text-gray-600'
                 }`}
               >
-                <List className="w-5 h-5" />
+                <List size={20} />
               </button>
             </div>
           </div>
 
           {/* Drag reorder hint */}
           {!isFiltered && jobs.length > 1 && (
-            <p className="text-xs text-gray-500 mb-3">
+            <p className="text-xs text-gray-400 mb-3">
               Drag jobs to reorder priority. Higher priority jobs get inventory allocated first.
             </p>
           )}
           {isFiltered && jobs.length > 0 && (
-            <p className="text-xs text-yellow-500/70 mb-3">
+            <p className="text-xs text-amber-500 mb-3">
               Drag reordering disabled while filters are active.
             </p>
           )}
@@ -399,7 +378,7 @@ export default function SupplyChain() {
                     >
                       <PbomTableSupplyChain jobId={job.id} />
                       <div>
-                        <h4 className="text-md font-semibold text-white mb-3">Procurement Items</h4>
+                        <h4 className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mb-3">Procurement Items</h4>
                         <ProcurementSummary jobId={job.id} />
                       </div>
                     </SortableJobCard>
@@ -408,9 +387,9 @@ export default function SupplyChain() {
               </SortableContext>
             </DndContext>
           ) : (
-            <div className="text-center py-12 bg-rivian-soft-black rounded-lg">
-              <p className="text-gray-400 text-lg">No jobs in Supply Chain stages</p>
-              <p className="text-gray-500 text-sm mt-2">
+            <div className="text-center py-12 bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02]">
+              <p className="text-sm text-gray-600">No jobs in Supply Chain stages</p>
+              <p className="text-gray-400 text-sm mt-2">
                 {search
                   ? 'Try adjusting your search'
                   : 'No jobs currently in WO Release or Materials stages'}

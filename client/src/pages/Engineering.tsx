@@ -6,23 +6,23 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
 import Select from '../components/ui/Select';
 import {
-  Search,
-  ChevronDown,
-  ChevronUp,
-  MoreVertical,
-  Download,
-  Send,
-  Layers,
-  Trash2,
-  FileCheck,
-  ClipboardList,
+  MagnifyingGlass,
+  CaretDown,
+  CaretUp,
+  DotsThreeVertical,
+  DownloadSimple,
+  PaperPlaneTilt,
+  Stack,
+  Trash,
+  FileText,
+  ClipboardText,
   User,
   Calendar,
   ArrowRight,
-  Filter,
+  Funnel,
   X,
-  Settings,
-} from 'lucide-react';
+  GearSix,
+} from '@phosphor-icons/react';
 import DesignMilestones from '../components/engineering/DesignMilestones';
 import BomImport from '../components/engineering/BomImport';
 import BomItemsTable from '../components/engineering/BomItemsTable';
@@ -240,10 +240,10 @@ export default function Engineering() {
         </p>
         <button
           onClick={() => setShowManageEngineers(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white bg-rivian-soft-black border border-gray-700/60 rounded-lg hover:border-gray-600 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 bg-white border border-gray-100 rounded-lg hover:border-gray-200 transition-colors"
           title="Manage Engineers"
         >
-          <Settings className="w-3.5 h-3.5" />
+          <GearSix size={14} />
           Engineers
         </button>
       </div>
@@ -261,20 +261,20 @@ export default function Engineering() {
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+            <MagnifyingGlass size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Search by job number, description, or client..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-rivian-soft-black border border-gray-700/60 rounded-lg text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-stage-engineering/50 focus:border-stage-engineering/50 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-100 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900 transition-colors"
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                <X className="w-3.5 h-3.5" />
+                <X size={14} />
               </button>
             )}
           </div>
@@ -284,21 +284,21 @@ export default function Engineering() {
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
               showFilters || hasActiveFilters
-                ? 'bg-stage-engineering/10 border-stage-engineering/30 text-stage-engineering'
-                : 'bg-rivian-soft-black border-gray-700/60 text-gray-400 hover:text-white hover:border-gray-600'
+                ? 'bg-gray-900/5 border-gray-900/20 text-gray-900'
+                : 'bg-white border-gray-100 text-gray-500 hover:text-gray-900 hover:border-gray-200'
             }`}
           >
-            <Filter className="w-4 h-4" />
+            <Funnel size={16} />
             Filters
             {hasActiveFilters && (
-              <span className="w-1.5 h-1.5 rounded-full bg-stage-engineering" />
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-900" />
             )}
           </button>
 
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors whitespace-nowrap"
+              className="text-xs text-gray-400 hover:text-gray-600 transition-colors whitespace-nowrap"
             >
               Clear all
             </button>
@@ -356,12 +356,12 @@ export default function Engineering() {
           ))}
         </div>
       ) : (
-        <div className="border border-gray-800/60 border-dashed rounded-xl py-16 text-center">
-          <div className="w-12 h-12 rounded-full bg-gray-800/60 flex items-center justify-center mx-auto mb-4">
-            <ClipboardList className="w-5 h-5 text-gray-600" />
+        <div className="border border-gray-100 border-dashed rounded-xl py-16 text-center">
+          <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4">
+            <ClipboardText size={20} className="text-gray-400" />
           </div>
-          <p className="text-sm font-medium text-gray-400">No jobs found</p>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="text-sm font-medium text-gray-500">No jobs found</p>
+          <p className="text-xs text-gray-400 mt-1">
             {hasActiveFilters
               ? 'Try adjusting your filters'
               : 'No jobs are currently in the Engineering stage'}
@@ -369,7 +369,7 @@ export default function Engineering() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="mt-4 text-xs text-stage-engineering hover:underline"
+              className="mt-4 text-xs text-gray-900 hover:underline"
             >
               Clear filters
             </button>
@@ -420,11 +420,11 @@ function EngineeringSummaryPanel({
   const hasAlerts = overdueJobs.length > 0 || unassignedJobs.length > 0 || idleJobs.length > 0;
 
   return (
-    <div className="bg-rivian-soft-black rounded-xl border border-gray-800/60 p-5">
+    <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-5">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left column: Engineer Workload */}
         <div>
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h3 className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mb-3">
             Engineer Workload
           </h3>
           <div className="space-y-2.5">
@@ -436,20 +436,20 @@ function EngineeringSummaryPanel({
               return (
                 <div key={name} className="flex items-center gap-3">
                   <div className="w-24 flex-shrink-0">
-                    <span className={`text-sm ${isEmpty ? 'text-gray-600' : 'text-gray-300'}`}>
+                    <span className={`text-sm ${isEmpty ? 'text-gray-400' : 'text-gray-600'}`}>
                       {name}
                     </span>
                   </div>
                   <div className="flex-1 flex items-center gap-2">
-                    <div className="flex-1 bg-gray-800/40 rounded-full h-1.5 overflow-hidden">
+                    <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
                       {!isEmpty && (
                         <div
-                          className="h-full bg-stage-engineering rounded-full transition-all"
+                          className="h-full bg-gray-900 rounded-full transition-all"
                           style={{ width: `${widthPercent}%` }}
                         />
                       )}
                     </div>
-                    <span className={`text-xs w-12 text-right ${isEmpty ? 'text-gray-600' : 'text-gray-400'}`}>
+                    <span className={`text-xs w-12 text-right ${isEmpty ? 'text-gray-400' : 'text-gray-500'}`}>
                       {total} {total === 1 ? 'job' : 'jobs'}
                     </span>
                   </div>
@@ -459,30 +459,30 @@ function EngineeringSummaryPanel({
             {unassignedJobs.length > 0 && (
               <div className="flex items-center gap-3">
                 <div className="w-24 flex-shrink-0">
-                  <span className="text-sm text-gray-300">Unassigned</span>
+                  <span className="text-sm text-gray-600">Unassigned</span>
                 </div>
                 <div className="flex-1 flex items-center gap-2">
-                  <div className="flex-1 bg-gray-800/40 rounded-full h-1.5 overflow-hidden">
+                  <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="h-full bg-blue-500/60 rounded-full transition-all"
+                      className="h-full bg-gray-400 rounded-full transition-all"
                       style={{ width: `${Math.max((unassignedJobs.length / maxJobs) * 100, 2)}%` }}
                     />
                   </div>
-                  <span className="text-xs w-12 text-right text-gray-400">
+                  <span className="text-xs w-12 text-right text-gray-500">
                     {unassignedJobs.length} {unassignedJobs.length === 1 ? 'job' : 'jobs'}
                   </span>
                 </div>
               </div>
             )}
           </div>
-          <div className="mt-4 pt-3 border-t border-gray-800/60 text-xs text-gray-500">
+          <div className="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400">
             {totalJobs} total · {inProgressCount} in progress · {notStartedCount} not started
           </div>
         </div>
 
         {/* Right column: Attention Needed */}
         <div>
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h3 className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mb-3">
             Attention Needed
           </h3>
           {hasAlerts ? (
@@ -490,32 +490,32 @@ function EngineeringSummaryPanel({
               {overdueJobs.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
                   <div className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                  <span className="text-red-400 font-medium">{overdueJobs.length}</span>
-                  <span className="text-gray-400">
+                  <span className="text-red-500 font-medium">{overdueJobs.length}</span>
+                  <span className="text-gray-600">
                     {overdueJobs.length === 1 ? 'job' : 'jobs'} overdue
                   </span>
                 </div>
               )}
               {unassignedJobs.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
-                  <span className="text-blue-400 font-medium">{unassignedJobs.length}</span>
-                  <span className="text-gray-400">unassigned</span>
+                  <div className="w-2 h-2 rounded-full bg-gray-400 flex-shrink-0" />
+                  <span className="text-gray-700 font-medium">{unassignedJobs.length}</span>
+                  <span className="text-gray-600">unassigned</span>
                 </div>
               )}
               {idleJobs.length > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0" />
-                  <span className="text-yellow-400 font-medium">{idleJobs.length}</span>
-                  <span className="text-gray-400">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
+                  <span className="text-amber-600 font-medium">{idleJobs.length}</span>
+                  <span className="text-gray-600">
                     idle &gt; 7 days
                   </span>
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2 text-sm text-green-400">
-              <div className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+            <div className="flex items-center gap-2 text-sm text-emerald-600">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
               <span>All clear</span>
             </div>
           )}
@@ -543,8 +543,8 @@ function EngineeringJobRow({ job, isExpanded, onToggle, onNavigate, onDelete }: 
     <div
       className={`rounded-xl border transition-colors ${
         isExpanded
-          ? 'border-stage-engineering/30 bg-rivian-soft-black'
-          : 'border-gray-800/60 bg-rivian-soft-black hover:border-gray-700'
+          ? 'border-gray-200 bg-white shadow-sm'
+          : 'border-gray-100 bg-white hover:border-gray-200'
       }`}
     >
       {/* Row header */}
@@ -553,16 +553,16 @@ function EngineeringJobRow({ job, isExpanded, onToggle, onNavigate, onDelete }: 
           {/* Job info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2.5 mb-1">
-              <span className="text-sm font-semibold text-white">{job.jobNumber}</span>
+              <span className="text-sm font-semibold text-gray-900">{job.jobNumber}</span>
               <span className={`${status.badge} !text-[10px] !px-1.5 !py-0`}>
                 {stage?.status || 'Not Started'}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-xs text-gray-500">
-              <span className="text-gray-400">{job.clientName}</span>
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <span className="text-gray-600">{job.clientName}</span>
               {job.description && (
                 <>
-                  <span className="text-gray-700">&middot;</span>
+                  <span className="text-gray-300">&middot;</span>
                   <span className="truncate">{job.description}</span>
                 </>
               )}
@@ -572,14 +572,14 @@ function EngineeringJobRow({ job, isExpanded, onToggle, onNavigate, onDelete }: 
           {/* Quick info pills */}
           <div className="hidden md:flex items-center gap-3 flex-shrink-0">
             {stage?.assignee && (
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                <User className="w-3 h-3" />
+              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <User size={12} />
                 <span>{stage.assignee}</span>
               </div>
             )}
             {job.targetEndDate && (
-              <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                <Calendar className="w-3 h-3" />
+              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                <Calendar size={12} />
                 <span>{formatDate(job.targetEndDate)}</span>
               </div>
             )}
@@ -587,10 +587,10 @@ function EngineeringJobRow({ job, isExpanded, onToggle, onNavigate, onDelete }: 
               <div
                 className={`text-xs px-2 py-0.5 rounded-md ${
                   daysInStage > 14
-                    ? 'bg-priority-high/10 text-priority-high'
+                    ? 'bg-amber-50 text-amber-600'
                     : daysInStage > 7
-                    ? 'bg-priority-medium/10 text-priority-medium'
-                    : 'bg-gray-800 text-gray-500'
+                    ? 'bg-yellow-50 text-yellow-600'
+                    : 'bg-gray-50 text-gray-500'
                 }`}
               >
                 {daysInStage}d
@@ -604,10 +604,10 @@ function EngineeringJobRow({ job, isExpanded, onToggle, onNavigate, onDelete }: 
               e.stopPropagation();
               onNavigate();
             }}
-            className="flex items-center justify-center w-7 h-7 rounded-md text-gray-600 hover:text-gray-300 hover:bg-gray-800 transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors flex-shrink-0"
             title="Open job detail"
           >
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight size={14} />
           </button>
 
           {/* Delete job */}
@@ -616,18 +616,18 @@ function EngineeringJobRow({ job, isExpanded, onToggle, onNavigate, onDelete }: 
               e.stopPropagation();
               onDelete(job.id);
             }}
-            className="flex items-center justify-center w-7 h-7 rounded-md text-gray-600 hover:text-red-400 hover:bg-red-900/20 transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0"
             title="Delete job"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash size={14} />
           </button>
 
           {/* Expand chevron */}
-          <div className="flex-shrink-0 text-gray-600 group-hover:text-gray-400 transition-colors">
+          <div className="flex-shrink-0 text-gray-400 group-hover:text-gray-600 transition-colors">
             {isExpanded ? (
-              <ChevronUp className="w-4 h-4" />
+              <CaretUp size={16} />
             ) : (
-              <ChevronDown className="w-4 h-4" />
+              <CaretDown size={16} />
             )}
           </div>
         </div>
@@ -779,17 +779,17 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
   ];
 
   return (
-    <div className="border-t border-gray-800/60">
+    <div className="border-t border-gray-100">
       {/* Tab bar */}
-      <div className="flex items-center gap-1 px-5 pt-1 bg-rivian-black/30 overflow-x-auto">
+      <div className="flex items-center gap-1 px-5 pt-1 bg-gray-50 overflow-x-auto">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`relative flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium rounded-t-lg transition-colors whitespace-nowrap ${
               activeTab === tab.key
-                ? 'text-white bg-rivian-soft-black'
-                : 'text-gray-500 hover:text-gray-300'
+                ? 'text-gray-900 bg-white'
+                : 'text-gray-400 hover:text-gray-600'
             }`}
           >
             {tab.label}
@@ -797,17 +797,17 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
               <span
                 className={`ml-1 px-1.5 py-px rounded-full text-[10px] font-semibold ${
                   tab.alert
-                    ? 'bg-red-500/20 text-red-400'
+                    ? 'bg-red-100 text-red-500'
                     : activeTab === tab.key
-                    ? 'bg-gray-700 text-gray-300'
-                    : 'bg-gray-800 text-gray-500'
+                    ? 'bg-gray-100 text-gray-600'
+                    : 'bg-gray-100 text-gray-400'
                 }`}
               >
                 {tab.count}
               </span>
             )}
             {activeTab === tab.key && (
-              <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-stage-engineering rounded-full" />
+              <div className="absolute bottom-0 left-2 right-2 h-0.5 bg-gray-900 rounded-full" />
             )}
           </button>
         ))}
@@ -840,10 +840,10 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
             {workOrders && workOrders.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <h4 className="text-[11px] uppercase tracking-wider font-medium text-gray-400">
                     Work Orders
                   </h4>
-                  <span className="text-xs text-gray-600">{workOrders.length} total</span>
+                  <span className="text-xs text-gray-400">{workOrders.length} total</span>
                 </div>
                 <div className="space-y-2">
                   {workOrders.map((wo) => {
@@ -855,24 +855,24 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
                     return (
                       <div
                         key={wo.id}
-                        className="p-4 rounded-lg bg-rivian-black/40 border border-gray-800/40 hover:border-gray-700/60 transition-colors"
+                        className="p-4 rounded-lg bg-gray-50 border border-gray-100 hover:border-gray-200 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2">
-                              <h5 className="font-medium text-white text-sm">{wo.woNumber}</h5>
+                              <h5 className="font-medium text-gray-900 text-sm">{wo.woNumber}</h5>
                               {wo.isRecut && (
-                                <span className="text-[10px] px-1.5 py-px rounded-md font-medium bg-orange-500/15 text-orange-400 border border-orange-500/20">
+                                <span className="text-[10px] px-1.5 py-px rounded-md font-medium bg-orange-50 text-orange-600 border border-orange-200">
                                   Recut
                                 </span>
                               )}
                               {machine && (
-                                <span className="text-[10px] px-1.5 py-px rounded-md font-medium bg-blue-500/15 text-blue-400 border border-blue-500/20">
+                                <span className="text-[10px] px-1.5 py-px rounded-md font-medium bg-blue-50 text-blue-600 border border-blue-200">
                                   {machine}
                                 </span>
                               )}
                               {woPartsCount > 0 && (
-                                <span className="text-[10px] px-1.5 py-px rounded-md font-medium bg-purple-500/15 text-purple-400">
+                                <span className="text-[10px] px-1.5 py-px rounded-md font-medium bg-purple-50 text-purple-600">
                                   {woPartsCount} part{woPartsCount !== 1 ? 's' : ''}
                                 </span>
                               )}
@@ -888,7 +888,7 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
                             )}
 
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] text-gray-600 uppercase">Status</span>
+                              <span className="text-[10px] text-gray-400 uppercase">Status</span>
                               <Select
                                 value={wo.status}
                                 onChange={(e) =>
@@ -916,16 +916,16 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
                                 onClick={() => setSendToProductionWO(wo)}
                                 className="!text-xs !px-3 !py-1.5"
                               >
-                                <Send className="w-3.5 h-3.5 mr-1.5" />
+                                <PaperPlaneTilt size={14} className="mr-1.5" />
                                 Send to Production
                               </Button>
                             )}
 
                             <Menu as="div" className="relative">
-                              <Menu.Button className="p-1.5 hover:bg-gray-700/60 rounded-lg transition-colors text-gray-500 hover:text-white">
-                                <MoreVertical className="w-4 h-4" />
+                              <Menu.Button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-gray-600">
+                                <DotsThreeVertical size={16} />
                               </Menu.Button>
-                              <Menu.Items className="absolute right-0 mt-1 w-52 bg-rivian-soft-black border border-gray-700 rounded-lg shadow-xl z-10 overflow-hidden">
+                              <Menu.Items className="absolute right-0 mt-1 w-52 bg-white border border-gray-100 rounded-lg shadow-lg z-10 overflow-hidden">
                                 <div className="py-1">
                                   <Menu.Item>
                                     {({ active }) => (
@@ -933,10 +933,10 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
                                         onClick={() => handleParsePdfAndInitParts(wo)}
                                         disabled={parsingWoId === wo.id}
                                         className={`${
-                                          active ? 'bg-gray-800' : ''
-                                        } flex items-center w-full px-3 py-2 text-xs text-gray-300 disabled:opacity-50`}
+                                          active ? 'bg-gray-50' : ''
+                                        } flex items-center w-full px-3 py-2 text-xs text-gray-600 disabled:opacity-50`}
                                       >
-                                        <FileCheck className="w-3.5 h-3.5 mr-2.5" />
+                                        <FileText size={14} className="mr-2.5" />
                                         {parsingWoId === wo.id
                                           ? 'Parsing PDF...'
                                           : 'Parse PDF & Init Parts'}
@@ -951,10 +951,10 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
                                           setInitPartsWO(wo);
                                         }}
                                         className={`${
-                                          active ? 'bg-gray-800' : ''
-                                        } flex items-center w-full px-3 py-2 text-xs text-gray-300`}
+                                          active ? 'bg-gray-50' : ''
+                                        } flex items-center w-full px-3 py-2 text-xs text-gray-600`}
                                       >
-                                        <Layers className="w-3.5 h-3.5 mr-2.5" />
+                                        <Stack size={14} className="mr-2.5" />
                                         Manual Init Parts
                                       </button>
                                     )}
@@ -964,25 +964,25 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
                                       <button
                                         onClick={() => handleDownloadPdf(wo.id)}
                                         className={`${
-                                          active ? 'bg-gray-800' : ''
-                                        } flex items-center w-full px-3 py-2 text-xs text-gray-300`}
+                                          active ? 'bg-gray-50' : ''
+                                        } flex items-center w-full px-3 py-2 text-xs text-gray-600`}
                                       >
-                                        <Download className="w-3.5 h-3.5 mr-2.5" />
+                                        <DownloadSimple size={14} className="mr-2.5" />
                                         Download PDF
                                       </button>
                                     )}
                                   </Menu.Item>
-                                  <div className="border-t border-gray-800 my-1" />
+                                  <div className="border-t border-gray-100 my-1" />
                                   <Menu.Item>
                                     {({ active }) => (
                                       <button
                                         onClick={() => handleDeleteWo(wo.id, wo.woNumber)}
                                         disabled={deleteWoMutation.isPending}
                                         className={`${
-                                          active ? 'bg-red-500/10' : ''
-                                        } flex items-center w-full px-3 py-2 text-xs text-red-400 disabled:opacity-50`}
+                                          active ? 'bg-red-50' : ''
+                                        } flex items-center w-full px-3 py-2 text-xs text-red-500 disabled:opacity-50`}
                                       >
-                                        <Trash2 className="w-3.5 h-3.5 mr-2.5" />
+                                        <Trash size={14} className="mr-2.5" />
                                         Delete Work Order
                                       </button>
                                     )}

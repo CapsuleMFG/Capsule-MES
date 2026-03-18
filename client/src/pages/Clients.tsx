@@ -7,7 +7,7 @@ import Input from '../components/ui/Input';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import AddClientModal from '../components/clients/AddClientModal';
 import EditClientModal from '../components/clients/EditClientModal';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { Plus, PencilSimple, Trash } from '@phosphor-icons/react';
 import type { Client } from '../types';
 
 export default function Clients() {
@@ -58,13 +58,13 @@ export default function Clients() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Clients</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Clients</h1>
         <Button
           variant="primary"
           onClick={() => setIsAddModalOpen(true)}
           className="flex items-center gap-2"
         >
-          <Plus className="w-4 h-4" />
+          <Plus size={16} />
           Add Client
         </Button>
       </div>
@@ -79,44 +79,44 @@ export default function Clients() {
       </div>
 
       {/* Clients Table */}
-      <Card>
+      <Card className="p-0 overflow-hidden">
         {filteredClients && filteredClients.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Company Name</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Contact Person</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Email</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Phone</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Address</th>
-                  <th className="text-right py-3 px-4 text-sm font-medium text-gray-400">Actions</th>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3">Company Name</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3">Contact Person</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3">Email</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3">Phone</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3">Address</th>
+                  <th className="text-right text-[11px] uppercase tracking-wider font-medium text-gray-400 px-5 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredClients.map((client) => (
-                  <tr key={client.id} className="border-b border-gray-800 hover:bg-rivian-hover transition-colors">
-                    <td className="py-3 px-4 text-white font-medium">{client.name}</td>
-                    <td className="py-3 px-4 text-gray-300">{client.contactName || '-'}</td>
-                    <td className="py-3 px-4 text-gray-300">{client.email || '-'}</td>
-                    <td className="py-3 px-4 text-gray-300">{client.phone || '-'}</td>
-                    <td className="py-3 px-4 text-gray-300 max-w-xs truncate">{client.address || '-'}</td>
-                    <td className="py-3 px-4 text-right">
+                  <tr key={client.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                    <td className="py-3 px-5 text-sm text-gray-900 font-medium">{client.name}</td>
+                    <td className="py-3 px-5 text-sm text-gray-600">{client.contactName || '-'}</td>
+                    <td className="py-3 px-5 text-sm text-gray-600">{client.email || '-'}</td>
+                    <td className="py-3 px-5 text-sm text-gray-600">{client.phone || '-'}</td>
+                    <td className="py-3 px-5 text-sm text-gray-600 max-w-xs truncate">{client.address || '-'}</td>
+                    <td className="py-3 px-5 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setEditingClient(client)}
-                          className="text-rivian-accent hover:text-blue-400 transition-colors"
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
                           title="Edit client"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <PencilSimple size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(client)}
-                          className="text-red-500 hover:text-red-400 transition-colors"
+                          className="text-gray-400 hover:text-red-500 transition-colors"
                           title="Delete client"
                           disabled={deleteClientMutation.isPending}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash size={16} />
                         </button>
                       </div>
                     </td>
