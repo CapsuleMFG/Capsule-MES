@@ -34,3 +34,4 @@ server/uploads/
 
 # Windows artifact
 nul
+.worktrees/
