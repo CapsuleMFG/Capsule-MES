@@ -32,30 +32,30 @@ export default function ScrapPartModal({ isOpen, onClose, part, onSubmit, isPend
     <Modal isOpen={isOpen} onClose={onClose} title="Scrap Part">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Part info */}
-        <div className="bg-rivian-soft-black rounded-lg p-4 space-y-2">
+        <div className="bg-white rounded-lg p-4 space-y-2 border border-gray-100">
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Tracking ID</span>
-            <span className="text-white font-mono">{part.trackingId || `#${part.id}`}</span>
+            <span className="text-gray-900 font-mono">{part.trackingId || `#${part.id}`}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Part Number</span>
-            <span className="text-white">{part.partNumber || '-'}</span>
+            <span className="text-gray-900">{part.partNumber || '-'}</span>
           </div>
           {part.currentStationName && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Current Station</span>
-              <span className="text-white">{part.currentStationName}</span>
+              <span className="text-gray-900">{part.currentStationName}</span>
             </div>
           )}
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Status</span>
-            <span className="text-white">{part.status}</span>
+            <span className="text-gray-900">{part.status}</span>
           </div>
         </div>
 
         {/* Scrap Reason */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
             Scrap Reason <span className="text-red-400">*</span>
           </label>
           <textarea
@@ -63,7 +63,7 @@ export default function ScrapPartModal({ isOpen, onClose, part, onSubmit, isPend
             onChange={(e) => setScrapReason(e.target.value)}
             placeholder="Why is this part being scrapped?"
             rows={3}
-            className="w-full bg-rivian-soft-black border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-rivian-accent"
+            className="w-full bg-white border border-gray-100 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
             autoFocus
           />

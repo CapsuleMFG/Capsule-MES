@@ -20,7 +20,7 @@ interface BulkCreatePartsModalProps {
   bomItems?: BomItem[];
 }
 
-export default function BulkCreatePartsModal({ isOpen, onClose, onSubmit, isPending, jobId, bomItems = [] }: BulkCreatePartsModalProps) {
+export default function BulkCreatePartsModal({ isOpen, onClose, onSubmit, isPending, bomItems = [] }: BulkCreatePartsModalProps) {
   const { data: templates } = useRouteTemplates();
   const [bomItemId, setBomItemId] = useState<string>('');
   const [quantity, setQuantity] = useState('1');
@@ -72,11 +72,11 @@ export default function BulkCreatePartsModal({ isOpen, onClose, onSubmit, isPend
       <form onSubmit={handleSubmit} className="space-y-4">
         {bomItems.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">BOM Item (optional)</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">BOM Item (optional)</label>
             <select
               value={bomItemId}
               onChange={(e) => setBomItemId(e.target.value)}
-              className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+              className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             >
               <option value="">-- Select BOM item --</option>
               {bomItems.map(item => (
@@ -90,23 +90,23 @@ export default function BulkCreatePartsModal({ isOpen, onClose, onSubmit, isPend
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Quantity *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Quantity *</label>
             <input
               type="number"
               min="1"
               max="1000"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+              className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Route Template</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Route Template</label>
             <select
               value={routeTemplateId}
               onChange={(e) => setRouteTemplateId(e.target.value)}
-              className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+              className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             >
               <option value="">-- No route --</option>
               {templates?.map(t => (
@@ -118,11 +118,11 @@ export default function BulkCreatePartsModal({ isOpen, onClose, onSubmit, isPend
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">ID Type</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">ID Type</label>
             <select
               value={identificationType}
               onChange={(e) => setIdentificationType(e.target.value as IdentificationType)}
-              className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+              className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             >
               <option value="QR">QR Code</option>
               <option value="Engraved">Engraved</option>
@@ -131,12 +131,12 @@ export default function BulkCreatePartsModal({ isOpen, onClose, onSubmit, isPend
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Tracking ID Prefix</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Tracking ID Prefix</label>
             <input
               type="text"
               value={trackingIdPrefix}
               onChange={(e) => setTrackingIdPrefix(e.target.value)}
-              className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+              className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
               placeholder="e.g., BRK-001 → BRK-001-001, BRK-001-002..."
             />
           </div>
@@ -144,27 +144,27 @@ export default function BulkCreatePartsModal({ isOpen, onClose, onSubmit, isPend
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Part Number</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Part Number</label>
             <input
               type="text"
               value={partNumber}
               onChange={(e) => setPartNumber(e.target.value)}
-              className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+              className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Description</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+              className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             />
           </div>
         </div>
 
         <div className="flex justify-end gap-3 pt-4">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-gray-300 hover:text-white transition-colors">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors">
             Cancel
           </button>
           <button type="submit" disabled={isPending || Number(quantity) < 1} className="btn-primary disabled:opacity-50">

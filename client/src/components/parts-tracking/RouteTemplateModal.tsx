@@ -33,28 +33,28 @@ export default function RouteTemplateModal({ isOpen, onClose, onSubmit, isPendin
     <Modal isOpen={isOpen} onClose={onClose} title={template ? 'Edit Route Template' : 'New Route Template'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Template Name *</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Template Name *</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+            className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             placeholder="e.g., Sheet Metal Route"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1">Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+            className="w-full bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             rows={3}
             placeholder="Describe this route template..."
           />
         </div>
         <div className="flex justify-end gap-3 pt-4">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-gray-300 hover:text-white transition-colors">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors">
             Cancel
           </button>
           <button type="submit" disabled={isPending || !name.trim()} className="btn-primary disabled:opacity-50">

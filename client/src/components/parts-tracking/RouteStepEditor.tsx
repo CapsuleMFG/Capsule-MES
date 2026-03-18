@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, GripVertical, Edit2, Check, X } from 'lucide-react';
+import { Plus, Trash, DotsSixVertical, PencilSimple, Check, X } from '@phosphor-icons/react';
 import type { RouteTemplateStep, Machine } from '../../../../shared/types';
 
 interface RouteStepEditorProps {
@@ -61,26 +61,26 @@ export default function RouteStepEditor({ steps, machines, onAddStep, onUpdateSt
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-300">Route Steps ({steps.length})</h4>
+        <h4 className="text-sm font-medium text-gray-600">Route Steps ({steps.length})</h4>
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="flex items-center gap-1 text-sm text-rivian-accent hover:text-rivian-accent/80 transition-colors"
+            className="flex items-center gap-1 text-sm text-blue-500 hover:text-blue-600 transition-colors"
           >
-            <Plus className="w-4 h-4" />
+            <Plus size={16} />
             Add Step
           </button>
         )}
       </div>
 
       {steps.length === 0 && !showAddForm && (
-        <p className="text-sm text-gray-500 italic">No steps defined. Add steps to define the manufacturing route.</p>
+        <p className="text-sm text-gray-400 italic">No steps defined. Add steps to define the manufacturing route.</p>
       )}
 
       {/* Steps list */}
       <div className="space-y-2">
         {steps.map((step, index) => (
-          <div key={step.id} className="bg-rivian-black border border-gray-700 rounded-lg p-3">
+          <div key={step.id} className="bg-white border border-gray-100 rounded-lg p-3">
             {editingStepId === step.id ? (
               <div className="space-y-2">
                 <div className="flex gap-2">
@@ -88,13 +88,13 @@ export default function RouteStepEditor({ steps, machines, onAddStep, onUpdateSt
                     type="text"
                     value={editStep.stationName}
                     onChange={(e) => setEditStep({ ...editStep, stationName: e.target.value })}
-                    className="flex-1 bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+                    className="flex-1 bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
                     placeholder="Station name"
                   />
                   <select
                     value={editStep.machineId}
                     onChange={(e) => setEditStep({ ...editStep, machineId: e.target.value })}
-                    className="bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+                    className="bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="">No machine</option>
                     {machines.map(m => (
@@ -107,21 +107,21 @@ export default function RouteStepEditor({ steps, machines, onAddStep, onUpdateSt
                     type="number"
                     value={editStep.estimatedMinutes}
                     onChange={(e) => setEditStep({ ...editStep, estimatedMinutes: e.target.value })}
-                    className="w-32 bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+                    className="w-32 bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
                     placeholder="Est. minutes"
                   />
                   <input
                     type="text"
                     value={editStep.notes}
                     onChange={(e) => setEditStep({ ...editStep, notes: e.target.value })}
-                    className="flex-1 bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+                    className="flex-1 bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
                     placeholder="Notes"
                   />
-                  <button onClick={() => saveEdit(step.id)} className="text-green-400 hover:text-green-300">
-                    <Check className="w-4 h-4" />
+                  <button onClick={() => saveEdit(step.id)} className="text-emerald-600 hover:text-emerald-700">
+                    <Check size={16} />
                   </button>
-                  <button onClick={() => setEditingStepId(null)} className="text-gray-400 hover:text-white">
-                    <X className="w-4 h-4" />
+                  <button onClick={() => setEditingStepId(null)} className="text-gray-400 hover:text-gray-600">
+                    <X size={16} />
                   </button>
                 </div>
               </div>
@@ -131,33 +131,33 @@ export default function RouteStepEditor({ steps, machines, onAddStep, onUpdateSt
                   <button
                     onClick={() => moveStep(index, 'up')}
                     disabled={index === 0}
-                    className="text-gray-500 hover:text-white disabled:opacity-20 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 disabled:opacity-20 transition-colors"
                   >
-                    <GripVertical className="w-4 h-4" />
+                    <DotsSixVertical size={16} />
                   </button>
                 </div>
-                <span className="w-8 h-8 rounded-full bg-rivian-accent/20 text-rivian-accent flex items-center justify-center text-sm font-medium">
+                <span className="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-sm font-medium">
                   {index + 1}
                 </span>
                 <div className="flex-1">
-                  <p className="text-white font-medium">{step.stationName}</p>
+                  <p className="text-gray-900 font-medium">{step.stationName}</p>
                   <div className="flex gap-3 text-xs text-gray-400">
                     {step.machineName && <span>Machine: {step.machineName}</span>}
                     {step.estimatedMinutes && <span>{step.estimatedMinutes} min</span>}
                     {step.notes && <span>{step.notes}</span>}
                   </div>
                 </div>
-                <button onClick={() => startEdit(step)} className="text-gray-400 hover:text-white transition-colors">
-                  <Edit2 className="w-4 h-4" />
+                <button onClick={() => startEdit(step)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                  <PencilSimple size={16} />
                 </button>
-                <button onClick={() => moveStep(index, 'up')} disabled={index === 0} className="text-gray-400 hover:text-white disabled:opacity-20 transition-colors text-xs">
+                <button onClick={() => moveStep(index, 'up')} disabled={index === 0} className="text-gray-400 hover:text-gray-600 disabled:opacity-20 transition-colors text-xs">
                   Up
                 </button>
-                <button onClick={() => moveStep(index, 'down')} disabled={index === steps.length - 1} className="text-gray-400 hover:text-white disabled:opacity-20 transition-colors text-xs">
+                <button onClick={() => moveStep(index, 'down')} disabled={index === steps.length - 1} className="text-gray-400 hover:text-gray-600 disabled:opacity-20 transition-colors text-xs">
                   Down
                 </button>
-                <button onClick={() => onDeleteStep(step.id)} className="text-red-400 hover:text-red-300 transition-colors">
-                  <Trash2 className="w-4 h-4" />
+                <button onClick={() => onDeleteStep(step.id)} className="text-red-400 hover:text-red-500 transition-colors">
+                  <Trash size={16} />
                 </button>
               </div>
             )}
@@ -167,20 +167,20 @@ export default function RouteStepEditor({ steps, machines, onAddStep, onUpdateSt
 
       {/* Add step form */}
       {showAddForm && (
-        <div className="bg-rivian-black border border-rivian-accent/30 rounded-lg p-3 space-y-2">
+        <div className="bg-white border border-blue-200 rounded-lg p-3 space-y-2">
           <div className="flex gap-2">
             <input
               type="text"
               value={newStep.stationName}
               onChange={(e) => setNewStep({ ...newStep, stationName: e.target.value })}
-              className="flex-1 bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+              className="flex-1 bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
               placeholder="Station name (e.g., Laser Cut, Brake Press, Powder Coat)"
               autoFocus
             />
             <select
               value={newStep.machineId}
               onChange={(e) => setNewStep({ ...newStep, machineId: e.target.value })}
-              className="bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+              className="bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
             >
               <option value="">No machine</option>
               {machines.map(m => (
@@ -193,14 +193,14 @@ export default function RouteStepEditor({ steps, machines, onAddStep, onUpdateSt
               type="number"
               value={newStep.estimatedMinutes}
               onChange={(e) => setNewStep({ ...newStep, estimatedMinutes: e.target.value })}
-              className="w-32 bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+              className="w-32 bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
               placeholder="Est. minutes"
             />
             <input
               type="text"
               value={newStep.notes}
               onChange={(e) => setNewStep({ ...newStep, notes: e.target.value })}
-              className="flex-1 bg-rivian-soft-black border border-gray-600 rounded px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rivian-accent"
+              className="flex-1 bg-gray-50 border border-gray-100 rounded px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
               placeholder="Notes (optional)"
             />
             <button
@@ -210,8 +210,8 @@ export default function RouteStepEditor({ steps, machines, onAddStep, onUpdateSt
             >
               {isAdding ? 'Adding...' : 'Add'}
             </button>
-            <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-white transition-colors">
-              <X className="w-4 h-4" />
+            <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <X size={16} />
             </button>
           </div>
         </div>

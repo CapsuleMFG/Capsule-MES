@@ -83,7 +83,7 @@ export default function EditClientModal({ isOpen, onClose, client }: EditClientM
     <Modal isOpen={isOpen} onClose={handleClose} title="Edit Client" maxWidth="lg">
       <form onSubmit={handleSubmit}>
         {errors.submit && (
-          <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded text-red-500 text-sm">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
             {errors.submit}
           </div>
         )}
@@ -122,11 +122,11 @@ export default function EditClientModal({ isOpen, onClose, client }: EditClientM
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-600 mb-2">
             Address
           </label>
           <textarea
-            className="w-full bg-rivian-soft-black text-white border border-gray-700 rounded px-3 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-rivian-accent"
+            className="w-full bg-white text-gray-900 border border-gray-100 rounded px-3 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Full address..."
             value={formData.address}
             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
