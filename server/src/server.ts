@@ -37,8 +37,8 @@ const allowedOrigins = [
 app.use(helmet());
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
-        if (!origin) return callback(null, true);
+        // Allow requests with no origin only in development (Postman, etc.)
+        if (!origin) return callback(null, process.env.NODE_ENV !== 'production');
 
         // Allow any localhost origin in development
         if (process.env.NODE_ENV !== 'production' && origin.startsWith('http://localhost:')) {

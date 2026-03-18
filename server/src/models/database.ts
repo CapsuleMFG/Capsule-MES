@@ -5,7 +5,7 @@ dotenv.config();
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : { rejectUnauthorized: false },
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
@@ -60,8 +60,6 @@ export async function query<T = any>(sql: string, params: any[] = []): Promise<T
         return result.rows as T[];
     } catch (error) {
         console.error('Query error:', error);
-        console.error('SQL:', converted);
-        console.error('Params:', params);
         throw error;
     }
 }
@@ -85,19 +83,12 @@ export async function execute(sql: string, params: any[] = []): Promise<{ change
     }
 
     try {
-        console.log('[DB Execute] SQL:', converted);
-        console.log('[DB Execute] Params:', params);
-
         const result = await pool.query(converted, params);
         const changes = result.rowCount ?? 0;
         const lastID = isInsert ? (result.rows[0]?.id ?? 0) : 0;
-
-        console.log('[DB Execute] Changes:', changes, 'LastID:', lastID);
         return { changes, lastID };
     } catch (error) {
         console.error('Execute error:', error);
-        console.error('SQL:', converted);
-        console.error('Params:', params);
         throw error;
     }
 }

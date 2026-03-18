@@ -2,16 +2,17 @@ import { Request, Response } from 'express';
 import { query, queryOne, execute } from "../models/database";
 import type { StationKiosk, CreateStationKioskRequest, UpdateStationKioskRequest, StationAuthRequest } from "../../../shared/types";
 
-function mapKiosk(row: any): StationKiosk {
-  return { id: row.id, stationName: row.station_name, pinCode: row.pin_code, machineId: row.machine_id,
-    machineName: row.machine_name, isActive: !!row.is_active, notes: row.notes, createdAt: row.created_at, updatedAt: row.updated_at };
+function mapKiosk(row: any, includePinCode = false): StationKiosk {
+  return { id: row.id, stationName: row.station_name, pinCode: includePinCode ? row.pin_code : '••••',
+    machineId: row.machine_id, machineName: row.machine_name, isActive: !!row.is_active,
+    notes: row.notes, createdAt: row.created_at, updatedAt: row.updated_at };
 }
 
 /** GET /api/station-kiosks */
 export const getStationKiosks = async (_req: Request, res: Response) => {
   try {
     const rows = await query<any>("SELECT sk.id, sk.station_name, sk.pin_code, sk.machine_id, m.name as machine_name, sk.is_active, sk.notes, sk.created_at, sk.updated_at FROM station_kiosks sk LEFT JOIN machines m ON sk.machine_id = m.id ORDER BY sk.station_name ASC");
-    res.json(rows.map(mapKiosk));
+    res.json(rows.map(row => mapKiosk(row)));
   } catch (error) {
     console.error("Error fetching station kiosks:", error);
     res.status(500).json({ error: "Failed to fetch station kiosks" });
@@ -23,7 +24,7 @@ export const createStationKiosk = async (req: Request, res: Response) => {
   try {
     const data: CreateStationKioskRequest = req.body;
     if (!data.stationName || !data.pinCode) return res.status(400).json({ error: "Station name and PIN code are required" });
-    if (!/^d{4,6}$/.test(data.pinCode)) return res.status(400).json({ error: "PIN code must be 4-6 digits" });
+    if (!/^\d{4,6}$/.test(data.pinCode)) return res.status(400).json({ error: "PIN code must be 4-6 digits" });
     const existing = await queryOne<any>("SELECT id FROM station_kiosks WHERE station_name = ? OR pin_code = ?", [data.stationName, data.pinCode]);
     if (existing) return res.status(400).json({ error: "Station name or PIN code already exists" });
     const result = await execute("INSERT INTO station_kiosks (station_name, pin_code, machine_id, is_active, notes) VALUES (?, ?, ?, ?, ?)",
@@ -51,7 +52,7 @@ export const updateStationKiosk = async (req: Request, res: Response) => {
       updates.push("station_name = ?"); params.push(data.stationName);
     }
     if (data.pinCode !== undefined) {
-      if (!/^d{4,6}$/.test(data.pinCode)) return res.status(400).json({ error: "PIN code must be 4-6 digits" });
+      if (!/^\d{4,6}$/.test(data.pinCode)) return res.status(400).json({ error: "PIN code must be 4-6 digits" });
       const dup = await queryOne<any>("SELECT id FROM station_kiosks WHERE pin_code = ? AND id != ?", [data.pinCode, id]);
       if (dup) return res.status(400).json({ error: "PIN code already exists" });
       updates.push("pin_code = ?"); params.push(data.pinCode);

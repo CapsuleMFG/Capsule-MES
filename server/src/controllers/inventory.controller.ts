@@ -176,8 +176,7 @@ export async function createInventoryItem(req: Request, res: Response): Promise<
         });
     } catch (error: any) {
         console.error('Error creating inventory item:', error);
-        console.error('Error details:', error.message);
-        res.status(500).json({ error: 'Failed to create inventory item', details: error.message });
+        res.status(500).json({ error: 'Failed to create inventory item' });
     }
 }
 
