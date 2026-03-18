@@ -76,8 +76,10 @@ export const getAuditLog = async (req: Request, res: Response): Promise<void> =>
     );
     const total = parseInt(countResult?.count || '0');
 
+    const limitParam = paramIdx++;
+    const offsetParam = paramIdx++;
     const rows = await query<AuditRow>(
-      `SELECT * FROM audit_log ${where} ORDER BY created_at DESC LIMIT $${paramIdx++} OFFSET $${paramIdx}`,
+      `SELECT * FROM audit_log ${where} ORDER BY created_at DESC LIMIT $${limitParam} OFFSET $${offsetParam}`,
       [...params, limitNum, offset]
     );
 

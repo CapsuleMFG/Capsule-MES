@@ -34,8 +34,12 @@ export async function logAudit(params: {
 }
 
 /**
- * Helper: fetch a row's current state before an UPDATE or DELETE.
+ * Fetches a row's current state before an UPDATE or DELETE for audit logging.
  * Returns the row as a plain object, or null if not found.
+ *
+ * SECURITY: tableName and idColumn are interpolated directly into SQL (identifiers
+ * cannot be parameterized in PostgreSQL). NEVER pass user-controlled input for
+ * these arguments — always use hardcoded string literals at the call site.
  */
 export async function fetchCurrentState(
   tableName: string,
