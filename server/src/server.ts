@@ -19,6 +19,9 @@ import engineersRouter from './routes/engineers.routes';
 import pbomOrdersRouter from './routes/pbom-orders.routes';
 import supplyChainRouter from './routes/supplychain.routes';
 import purchaseOrdersRouter from './routes/purchase-orders.routes';
+import { authMiddleware } from './middleware/auth';
+import profilesRouter from './routes/profiles.routes';
+import auditLogRouter from './routes/audit-log.routes';
 
 // Load environment variables
 dotenv.config();
@@ -63,6 +66,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
+// Auth middleware — applied globally, behavior controlled by AUTH_REQUIRED env var
+app.use(authMiddleware);
+
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -85,6 +91,8 @@ app.use('/api/engineers', engineersRouter);
 app.use('/api/pbom/orders', pbomOrdersRouter);
 app.use('/api/supply-chain', supplyChainRouter);
 app.use('/api/purchase-orders', purchaseOrdersRouter);
+app.use('/api/profiles', profilesRouter);
+app.use('/api/audit-log', auditLogRouter);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
