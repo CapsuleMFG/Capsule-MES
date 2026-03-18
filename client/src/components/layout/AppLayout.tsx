@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Briefcase, Users, Plus, Wrench, Package, Factory, Monitor } from 'lucide-react';
+import {
+  SquaresFour,
+  Briefcase,
+  Users,
+  Plus,
+  Wrench,
+  Package,
+  Factory,
+  Monitor,
+} from '@phosphor-icons/react';
 import QuickAddJobModal from '../jobs/QuickAddJobModal';
 
 export default function AppLayout() {
@@ -8,7 +17,7 @@ export default function AppLayout() {
   const [isAddJobModalOpen, setIsAddJobModalOpen] = useState(false);
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Dashboard', href: '/', icon: SquaresFour },
     { name: 'Jobs', href: '/jobs', icon: Briefcase },
     { name: 'Engineering', href: '/engineering', icon: Wrench },
     { name: 'Supply Chain', href: '/supply-chain', icon: Package },
@@ -18,22 +27,20 @@ export default function AppLayout() {
   ];
 
   const isActive = (href: string) => {
-    if (href === '/') {
-      return location.pathname === '/';
-    }
+    if (href === '/') return location.pathname === '/';
     return location.pathname.startsWith(href);
   };
 
   return (
-    <div className="flex h-screen bg-rivian-black">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-rivian-soft-black border-r border-gray-800 flex flex-col">
-        <div className="p-6 border-b border-gray-800">
-          <h1 className="text-2xl font-bold text-rivian-accent">CAPSULE</h1>
-          <p className="text-sm text-gray-400 mt-1">Manufacturing ERP</p>
+      <aside className="w-[220px] bg-white border-r border-gray-100 flex flex-col flex-shrink-0">
+        <div className="px-4 py-4 border-b border-gray-100">
+          <h1 className="text-sm font-semibold tracking-tight text-gray-900">CAPSULE</h1>
+          <p className="text-[11px] text-gray-400 mt-0.5">Manufacturing ERP</p>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-3 space-y-0.5">
           {navigation.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -43,25 +50,25 @@ export default function AppLayout() {
                 key={item.name}
                 to={item.href}
                 className={`
-                  flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
+                  flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-sm
                   ${
                     active
-                      ? 'bg-rivian-accent text-white'
-                      : 'text-gray-300 hover:bg-rivian-hover hover:text-white'
+                      ? 'bg-gray-900 text-white font-medium'
+                      : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                   }
                 `}
               >
-                <Icon className="w-5 h-5" />
-                <span className="font-medium">{item.name}</span>
+                <Icon size={18} weight="light" />
+                <span>{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-gray-800">
-          <div className="text-xs text-gray-500">
+        <div className="p-4 border-t border-gray-100">
+          <div className="text-[11px] text-gray-400">
             <p>v1.0.0</p>
-            <p className="mt-1">© 2025 Capsule ERP</p>
+            <p className="mt-1">&copy; 2025 Capsule ERP</p>
           </div>
         </div>
       </aside>
@@ -69,37 +76,34 @@ export default function AppLayout() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-rivian-soft-black border-b border-gray-800 px-6 py-4">
+        <header className="bg-white border-b border-gray-100 px-6 py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-white">
-                {navigation.find((item) => isActive(item.href))?.name || 'Capsule ERP'}
-              </h2>
-            </div>
+            <h2 className="text-sm font-medium text-gray-900">
+              {navigation.find((item) => isActive(item.href))?.name || 'Capsule ERP'}
+            </h2>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsAddJobModalOpen(true)}
-                className="btn-primary flex items-center gap-2"
+                className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-[10px] flex items-center gap-2 transition-colors active:scale-[0.98]"
               >
-                <Plus className="w-4 h-4" />
+                <Plus size={16} />
                 New Job
               </button>
 
-              <div className="w-10 h-10 rounded-full bg-rivian-accent flex items-center justify-center">
-                <span className="text-sm font-semibold">AD</span>
+              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                <span className="text-xs font-medium text-gray-600">AD</span>
               </div>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6 animate-fadeIn">
           <Outlet />
         </main>
       </div>
 
-      {/* Quick Add Job Modal */}
       <QuickAddJobModal
         isOpen={isAddJobModalOpen}
         onClose={() => setIsAddJobModalOpen(false)}
