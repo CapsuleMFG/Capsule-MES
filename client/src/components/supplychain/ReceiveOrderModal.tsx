@@ -48,45 +48,45 @@ export default function ReceiveOrderModal({ item, isOpen, onClose }: ReceiveOrde
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Receive Order">
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="bg-rivian-black rounded-lg p-3 space-y-1">
-                    <p className="text-sm text-gray-300">{item.description}</p>
+                <div className="bg-gray-50 rounded-lg p-3 space-y-1">
+                    <p className="text-sm text-gray-600">{item.description}</p>
                     {item.poNumber && (
-                        <p className="text-xs text-purple-400">PO# {item.poNumber}</p>
+                        <p className="text-xs text-purple-500">PO# {item.poNumber}</p>
                     )}
                     {item.linkedJobs && item.linkedJobs.length > 1 && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-400">
                             Distributes to: {item.linkedJobs.map(j => j.jobNumber).join(', ')}
                         </p>
                     )}
                     {item.linkedJobs && item.linkedJobs.length === 1 && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-400">
                             {item.linkedJobs[0].jobNumber} — {item.linkedJobs[0].clientName}
                         </p>
                     )}
                 </div>
 
                 <div className="grid grid-cols-3 gap-3 text-sm">
-                    <div className="bg-rivian-black rounded-lg p-3 text-center">
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
                         <p className="text-gray-400 text-xs">Ordered</p>
-                        <p className="text-white font-bold text-lg">{item.qtyOrdered}</p>
+                        <p className="text-gray-900 font-semibold text-base">{item.qtyOrdered}</p>
                     </div>
-                    <div className="bg-rivian-black rounded-lg p-3 text-center">
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
                         <p className="text-gray-400 text-xs">Received</p>
-                        <p className="text-green-400 font-bold text-lg">{item.qtyReceived}</p>
+                        <p className="text-gray-900 font-semibold text-base">{item.qtyReceived}</p>
                     </div>
-                    <div className="bg-rivian-black rounded-lg p-3 text-center">
+                    <div className="bg-gray-50 rounded-lg p-3 text-center">
                         <p className="text-gray-400 text-xs">Remaining</p>
-                        <p className="text-orange-400 font-bold text-lg">{remaining}</p>
+                        <p className="text-gray-900 font-semibold text-base">{remaining}</p>
                     </div>
                 </div>
 
                 {/* Job breakdown for multi-job POs */}
                 {item.linkedJobs && item.linkedJobs.length > 1 && (
-                    <div className="bg-rivian-black rounded-lg p-3">
+                    <div className="bg-gray-50 rounded-lg p-3">
                         <p className="text-xs text-gray-400 mb-2">Distribution (by SC priority):</p>
                         {item.linkedJobs.map((job) => (
                             <div key={job.pbomItemId} className="flex justify-between text-xs py-1">
-                                <span className="text-gray-300">{job.jobNumber}</span>
+                                <span className="text-gray-600">{job.jobNumber}</span>
                                 <span className="text-gray-400">
                                     {job.qtyReceived}/{job.qtyOrdered}
                                 </span>
@@ -96,7 +96,7 @@ export default function ReceiveOrderModal({ item, isOpen, onClose }: ReceiveOrde
                 )}
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
                         Quantity to Receive Now
                     </label>
                     <input
@@ -109,7 +109,7 @@ export default function ReceiveOrderModal({ item, isOpen, onClose }: ReceiveOrde
                             const val = parseFloat(e.target.value) || 0;
                             setQtyToReceive(Math.min(val, remaining));
                         }}
-                        className="w-full px-3 py-2 bg-rivian-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     />
                     {qtyToReceive > 0 && qtyToReceive + item.qtyReceived >= item.qtyOrdered && (
                         <p className="text-xs text-green-400 mt-1">

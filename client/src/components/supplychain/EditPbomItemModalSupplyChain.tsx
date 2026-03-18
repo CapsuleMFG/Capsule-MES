@@ -97,15 +97,15 @@ export default function EditPbomItemModalSupplyChain({
         <Modal isOpen={isOpen} onClose={handleClose} title="Edit PBOM Item - Supply Chain">
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Read-only info from Engineering */}
-                <div className="bg-gray-800/50 rounded-lg p-3">
+                <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs text-gray-400 mb-2">From Engineering:</p>
-                    <p className="text-sm text-white font-medium">{pbomItem.description}</p>
+                    <p className="text-sm text-gray-900 font-medium">{pbomItem.description}</p>
                     <p className="text-xs text-gray-400 mt-1">Quantity Required: {pbomItem.qtyRequired}</p>
                 </div>
 
                 {/* Status */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Status <span className="text-red-400">*</span>
                     </label>
                     <Select
@@ -123,8 +123,8 @@ export default function EditPbomItemModalSupplyChain({
 
                 {/* Qty Ordered - visible when Ordered or Received */}
                 {(formData.status === 'Ordered' || formData.status === 'Received') && (
-                    <div className="bg-orange-500/10 rounded-lg p-3">
-                        <label className="block text-sm font-medium text-orange-400 mb-2">
+                    <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="block text-sm font-medium text-gray-600 mb-2">
                             Qty Ordered
                         </label>
                         <input
@@ -134,7 +134,7 @@ export default function EditPbomItemModalSupplyChain({
                             value={formData.qtyOrdered ?? 0}
                             onChange={(e) => setFormData({ ...formData, qtyOrdered: parseFloat(e.target.value) || 0 })}
                             disabled={updateMutation.isPending}
-                            className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                            className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                         />
                         <p className="text-xs text-gray-500 mt-1">
                             How many were actually ordered from the supplier
@@ -144,8 +144,8 @@ export default function EditPbomItemModalSupplyChain({
 
                 {/* Qty Received - visible when Received */}
                 {formData.status === 'Received' && (
-                    <div className="bg-orange-500/10 rounded-lg p-3">
-                        <label className="block text-sm font-medium text-orange-400 mb-2">
+                    <div className="bg-gray-50 rounded-lg p-3">
+                        <label className="block text-sm font-medium text-gray-600 mb-2">
                             Qty Received
                         </label>
                         <input
@@ -155,7 +155,7 @@ export default function EditPbomItemModalSupplyChain({
                             value={formData.qtyReceived ?? 0}
                             onChange={(e) => setFormData({ ...formData, qtyReceived: parseFloat(e.target.value) || 0 })}
                             disabled={updateMutation.isPending}
-                            className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                            className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                         />
                         <p className="text-xs text-gray-500 mt-1">
                             How many were actually received (surplus goes to inventory)
@@ -165,7 +165,7 @@ export default function EditPbomItemModalSupplyChain({
 
                 {/* Mfr/Vendor */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Manufacturer/Vendor
                     </label>
                     <Input
@@ -178,7 +178,7 @@ export default function EditPbomItemModalSupplyChain({
 
                 {/* Mfr/Vendor Part */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Manufacturer Part #
                     </label>
                     <Input
@@ -191,7 +191,7 @@ export default function EditPbomItemModalSupplyChain({
 
                 {/* Category */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Category
                     </label>
                     <Input
@@ -203,8 +203,8 @@ export default function EditPbomItemModalSupplyChain({
                 </div>
 
                 {/* Inventory Linking */}
-                <div className="bg-green-500/10 rounded-lg p-3 space-y-3">
-                    <label className="block text-sm font-medium text-green-400 mb-2">
+                <div className="bg-gray-50 rounded-lg p-3 space-y-3">
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Inventory Link <span className="text-xs text-gray-500">(Stock Allocation)</span>
                     </label>
 
@@ -214,7 +214,7 @@ export default function EditPbomItemModalSupplyChain({
                             inv => inv.partNumber?.toLowerCase() === pbomItem.mfrVendorPart!.toLowerCase()
                         );
                         return match ? (
-                            <div className="flex items-center gap-2 text-xs bg-green-500/20 rounded px-2 py-1">
+                            <div className="flex items-center gap-2 text-xs bg-white border border-gray-100 rounded px-2 py-1">
                                 <span className="text-green-300">Match found: {match.partNumber} ({match.availableQty} avail)</span>
                                 <button
                                     type="button"
@@ -251,7 +251,7 @@ export default function EditPbomItemModalSupplyChain({
                                 }
                             }}
                             disabled={updateMutation.isPending}
-                            className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                            className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                         >
                             <option value="">None (not linked)</option>
                             {availableInventory?.map((inv) => {
@@ -283,7 +283,7 @@ export default function EditPbomItemModalSupplyChain({
                                     value={formData.qtyAllocated ?? 0}
                                     onChange={(e) => setFormData({ ...formData, qtyAllocated: parseFloat(e.target.value) || 0 })}
                                     disabled={updateMutation.isPending}
-                                    className="w-24 px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                                    className="w-24 px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                                 />
                                 <span className="text-xs text-gray-400">
                                     of {pbomItem.qtyRequired} needed
@@ -299,8 +299,8 @@ export default function EditPbomItemModalSupplyChain({
                 </div>
 
                 {/* Req Number (SC Only) */}
-                <div className="bg-blue-500/10 rounded-lg p-3">
-                    <label className="block text-sm font-medium text-blue-400 mb-2">
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Requisition # <span className="text-xs text-gray-500">(SC Use Only)</span>
                     </label>
                     <Input
@@ -312,8 +312,8 @@ export default function EditPbomItemModalSupplyChain({
                 </div>
 
                 {/* PO Number (PM Only) */}
-                <div className="bg-purple-500/10 rounded-lg p-3">
-                    <label className="block text-sm font-medium text-purple-400 mb-2">
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Purchase Order # <span className="text-xs text-gray-500">(PM Use Only)</span>
                     </label>
                     <Input
@@ -325,8 +325,8 @@ export default function EditPbomItemModalSupplyChain({
                 </div>
 
                 {/* Notes (SC Only) */}
-                <div className="bg-blue-500/10 rounded-lg p-3">
-                    <label className="block text-sm font-medium text-blue-400 mb-2">
+                <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">
                         Notes <span className="text-xs text-gray-500">(SC Use Only)</span>
                     </label>
                     <textarea
@@ -335,7 +335,7 @@ export default function EditPbomItemModalSupplyChain({
                         placeholder="Procurement notes, lead times, special instructions, etc."
                         disabled={updateMutation.isPending}
                         rows={3}
-                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
 

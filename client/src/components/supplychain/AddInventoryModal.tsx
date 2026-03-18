@@ -68,7 +68,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-600 mb-2">
                             Part Number <span className="text-gray-500">(optional)</span>
                         </label>
                         <Input
@@ -79,7 +79,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-600 mb-2">
                             Quantity On Hand
                         </label>
                         <Input
@@ -93,7 +93,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Description</label>
                     <Input
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -104,7 +104,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
 
                 <div className="grid grid-cols-3 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Unit</label>
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Unit</label>
                         <Select
                             value={formData.unit}
                             onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
@@ -120,7 +120,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Unit Cost ($)</label>
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Unit Cost ($)</label>
                         <Input
                             type="number"
                             step="0.01"
@@ -131,7 +131,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Reorder Level</label>
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Reorder Level</label>
                         <Input
                             type="number"
                             value={formData.reorderLevel}
@@ -144,7 +144,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
 
                 <div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Reorder Quantity</label>
+                        <label className="block text-sm font-medium text-gray-600 mb-2">Reorder Quantity</label>
                         <Input
                             type="number"
                             value={formData.reorderQuantity}
@@ -156,7 +156,7 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Supplier</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Supplier</label>
                     <Input
                         value={formData.supplierName}
                         onChange={(e) => setFormData({ ...formData, supplierName: e.target.value })}
@@ -166,14 +166,14 @@ export default function AddInventoryModal({ isOpen, onClose }: AddInventoryModal
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Notes</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-2">Notes</label>
                     <textarea
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                         placeholder="Additional notes"
                         disabled={createMutation.isPending}
                         rows={2}
-                        className="w-full px-3 py-2 bg-rivian-soft-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                 </div>
 

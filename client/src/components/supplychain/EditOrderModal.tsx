@@ -52,66 +52,66 @@ export default function EditOrderModal({ item, isOpen, onClose }: EditOrderModal
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Edit Order Details">
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="bg-rivian-black rounded-lg p-3 space-y-1">
-                    <p className="text-sm text-gray-300">{item.description}</p>
+                <div className="bg-gray-50 rounded-lg p-3 space-y-1">
+                    <p className="text-sm text-gray-600">{item.description}</p>
                     {item.linkedJobs && item.linkedJobs.length > 0 && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-400">
                             {item.linkedJobs.map(j => j.jobNumber).join(', ')}
                         </p>
                     )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-rivian-black rounded-lg p-3">
+                    <div className="bg-gray-50 rounded-lg p-3">
                         <p className="text-gray-400 text-xs">Qty Ordered</p>
-                        <p className="text-white font-medium">{item.qtyOrdered}</p>
+                        <p className="text-gray-900 font-medium">{item.qtyOrdered}</p>
                     </div>
-                    <div className="bg-rivian-black rounded-lg p-3">
+                    <div className="bg-gray-50 rounded-lg p-3">
                         <p className="text-gray-400 text-xs">Qty Received</p>
-                        <p className="text-white font-medium">{item.qtyReceived}</p>
+                        <p className="text-gray-900 font-medium">{item.qtyReceived}</p>
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">PO Number</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">PO Number</label>
                     <input
                         type="text"
                         value={poNumber}
                         onChange={(e) => setPoNumber(e.target.value)}
                         placeholder="Enter PO number..."
-                        className="w-full px-3 py-2 bg-rivian-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Vendor</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Vendor</label>
                     <input
                         type="text"
                         value={vendor}
                         onChange={(e) => setVendor(e.target.value)}
                         placeholder="Enter vendor name..."
-                        className="w-full px-3 py-2 bg-rivian-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Expected Receive Date</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Expected Receive Date</label>
                     <input
                         type="date"
                         value={expectedDate}
                         onChange={(e) => setExpectedDate(e.target.value)}
-                        className="w-full px-3 py-2 bg-rivian-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">Notes</label>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Notes</label>
                     <textarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={2}
                         placeholder="Optional notes..."
-                        className="w-full px-3 py-2 bg-rivian-black border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-rivian-accent focus:border-transparent text-sm"
+                        className="w-full px-3 py-2 bg-white border border-gray-100 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                     />
                 </div>
 

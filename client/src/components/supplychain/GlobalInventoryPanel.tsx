@@ -9,7 +9,7 @@ import LoadingSpinner from '../ui/LoadingSpinner';
 import AddInventoryModal from './AddInventoryModal';
 import EditInventoryModal from './EditInventoryModal';
 import MassOrderModal from './MassOrderModal';
-import { Plus, Edit, Trash2, Package, AlertTriangle, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Plus, PencilSimple, Trash, Package, Warning, ShoppingCart } from '@phosphor-icons/react';
 import type { GlobalInventory } from '../../types';
 
 export default function GlobalInventoryPanel() {
@@ -91,55 +91,27 @@ export default function GlobalInventoryPanel() {
             {/* Summary Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-500/10 rounded-lg">
-                            <Package className="w-6 h-6 text-blue-500" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Total Items</p>
-                            <p className="text-2xl font-bold text-white">{totalItems}</p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Total Items</p>
+                    <p className="text-xl font-semibold text-gray-900 mt-1">{totalItems}</p>
                 </Card>
 
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className={`p-3 rounded-lg ${lowStockCount > 0 ? 'bg-amber-500/10' : 'bg-green-500/10'}`}>
-                            <AlertTriangle className={`w-6 h-6 ${lowStockCount > 0 ? 'text-amber-500' : 'text-green-500'}`} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Low Stock</p>
-                            <p className={`text-2xl font-bold ${lowStockCount > 0 ? 'text-amber-400' : 'text-white'}`}>
-                                {lowStockCount}
-                            </p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Low Stock</p>
+                    <p className={`text-xl font-semibold mt-1 ${lowStockCount > 0 ? 'text-amber-500' : 'text-gray-900'}`}>
+                        {lowStockCount}
+                    </p>
                 </Card>
 
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-green-500/10 rounded-lg">
-                            <DollarSign className="w-6 h-6 text-green-500" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Total Value</p>
-                            <p className="text-2xl font-bold text-white">${totalValue.toFixed(2)}</p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Total Value</p>
+                    <p className="text-xl font-semibold text-gray-900 mt-1">${totalValue.toFixed(2)}</p>
                 </Card>
 
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className={`p-3 rounded-lg ${totalDemand > 0 ? 'bg-orange-500/10' : 'bg-gray-500/10'}`}>
-                            <TrendingUp className={`w-6 h-6 ${totalDemand > 0 ? 'text-orange-500' : 'text-gray-500'}`} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Total Demand</p>
-                            <p className={`text-2xl font-bold ${totalDemand > 0 ? 'text-orange-400' : 'text-white'}`}>
-                                {totalDemand}
-                            </p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Total Demand</p>
+                    <p className={`text-xl font-semibold mt-1 ${totalDemand > 0 ? 'text-amber-500' : 'text-gray-900'}`}>
+                        {totalDemand}
+                    </p>
                 </Card>
             </div>
 
@@ -153,7 +125,7 @@ export default function GlobalInventoryPanel() {
                     />
                 </div>
                 <Button variant="primary" onClick={() => setIsAddModalOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus size={16} className="mr-2" />
                     Add Inventory Item
                 </Button>
             </div>
@@ -164,87 +136,87 @@ export default function GlobalInventoryPanel() {
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-gray-700">
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase">Part Number</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase">Description</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase">On Hand</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase bg-blue-500/5">Allocated</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase bg-green-500/5">Available</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase bg-orange-500/5">Demand</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase bg-red-500/5">Need to Order</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase">Unit</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase">Unit Cost</th>
-                                    <th className="text-right py-3 px-4 text-xs font-medium text-gray-400 uppercase">Reorder Lvl</th>
-                                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase">Supplier</th>
-                                    <th className="text-center py-3 px-4 text-xs font-medium text-gray-400 uppercase">Actions</th>
+                                <tr className="border-b border-gray-100">
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Part Number</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">On Hand</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Allocated</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Available</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Demand</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Need to Order</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Unit</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Unit Cost</th>
+                                    <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Reorder Lvl</th>
+                                    <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Supplier</th>
+                                    <th className="text-center py-3 px-4 text-[11px] uppercase tracking-wider font-medium text-gray-400">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filtered.map((item) => (
                                     <tr
                                         key={item.id}
-                                        className={`border-b border-gray-800 hover:bg-rivian-hover ${
-                                            isLowStock(item) ? 'bg-amber-500/5' : ''
+                                        className={`border-b border-gray-50 hover:bg-gray-50 text-sm text-gray-600 ${
+                                            isLowStock(item) ? 'bg-amber-50' : ''
                                         }`}
                                     >
-                                        <td className="py-3 px-4 font-medium text-white">
+                                        <td className="py-3 px-4 font-medium text-gray-900">
                                             <div className="flex items-center gap-2">
                                                 {isLowStock(item) && (
-                                                    <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                                                    <Warning size={16} className="text-amber-500 flex-shrink-0" />
                                                 )}
                                                 {item.partNumber}
                                             </div>
                                         </td>
-                                        <td className="py-3 px-4 text-gray-300">{item.description || '-'}</td>
-                                        <td className={`py-3 px-4 text-right ${isLowStock(item) ? 'text-amber-400 font-semibold' : 'text-white'}`}>
+                                        <td className="py-3 px-4 text-gray-600">{item.description || '-'}</td>
+                                        <td className={`py-3 px-4 text-right ${isLowStock(item) ? 'text-amber-500 font-semibold' : 'text-gray-900'}`}>
                                             {item.quantityOnHand}
                                         </td>
-                                        <td className="py-3 px-4 text-right text-blue-300 bg-blue-500/5">
+                                        <td className="py-3 px-4 text-right text-blue-500 bg-gray-50">
                                             {item.totalAllocated || 0}
                                         </td>
-                                        <td className="py-3 px-4 text-right text-green-300 font-medium bg-green-500/5">
+                                        <td className="py-3 px-4 text-right text-emerald-600 font-medium bg-gray-50">
                                             {item.availableQty ?? item.quantityOnHand}
                                         </td>
-                                        <td className={`py-3 px-4 text-right font-medium bg-orange-500/5 ${
-                                            (item.totalDemand || 0) > 0 ? 'text-orange-400' : 'text-gray-500'
+                                        <td className={`py-3 px-4 text-right font-medium bg-gray-50 ${
+                                            (item.totalDemand || 0) > 0 ? 'text-orange-500' : 'text-gray-400'
                                         }`}>
                                             {item.totalDemand || 0}
                                         </td>
                                         {(() => {
                                             const needToOrder = Math.max(0, (item.totalDemand || 0) - (item.availableQty ?? item.quantityOnHand));
                                             return (
-                                                <td className={`py-3 px-4 text-right font-medium bg-red-500/5 ${
-                                                    needToOrder > 0 ? 'text-red-400' : 'text-gray-500'
+                                                <td className={`py-3 px-4 text-right font-medium bg-gray-50 ${
+                                                    needToOrder > 0 ? 'text-red-500' : 'text-gray-400'
                                                 }`}>
                                                     {needToOrder}
                                                 </td>
                                             );
                                         })()}
-                                        <td className="py-3 px-4 text-gray-300">{item.unit}</td>
-                                        <td className="py-3 px-4 text-right text-gray-300">
+                                        <td className="py-3 px-4 text-gray-600">{item.unit}</td>
+                                        <td className="py-3 px-4 text-right text-gray-600">
                                             {item.unitCost != null ? `$${item.unitCost.toFixed(2)}` : '-'}
                                         </td>
-                                        <td className="py-3 px-4 text-right text-gray-300">
+                                        <td className="py-3 px-4 text-right text-gray-600">
                                             {item.reorderLevel != null ? item.reorderLevel : '-'}
                                         </td>
-                                        <td className="py-3 px-4 text-gray-300">{item.supplierName || '-'}</td>
+                                        <td className="py-3 px-4 text-gray-600">{item.supplierName || '-'}</td>
                                         <td className="py-3 px-4">
                                             <div className="flex gap-1 justify-center">
                                                 {(item.totalDemand || 0) > 0 && (
                                                     <button
                                                         onClick={() => setMassOrderItem(item)}
-                                                        className="p-1.5 text-orange-400 hover:text-orange-300 transition-colors"
+                                                        className="p-1.5 text-orange-500 hover:text-orange-600 transition-colors"
                                                         title="Mass Order"
                                                     >
-                                                        <ShoppingCart className="h-4 w-4" />
+                                                        <ShoppingCart size={16} />
                                                     </button>
                                                 )}
                                                 <button
                                                     onClick={() => setEditingItem(item)}
-                                                    className="p-1.5 text-blue-400 hover:text-blue-300 transition-colors"
+                                                    className="p-1.5 text-blue-500 hover:text-blue-600 transition-colors"
                                                     title="Edit"
                                                 >
-                                                    <Edit className="h-4 w-4" />
+                                                    <PencilSimple size={16} />
                                                 </button>
                                                 <button
                                                     onClick={() => {
@@ -252,10 +224,10 @@ export default function GlobalInventoryPanel() {
                                                             deleteMutation.mutate(item.id);
                                                         }
                                                     }}
-                                                    className="p-1.5 text-red-400 hover:text-red-300 transition-colors"
+                                                    className="p-1.5 text-red-500 hover:text-red-600 transition-colors"
                                                     title="Delete"
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    <Trash size={16} />
                                                 </button>
                                             </div>
                                         </td>
@@ -266,8 +238,8 @@ export default function GlobalInventoryPanel() {
                     </div>
                 </Card>
             ) : (
-                <div className="text-center py-12 bg-rivian-soft-black rounded-lg">
-                    <Package className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                    <Package size={48} className="text-gray-400 mx-auto mb-3" />
                     <p className="text-gray-400 text-lg">No inventory items</p>
                     <p className="text-gray-500 text-sm mt-2">
                         {search

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import * as inventoryService from '../../services/inventory.service';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import Button from '../ui/Button';
-import { ShoppingCart, X, Package, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ShoppingCart, X, Package, Warning, CheckCircle } from '@phosphor-icons/react';
 import type { GlobalInventory } from '../../types';
 
 interface MassOrderModalProps {
@@ -50,22 +50,20 @@ export default function MassOrderModal({ inventoryItem, isOpen, onClose, onConfi
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-            <div className="relative bg-gray-900 border border-gray-600 rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+            <div className="relative bg-white border border-gray-100 rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-sm">
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-gray-600 bg-gray-800/50 rounded-t-xl">
+                <div className="flex items-center justify-between p-5 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-orange-500/20 rounded-lg">
-                            <ShoppingCart className="w-5 h-5 text-orange-400" />
-                        </div>
+                        <ShoppingCart size={16} className="text-gray-400" />
                         <div>
-                            <h2 className="text-lg font-bold text-white">Mass Order</h2>
-                            <p className="text-sm text-gray-300">
+                            <h2 className="text-sm font-medium text-gray-900">Mass Order</h2>
+                            <p className="text-sm text-gray-600">
                                 {inventoryItem.description || inventoryItem.partNumber}
                             </p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
-                        <X className="w-5 h-5" />
+                    <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-colors">
+                        <X size={20} />
                     </button>
                 </div>
 
@@ -79,43 +77,43 @@ export default function MassOrderModal({ inventoryItem, isOpen, onClose, onConfi
                         <>
                             {/* Inventory Stock Summary */}
                             <div className="grid grid-cols-3 gap-3">
-                                <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-center">
+                                <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 text-center">
                                     <p className="text-xs text-gray-400 uppercase mb-1">On Hand</p>
-                                    <p className="text-xl font-bold text-white">{inventoryItem.quantityOnHand}</p>
-                                    <p className="text-xs text-gray-500">{inventoryItem.unit}</p>
+                                    <p className="text-base font-semibold text-gray-900">{inventoryItem.quantityOnHand}</p>
+                                    <p className="text-xs text-gray-400">{inventoryItem.unit}</p>
                                 </div>
-                                <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-center">
+                                <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 text-center">
                                     <p className="text-xs text-gray-400 uppercase mb-1">Available</p>
-                                    <p className="text-xl font-bold text-green-400">{availableQty}</p>
-                                    <p className="text-xs text-gray-500">{inventoryItem.unit}</p>
+                                    <p className="text-base font-semibold text-gray-900">{availableQty}</p>
+                                    <p className="text-xs text-gray-400">{inventoryItem.unit}</p>
                                 </div>
-                                <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 text-center">
+                                <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 text-center">
                                     <p className="text-xs text-gray-400 uppercase mb-1">Total Demand</p>
-                                    <p className="text-xl font-bold text-orange-400">{data.totalDemand}</p>
-                                    <p className="text-xs text-gray-500">{inventoryItem.unit}</p>
+                                    <p className="text-base font-semibold text-gray-900">{data.totalDemand}</p>
+                                    <p className="text-xs text-gray-400">{inventoryItem.unit}</p>
                                 </div>
                             </div>
 
                             {/* Stock Status Message */}
                             {stockCoversAll ? (
-                                <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-sm">
-                                    <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
-                                    <p className="text-green-300">
+                                <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg p-3 text-sm">
+                                    <CheckCircle size={16} className="text-emerald-500 flex-shrink-0" />
+                                    <p className="text-emerald-700">
                                         Available stock ({availableQty} {inventoryItem.unit}) covers all demand ({data.totalDemand} {inventoryItem.unit}). No order needed unless you want to restock.
                                     </p>
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm">
-                                    <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                                    <p className="text-red-300">
+                                <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-lg p-3 text-sm">
+                                    <Warning size={16} className="text-red-500 flex-shrink-0" />
+                                    <p className="text-red-700">
                                         Short by <strong>{data.needToOrder} {inventoryItem.unit}</strong>. Available stock ({availableQty}) does not cover total demand ({data.totalDemand}).
                                     </p>
                                 </div>
                             )}
 
                             {/* Order Quantity Input */}
-                            <div className="bg-gray-800 border border-gray-600 rounded-lg p-4">
-                                <label className="block text-sm font-medium text-white mb-2">
+                            <div className="bg-gray-50 border border-gray-100 rounded-lg p-4">
+                                <label className="block text-sm font-medium text-gray-900 mb-2">
                                     Quantity to Order
                                 </label>
                                 <div className="flex items-center gap-3">
@@ -124,7 +122,7 @@ export default function MassOrderModal({ inventoryItem, isOpen, onClose, onConfi
                                         min="1"
                                         value={orderQuantity}
                                         onChange={(e) => setOrderQuantity(e.target.value)}
-                                        className="w-40 px-3 py-2 bg-gray-900 border border-gray-500 rounded-lg text-white text-lg font-bold focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                                        className="w-40 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-900 text-lg font-bold focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
                                         placeholder="0"
                                     />
                                     <span className="text-gray-400 text-sm">{inventoryItem.unit}</span>
@@ -138,33 +136,33 @@ export default function MassOrderModal({ inventoryItem, isOpen, onClose, onConfi
 
                             {/* Demand Breakdown by Job */}
                             <div>
-                                <h3 className="text-sm font-medium text-gray-400 uppercase mb-2">Demand Breakdown</h3>
+                                <h3 className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Demand Breakdown</h3>
                                 <div className="space-y-2">
                                     {Object.values(jobGroups).map((group) => (
-                                        <div key={group.jobNumber} className="border border-gray-700 rounded-lg overflow-hidden">
-                                            <div className="bg-gray-800 px-4 py-2.5 text-sm border-b border-gray-700">
-                                                <span className="font-semibold text-white">{group.jobNumber}</span>
+                                        <div key={group.jobNumber} className="border border-gray-100 rounded-lg overflow-hidden">
+                                            <div className="bg-gray-50 px-4 py-2.5 text-sm border-b border-gray-100">
+                                                <span className="font-semibold text-gray-900">{group.jobNumber}</span>
                                                 <span className="text-gray-400 ml-2">{group.jobDescription}</span>
                                             </div>
                                             <table className="w-full text-sm">
                                                 <thead>
-                                                    <tr className="border-b border-gray-700/50 bg-gray-800/30">
-                                                        <th className="text-left py-2 px-4 text-xs text-gray-400 font-medium">PBOM Item</th>
-                                                        <th className="text-right py-2 px-4 text-xs text-gray-400 font-medium">Required</th>
-                                                        <th className="text-right py-2 px-4 text-xs text-gray-400 font-medium">Allocated</th>
-                                                        <th className="text-right py-2 px-4 text-xs text-gray-400 font-medium">Outstanding</th>
-                                                        <th className="text-left py-2 px-4 text-xs text-gray-400 font-medium">Status</th>
+                                                    <tr className="border-b border-gray-100 bg-gray-50">
+                                                        <th className="text-left py-2 px-4 text-[11px] uppercase tracking-wider text-gray-400 font-medium">PBOM Item</th>
+                                                        <th className="text-right py-2 px-4 text-[11px] uppercase tracking-wider text-gray-400 font-medium">Required</th>
+                                                        <th className="text-right py-2 px-4 text-[11px] uppercase tracking-wider text-gray-400 font-medium">Allocated</th>
+                                                        <th className="text-right py-2 px-4 text-[11px] uppercase tracking-wider text-gray-400 font-medium">Outstanding</th>
+                                                        <th className="text-left py-2 px-4 text-[11px] uppercase tracking-wider text-gray-400 font-medium">Status</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {group.items.map((item) => (
-                                                        <tr key={item.id} className="border-b border-gray-800/50">
-                                                            <td className="py-2 px-4 text-gray-200">{item.description}</td>
-                                                            <td className="py-2 px-4 text-right text-gray-200">{item.qtyRequired}</td>
-                                                            <td className="py-2 px-4 text-right text-blue-300">{item.qtyAllocated}</td>
-                                                            <td className="py-2 px-4 text-right text-orange-400 font-medium">{item.qtyToOrder}</td>
+                                                        <tr key={item.id} className="border-b border-gray-50">
+                                                            <td className="py-2 px-4 text-gray-600">{item.description}</td>
+                                                            <td className="py-2 px-4 text-right text-gray-600">{item.qtyRequired}</td>
+                                                            <td className="py-2 px-4 text-right text-blue-500">{item.qtyAllocated}</td>
+                                                            <td className="py-2 px-4 text-right text-orange-500 font-medium">{item.qtyToOrder}</td>
                                                             <td className="py-2 px-4">
-                                                                <span className="text-xs px-2 py-1 rounded-md bg-gray-700 text-gray-200 font-medium">
+                                                                <span className="text-xs px-2 py-1 rounded-md bg-gray-100 text-gray-600 font-medium">
                                                                     {item.status}
                                                                 </span>
                                                             </td>
@@ -179,14 +177,14 @@ export default function MassOrderModal({ inventoryItem, isOpen, onClose, onConfi
                         </>
                     ) : (
                         <div className="text-center py-8">
-                            <Package className="w-10 h-10 text-gray-500 mx-auto mb-3" />
+                            <Package size={40} className="text-gray-400 mx-auto mb-3" />
                             <p className="text-gray-400">No outstanding demand for this item.</p>
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between p-5 border-t border-gray-600 bg-gray-800/50 rounded-b-xl">
+                <div className="flex items-center justify-between p-5 border-t border-gray-100">
                     <div className="text-sm text-gray-400">
                         {data && data.demandItems.length > 0 && (
                             <span>{data.demandItems.length} item{data.demandItems.length !== 1 ? 's' : ''} across {jobCount} job{jobCount !== 1 ? 's' : ''}</span>

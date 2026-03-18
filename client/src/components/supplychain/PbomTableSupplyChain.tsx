@@ -5,7 +5,7 @@ import * as engineeringService from '../../services/engineering.service';
 import Card from '../ui/Card';
 import Select from '../ui/Select';
 import EditPbomItemModalSupplyChain from './EditPbomItemModalSupplyChain';
-import { Edit2, FileSpreadsheet, CheckCircle, Link2 } from 'lucide-react';
+import { PencilSimple, FileText, CheckCircle, Link } from '@phosphor-icons/react';
 import type { PbomItem, PbomStatus, UpdatePbomItemRequest } from '../../types';
 
 interface PbomTableSupplyChainProps {
@@ -105,7 +105,7 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
         <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
                 <div>
-                    <h3 className="text-lg font-semibold">Production Bill of Materials (PBOM)</h3>
+                    <h3 className="text-sm font-medium text-gray-900">Production Bill of Materials (PBOM)</h3>
                     {sentItems.length > 0 && (
                         <p className="text-sm text-gray-400 mt-1">
                             {sentItems.length} items • {percentComplete}% Complete
@@ -115,17 +115,17 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
                 {sentItems.length > 0 && (
                     <div className="flex items-center gap-2">
                         <div className="text-right">
-                            <p className="text-2xl font-bold text-white">{percentComplete}%</p>
+                            <p className="text-base font-semibold text-gray-900">{percentComplete}%</p>
                             <p className="text-xs text-gray-400">{receivedItems}/{totalItems} received</p>
                         </div>
-                        <CheckCircle className={`w-8 h-8 ${percentComplete === 100 ? 'text-green-500' : 'text-gray-600'}`} />
+                        <CheckCircle size={32} className={percentComplete === 100 ? 'text-green-500' : 'text-gray-400'} />
                     </div>
                 )}
             </div>
 
             {sentItems.length === 0 ? (
-                <div className="text-center py-12 bg-rivian-hover rounded-lg">
-                    <FileSpreadsheet className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                    <FileText size={48} className="text-gray-400 mx-auto mb-3" />
                     <p className="text-gray-400 text-sm">No PBOM items received from Engineering yet</p>
                     <p className="text-gray-500 text-xs mt-2">
                         Engineering will send PBOM items here for procurement
@@ -135,29 +135,29 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-gray-700">
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400">Status</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400">Description</th>
-                                <th className="text-right py-3 px-3 text-xs font-medium text-gray-400">Qty Req'd</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400">Mfr/Vendor</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400">Part #</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400">Category</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 bg-green-500/10">Inventory</th>
-                                <th className="text-right py-3 px-3 text-xs font-medium text-gray-400 bg-green-500/10">In Stock</th>
-                                <th className="text-right py-3 px-3 text-xs font-medium text-gray-400 bg-green-500/10">To Order</th>
-                                <th className="text-right py-3 px-3 text-xs font-medium text-gray-400 bg-orange-500/10">Qty Ordered</th>
-                                <th className="text-right py-3 px-3 text-xs font-medium text-gray-400 bg-orange-500/10">Qty Received</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 bg-blue-500/10">Req #</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 bg-purple-500/10">PO</th>
-                                <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 bg-blue-500/10">Notes</th>
-                                <th className="text-center py-3 px-3 text-xs font-medium text-gray-400">Actions</th>
+                            <tr className="border-b border-gray-100">
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Status</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                                <th className="text-right py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Qty Req'd</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Mfr/Vendor</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Part #</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Category</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Inventory</th>
+                                <th className="text-right py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">In Stock</th>
+                                <th className="text-right py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">To Order</th>
+                                <th className="text-right py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Qty Ordered</th>
+                                <th className="text-right py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Qty Received</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Req #</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">PO</th>
+                                <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400 bg-gray-50">Notes</th>
+                                <th className="text-center py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sentItems.map((item) => (
                                 <tr
                                     key={item.id}
-                                    className="border-b border-gray-800 hover:bg-rivian-hover"
+                                    className="border-b border-gray-50 hover:bg-gray-50 text-sm text-gray-600"
                                 >
                                     <td className="py-3 px-3">
                                         <Select
@@ -183,7 +183,7 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
                                                         ...prev,
                                                         [item.id]: { ...prev[item.id], qty: parseFloat(e.target.value) || 0 }
                                                     }))}
-                                                    className="w-16 px-1 py-0.5 bg-rivian-soft-black border border-orange-500/50 rounded text-white text-xs focus:outline-none focus:ring-1 focus:ring-orange-500"
+                                                    className="w-16 px-1 py-0.5 bg-white border border-orange-300 rounded text-gray-900 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500"
                                                     autoFocus
                                                 />
                                                 <button
@@ -204,41 +204,41 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
                                             </div>
                                         )}
                                     </td>
-                                    <td className="py-3 px-3 text-white">
+                                    <td className="py-3 px-3 text-gray-900">
                                         {item.description}
                                     </td>
-                                    <td className="py-3 px-3 text-right text-white">
+                                    <td className="py-3 px-3 text-right text-gray-900">
                                         {item.qtyRequired}
                                     </td>
-                                    <td className="py-3 px-3 text-gray-300">
+                                    <td className="py-3 px-3 text-gray-600">
                                         {item.mfrVendor || '-'}
                                     </td>
-                                    <td className="py-3 px-3 text-gray-300">
+                                    <td className="py-3 px-3 text-gray-600">
                                         {item.mfrVendorPart || '-'}
                                     </td>
-                                    <td className="py-3 px-3 text-gray-300">
+                                    <td className="py-3 px-3 text-gray-600">
                                         {item.category || '-'}
                                     </td>
-                                    <td className="py-3 px-3 bg-green-500/5">
+                                    <td className="py-3 px-3 bg-gray-50">
                                         {item.inventoryItem ? (
-                                            <span className="flex items-center gap-1 text-green-400 text-xs">
-                                                <Link2 className="w-3 h-3" />
+                                            <span className="flex items-center gap-1 text-green-600 text-xs">
+                                                <Link size={12} />
                                                 {item.inventoryItem.partNumber}
                                             </span>
                                         ) : (
-                                            <span className="text-gray-600 text-xs">Not linked</span>
+                                            <span className="text-gray-400 text-xs">Not linked</span>
                                         )}
                                     </td>
-                                    <td className="py-3 px-3 text-right bg-green-500/5">
+                                    <td className="py-3 px-3 text-right bg-gray-50">
                                         {item.inventoryItem ? (
-                                            <span className="text-xs text-gray-300">
+                                            <span className="text-xs text-gray-600">
                                                 {item.qtyAllocated} / {item.inventoryItem.availableQty + item.qtyAllocated} avail
                                             </span>
                                         ) : (
-                                            <span className="text-gray-600 text-xs">0 in stock</span>
+                                            <span className="text-gray-400 text-xs">0 in stock</span>
                                         )}
                                     </td>
-                                    <td className="py-3 px-3 text-right bg-green-500/5">
+                                    <td className="py-3 px-3 text-right bg-gray-900/30">
                                         {(() => {
                                             const toOrder = Math.max(0, item.qtyRequired - item.qtyAllocated);
                                             if (toOrder === 0) return <span className="text-green-400 font-medium text-xs">0</span>;
@@ -246,36 +246,36 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
                                             return <span className="text-red-400 font-medium text-xs">{toOrder}</span>;
                                         })()}
                                     </td>
-                                    <td className="py-3 px-3 text-right bg-orange-500/5">
+                                    <td className="py-3 px-3 text-right bg-gray-50">
                                         {item.qtyOrdered > 0 ? (
-                                            <span className="text-orange-300 font-medium text-xs">{item.qtyOrdered}</span>
+                                            <span className="text-orange-500 font-medium text-xs">{item.qtyOrdered}</span>
                                         ) : (
-                                            <span className="text-gray-600 text-xs">-</span>
+                                            <span className="text-gray-400 text-xs">-</span>
                                         )}
                                     </td>
-                                    <td className="py-3 px-3 text-right bg-orange-500/5">
+                                    <td className="py-3 px-3 text-right bg-gray-50">
                                         {item.qtyReceived > 0 ? (
-                                            <span className="text-orange-300 font-medium text-xs">{item.qtyReceived}</span>
+                                            <span className="text-orange-500 font-medium text-xs">{item.qtyReceived}</span>
                                         ) : (
-                                            <span className="text-gray-600 text-xs">-</span>
+                                            <span className="text-gray-400 text-xs">-</span>
                                         )}
                                     </td>
-                                    <td className="py-3 px-3 text-gray-300 bg-blue-500/5">
+                                    <td className="py-3 px-3 text-gray-600 bg-gray-50">
                                         {item.reqNumber || '-'}
                                     </td>
-                                    <td className="py-3 px-3 text-gray-300 bg-purple-500/5">
+                                    <td className="py-3 px-3 text-gray-600 bg-gray-50">
                                         {item.poNumber || '-'}
                                     </td>
-                                    <td className="py-3 px-3 text-gray-300 bg-blue-500/5">
+                                    <td className="py-3 px-3 text-gray-600 bg-gray-50">
                                         {item.notes || '-'}
                                     </td>
                                     <td className="py-3 px-3 text-center">
                                         <button
                                             onClick={() => setEditingItem(item)}
-                                            className="p-1 text-blue-400 hover:text-blue-300 transition-colors"
+                                            className="p-1 text-blue-500 hover:text-blue-600 transition-colors"
                                             title="Edit details"
                                         >
-                                            <Edit2 className="w-4 h-4" />
+                                            <PencilSimple size={16} />
                                         </button>
                                     </td>
                                 </tr>
@@ -287,7 +287,7 @@ export default function PbomTableSupplyChain({ jobId }: PbomTableSupplyChainProp
 
             {/* Legend */}
             {sentItems.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-gray-800">
+                <div className="mt-4 pt-4 border-t border-gray-100">
                     <p className="text-xs text-gray-500 mb-2">Column Guide:</p>
                     <div className="flex flex-wrap gap-4 text-xs">
                         <div className="flex items-center gap-2">

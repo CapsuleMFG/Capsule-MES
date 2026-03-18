@@ -5,7 +5,7 @@ import Card from '../ui/Card';
 import Input from '../ui/Input';
 import EditOrderModal from './EditOrderModal';
 import ReceiveOrderModal from './ReceiveOrderModal';
-import { Package, Clock, AlertTriangle, CheckCircle2, Pencil, PackageCheck, ChevronDown, ChevronRight } from 'lucide-react';
+import { Package, PencilSimple, ArrowLineDown, CaretDown, CaretRight } from '@phosphor-icons/react';
 import type { PurchaseOrder } from '../../types';
 
 export default function OrderTrackingPanel() {
@@ -60,53 +60,25 @@ export default function OrderTrackingPanel() {
             {/* Summary Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-500/10 rounded-lg">
-                            <Package className="w-6 h-6 text-blue-500" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Total Orders</p>
-                            <p className="text-2xl font-bold text-white">{totalOrders}</p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Total Orders</p>
+                    <p className="text-xl font-semibold text-gray-900 mt-1">{totalOrders}</p>
                 </Card>
 
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-orange-500/10 rounded-lg">
-                            <Clock className="w-6 h-6 text-orange-500" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Pending Receipt</p>
-                            <p className="text-2xl font-bold text-white">{pendingReceipt}</p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Pending Receipt</p>
+                    <p className="text-xl font-semibold text-gray-900 mt-1">{pendingReceipt}</p>
                 </Card>
 
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-red-500/10 rounded-lg">
-                            <AlertTriangle className="w-6 h-6 text-red-500" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Overdue</p>
-                            <p className={`text-2xl font-bold ${overdue > 0 ? 'text-red-400' : 'text-green-400'}`}>
-                                {overdue}
-                            </p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Overdue</p>
+                    <p className={`text-xl font-semibold mt-1 ${overdue > 0 ? 'text-red-500' : 'text-gray-900'}`}>
+                        {overdue}
+                    </p>
                 </Card>
 
                 <Card className="p-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-3 bg-green-500/10 rounded-lg">
-                            <CheckCircle2 className="w-6 h-6 text-green-500" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-400">Received (7d)</p>
-                            <p className="text-2xl font-bold text-white">{recentlyReceived}</p>
-                        </div>
-                    </div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Received (7d)</p>
+                    <p className="text-xl font-semibold text-gray-900 mt-1">{recentlyReceived}</p>
                 </Card>
             </div>
 
@@ -125,16 +97,16 @@ export default function OrderTrackingPanel() {
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                             <thead>
-                                <tr className="border-b border-gray-700 bg-rivian-black">
+                                <tr className="border-b border-gray-100 bg-white">
                                     <th className="w-8 py-3 px-2"></th>
-                                    <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 uppercase">Description</th>
-                                    <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 uppercase">Jobs</th>
-                                    <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 uppercase">Vendor</th>
-                                    <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 uppercase">PO#</th>
-                                    <th className="text-right py-3 px-3 text-xs font-medium text-gray-400 uppercase">Ordered</th>
-                                    <th className="text-right py-3 px-3 text-xs font-medium text-gray-400 uppercase">Received</th>
-                                    <th className="text-left py-3 px-3 text-xs font-medium text-gray-400 uppercase">Expected</th>
-                                    <th className="text-center py-3 px-3 text-xs font-medium text-gray-400 uppercase">Actions</th>
+                                    <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Description</th>
+                                    <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Jobs</th>
+                                    <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Vendor</th>
+                                    <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">PO#</th>
+                                    <th className="text-right py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Ordered</th>
+                                    <th className="text-right py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Received</th>
+                                    <th className="text-left py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Expected</th>
+                                    <th className="text-center py-3 px-3 text-[11px] uppercase tracking-wider font-medium text-gray-400">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -151,20 +123,20 @@ export default function OrderTrackingPanel() {
                                         <>
                                             <tr
                                                 key={item.id}
-                                                className={`border-b border-gray-800 hover:bg-rivian-hover transition-colors ${
-                                                    isOverdue ? 'bg-red-500/5' : ''
+                                                className={`border-b border-gray-50 hover:bg-gray-50 transition-colors text-sm text-gray-600 ${
+                                                    isOverdue ? 'bg-red-50' : ''
                                                 } ${hasMultipleJobs ? 'cursor-pointer' : ''}`}
                                                 onClick={() => hasMultipleJobs && setExpandedId(isExpanded ? null : item.id)}
                                             >
                                                 <td className="py-3 px-2 text-center">
                                                     {hasMultipleJobs && (
                                                         isExpanded
-                                                            ? <ChevronDown className="w-3.5 h-3.5 text-gray-400 inline" />
-                                                            : <ChevronRight className="w-3.5 h-3.5 text-gray-400 inline" />
+                                                            ? <CaretDown size={14} className="text-gray-400 inline" />
+                                                            : <CaretRight size={14} className="text-gray-400 inline" />
                                                     )}
                                                 </td>
                                                 <td className="py-3 px-3">
-                                                    <p className="text-gray-300 text-xs max-w-[200px] truncate" title={item.description}>
+                                                    <p className="text-gray-600 text-xs max-w-[200px] truncate" title={item.description}>
                                                         {item.description}
                                                     </p>
                                                 </td>
@@ -173,8 +145,8 @@ export default function OrderTrackingPanel() {
                                                         <div>
                                                             {item.linkedJobs.length === 1 ? (
                                                                 <div>
-                                                                    <p className="text-white font-medium text-xs">{item.linkedJobs[0].jobNumber}</p>
-                                                                    <p className="text-gray-500 text-xs">{item.linkedJobs[0].clientName}</p>
+                                                                    <p className="text-gray-900 font-medium text-xs">{item.linkedJobs[0].jobNumber}</p>
+                                                                    <p className="text-gray-400 text-xs">{item.linkedJobs[0].clientName}</p>
                                                                 </div>
                                                             ) : (
                                                                 <span className="text-xs text-blue-400">
@@ -184,26 +156,26 @@ export default function OrderTrackingPanel() {
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="py-3 px-3 text-gray-300 text-xs">
+                                                <td className="py-3 px-3 text-gray-600 text-xs">
                                                     {item.vendor || '-'}
                                                 </td>
                                                 <td className="py-3 px-3">
                                                     {item.poNumber ? (
-                                                        <span className="text-purple-400 text-xs">{item.poNumber}</span>
+                                                        <span className="text-purple-500 text-xs">{item.poNumber}</span>
                                                     ) : (
-                                                        <span className="text-gray-600 text-xs">-</span>
+                                                        <span className="text-gray-400 text-xs">-</span>
                                                     )}
                                                 </td>
-                                                <td className="py-3 px-3 text-right text-white text-xs font-medium">
+                                                <td className="py-3 px-3 text-right text-gray-900 text-xs font-medium">
                                                     {item.qtyOrdered}
                                                 </td>
                                                 <td className="py-3 px-3 text-right">
                                                     <span className={`text-xs font-medium ${
                                                         item.qtyReceived >= item.qtyOrdered
-                                                            ? 'text-green-400'
+                                                            ? 'text-emerald-500'
                                                             : isPartial
-                                                            ? 'text-yellow-400'
-                                                            : 'text-gray-500'
+                                                            ? 'text-amber-500'
+                                                            : 'text-gray-400'
                                                     }`}>
                                                         {item.qtyReceived}
                                                     </span>
@@ -211,31 +183,31 @@ export default function OrderTrackingPanel() {
                                                 <td className="py-3 px-3">
                                                     {item.expectedReceiveDate ? (
                                                         <span className={`text-xs ${
-                                                            isOverdue ? 'text-red-400 font-medium' : 'text-gray-300'
+                                                            isOverdue ? 'text-red-500 font-medium' : 'text-gray-600'
                                                         }`}>
                                                             {new Date(item.expectedReceiveDate + 'T00:00:00').toLocaleDateString()}
                                                             {isOverdue && ' (overdue)'}
                                                         </span>
                                                     ) : (
-                                                        <span className="text-gray-600 text-xs">Not set</span>
+                                                        <span className="text-gray-400 text-xs">Not set</span>
                                                     )}
                                                 </td>
                                                 <td className="py-3 px-3">
                                                     <div className="flex items-center justify-center gap-1" onClick={e => e.stopPropagation()}>
                                                         <button
                                                             onClick={() => setEditItem(item)}
-                                                            className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                                                            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
                                                             title="Edit order details"
                                                         >
-                                                            <Pencil className="w-3.5 h-3.5" />
+                                                            <PencilSimple size={14} />
                                                         </button>
                                                         {item.qtyReceived < item.qtyOrdered && (
                                                             <button
                                                                 onClick={() => setReceiveItem(item)}
-                                                                className="p-1.5 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded transition-colors"
+                                                                className="p-1.5 text-gray-400 hover:text-emerald-500 hover:bg-gray-100 rounded transition-colors"
                                                                 title="Receive order"
                                                             >
-                                                                <PackageCheck className="w-3.5 h-3.5" />
+                                                                <ArrowLineDown size={14} />
                                                             </button>
                                                         )}
                                                     </div>
@@ -243,12 +215,12 @@ export default function OrderTrackingPanel() {
                                             </tr>
                                             {/* Expanded job breakdown */}
                                             {isExpanded && hasMultipleJobs && item.linkedJobs?.map((job) => (
-                                                <tr key={`${item.id}-${job.pbomItemId}`} className="border-b border-gray-800/50 bg-rivian-black/50">
+                                                <tr key={`${item.id}-${job.pbomItemId}`} className="border-b border-gray-50 bg-gray-50">
                                                     <td className="py-2 px-2"></td>
                                                     <td className="py-2 px-3" colSpan={2}>
                                                         <div className="pl-4 flex items-center gap-2">
-                                                            <span className="text-xs text-white font-medium">{job.jobNumber}</span>
-                                                            <span className="text-xs text-gray-500">{job.clientName}</span>
+                                                            <span className="text-xs text-gray-900 font-medium">{job.jobNumber}</span>
+                                                            <span className="text-xs text-gray-400">{job.clientName}</span>
                                                         </div>
                                                     </td>
                                                     <td className="py-2 px-3" colSpan={2}></td>
@@ -265,8 +237,8 @@ export default function OrderTrackingPanel() {
                     </div>
                 </Card>
             ) : (
-                <div className="text-center py-12 bg-rivian-soft-black rounded-lg">
-                    <Package className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <div className="text-center py-12 bg-gray-50 rounded-lg">
+                    <Package size={48} className="text-gray-400 mx-auto mb-3" />
                     <p className="text-gray-400 text-lg">No active orders</p>
                     <p className="text-gray-500 text-sm mt-1">
                         {search
