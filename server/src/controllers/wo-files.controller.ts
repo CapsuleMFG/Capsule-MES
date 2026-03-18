@@ -118,13 +118,20 @@ export async function downloadWorkOrderFile(req: Request, res: Response): Promis
         }
 
         const filePath = fileRecord.file_path;
+        const uploadsDir = path.resolve(__dirname, '../../uploads');
+        const resolvedPath = path.resolve(filePath);
 
-        if (!fs.existsSync(filePath)) {
+        if (!resolvedPath.startsWith(uploadsDir + path.sep)) {
+            res.status(403).json({ error: 'Access denied' });
+            return;
+        }
+
+        if (!fs.existsSync(resolvedPath)) {
             res.status(404).json({ error: 'File not found on disk' });
             return;
         }
 
-        res.download(filePath, fileRecord.original_filename);
+        res.download(resolvedPath, fileRecord.original_filename);
     } catch (error) {
         console.error('Error downloading file:', error);
         res.status(500).json({ error: 'Failed to download file' });

@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import { query, queryOne, execute } from "../models/database";
 import type { StationKiosk, CreateStationKioskRequest, UpdateStationKioskRequest, StationAuthRequest } from "../../../shared/types";
+
+const BCRYPT_ROUNDS = 10;
 
 function mapKiosk(row: any, includePinCode = false): StationKiosk {
   return { id: row.id, stationName: row.station_name, pinCode: includePinCode ? row.pin_code : '••••',
@@ -25,10 +28,11 @@ export const createStationKiosk = async (req: Request, res: Response) => {
     const data: CreateStationKioskRequest = req.body;
     if (!data.stationName || !data.pinCode) return res.status(400).json({ error: "Station name and PIN code are required" });
     if (!/^\d{4,6}$/.test(data.pinCode)) return res.status(400).json({ error: "PIN code must be 4-6 digits" });
-    const existing = await queryOne<any>("SELECT id FROM station_kiosks WHERE station_name = ? OR pin_code = ?", [data.stationName, data.pinCode]);
-    if (existing) return res.status(400).json({ error: "Station name or PIN code already exists" });
+    const existing = await queryOne<any>("SELECT id FROM station_kiosks WHERE station_name = ?", [data.stationName]);
+    if (existing) return res.status(400).json({ error: "Station name already exists" });
+    const pinHash = await bcrypt.hash(data.pinCode, BCRYPT_ROUNDS);
     const result = await execute("INSERT INTO station_kiosks (station_name, pin_code, machine_id, is_active, notes) VALUES (?, ?, ?, ?, ?)",
-      [data.stationName, data.pinCode, data.machineId || null, data.isActive !== false, data.notes || null]);
+      [data.stationName, pinHash, data.machineId || null, data.isActive !== false, data.notes || null]);
     const row = await queryOne<any>("SELECT sk.id, sk.station_name, sk.pin_code, sk.machine_id, m.name as machine_name, sk.is_active, sk.notes, sk.created_at, sk.updated_at FROM station_kiosks sk LEFT JOIN machines m ON sk.machine_id = m.id WHERE sk.id = ?", [result.lastID]);
     res.status(201).json(mapKiosk(row));
   } catch (error) {
@@ -53,9 +57,8 @@ export const updateStationKiosk = async (req: Request, res: Response) => {
     }
     if (data.pinCode !== undefined) {
       if (!/^\d{4,6}$/.test(data.pinCode)) return res.status(400).json({ error: "PIN code must be 4-6 digits" });
-      const dup = await queryOne<any>("SELECT id FROM station_kiosks WHERE pin_code = ? AND id != ?", [data.pinCode, id]);
-      if (dup) return res.status(400).json({ error: "PIN code already exists" });
-      updates.push("pin_code = ?"); params.push(data.pinCode);
+      const pinHash = await bcrypt.hash(data.pinCode, BCRYPT_ROUNDS);
+      updates.push("pin_code = ?"); params.push(pinHash);
     }
     if (data.machineId !== undefined) { updates.push("machine_id = ?"); params.push(data.machineId); }
     if (data.isActive !== undefined) { updates.push("is_active = ?"); params.push(data.isActive !== false); }
@@ -90,10 +93,15 @@ export const deleteStationKiosk = async (req: Request, res: Response) => {
 export const authenticateStation = async (req: Request, res: Response) => {
   try {
     const data: StationAuthRequest = req.body;
-    if (!data.pinCode) return res.status(400).json({ error: "PIN code is required" });
-    const row = await queryOne<any>("SELECT id, station_name FROM station_kiosks WHERE pin_code = ? AND is_active = TRUE", [data.pinCode]);
-    if (!row) return res.status(401).json({ error: "Invalid PIN code" });
-    res.json({ kioskId: row.id, stationName: row.station_name });
+    if (!data.pinCode) return res.status(401).json({ error: "Invalid PIN code" });
+    const kiosks = await query<any>("SELECT id, station_name, pin_code FROM station_kiosks WHERE is_active = TRUE");
+    for (const kiosk of kiosks) {
+      const match = await bcrypt.compare(data.pinCode, kiosk.pin_code);
+      if (match) {
+        return res.json({ kioskId: kiosk.id, stationName: kiosk.station_name });
+      }
+    }
+    res.status(401).json({ error: "Invalid PIN code" });
   } catch (error) {
     console.error("Error authenticating station:", error);
     res.status(500).json({ error: "Failed to authenticate station" });
