@@ -92,18 +92,40 @@ export const deleteStationKiosk = async (req: Request, res: Response) => {
 /** POST /api/station-kiosks/auth */
 export const authenticateStation = async (req: Request, res: Response) => {
   try {
-    const data: StationAuthRequest = req.body;
-    if (!data.pinCode) return res.status(401).json({ error: "Invalid PIN code" });
-    const kiosks = await query<any>("SELECT id, station_name, pin_code FROM station_kiosks WHERE is_active = TRUE");
-    for (const kiosk of kiosks) {
-      const match = await bcrypt.compare(data.pinCode, kiosk.pin_code);
+    const { pinCode } = req.body;
+    if (!pinCode) {
+      res.status(400).json({ error: 'PIN code is required' });
+      return;
+    }
+
+    // Look up PIN against profiles table (not station_kiosks)
+    const profilesWithPin = await query<{ id: string; name: string; pin: string }>(
+      `SELECT id, name, pin FROM profiles WHERE pin IS NOT NULL AND is_active = true`
+    );
+
+    let matchedProfile: { id: string; name: string } | null = null;
+    for (const profile of profilesWithPin) {
+      const match = await bcrypt.compare(pinCode, profile.pin);
       if (match) {
-        return res.json({ kioskId: kiosk.id, stationName: kiosk.station_name });
+        matchedProfile = { id: profile.id, name: profile.name };
+        break;
       }
     }
-    res.status(401).json({ error: "Invalid PIN code" });
+
+    if (!matchedProfile) {
+      res.status(401).json({ error: 'Invalid PIN' });
+      return;
+    }
+
+    // Return user identity — legacy fields retained for backward compatibility with kiosk UI
+    res.json({
+      userId: matchedProfile.id,
+      userName: matchedProfile.name,
+      kioskId: 0,
+      stationName: matchedProfile.name,
+    });
   } catch (error) {
-    console.error("Error authenticating station:", error);
-    res.status(500).json({ error: "Failed to authenticate station" });
+    console.error('Kiosk auth error:', error);
+    res.status(500).json({ error: 'Authentication failed' });
   }
 };

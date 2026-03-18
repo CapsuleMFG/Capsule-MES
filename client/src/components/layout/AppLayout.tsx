@@ -16,7 +16,7 @@ import {
 } from '@phosphor-icons/react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import QuickAddJobModal from '../jobs/QuickAddJobModal';
-import type { UserRole } from '../../../shared/types';
+import type { UserRole } from '../../../../shared/types';
 
 interface NavItem {
   name: string;
