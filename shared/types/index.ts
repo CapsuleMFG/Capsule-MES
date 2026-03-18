@@ -874,3 +874,77 @@ export interface StationQueuePart extends TrackedPart {
     operatorName?: string;
     timeElapsedMinutes?: number;
 }
+
+// ============================================================
+// AUTH & PROFILES
+// ============================================================
+
+export type UserRole = 'admin' | 'manager' | 'engineer' | 'operator';
+
+export interface Profile {
+  id: string;         // UUID from auth.users
+  email: string;      // From auth.users, joined at query time
+  name: string;
+  role: UserRole;
+  pin: string | null;  // Always masked in API responses
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+}
+
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  name: string;
+  role: UserRole;
+  pin?: string;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  role?: UserRole;
+  pin?: string;
+  isActive?: boolean;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  userId: string | null;
+  userName: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  tableName: string;
+  recordId: string | null;
+  oldValues: Record<string, unknown> | null;
+  newValues: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+export interface AuditLogFilters {
+  userId?: string;
+  action?: string;
+  tableName?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
