@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useKiosk } from '../../contexts/KioskContext';
 import { useToast } from '../../contexts/ToastContext';
 import { authenticateStation } from '../../services/parts-tracking.service';
-import { Delete, LogIn } from 'lucide-react';
+import { Backspace, SignIn } from '@phosphor-icons/react';
 
 export default function StationLogin() {
   const [pin, setPin] = useState('');
@@ -46,16 +46,16 @@ export default function StationLogin() {
   const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center p-4">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
       {/* Branding */}
       <div className="mb-12 text-center">
-        <h1 className="text-5xl font-bold text-amber-500 tracking-wider">CAPSULE</h1>
+        <h1 className="text-2xl font-bold text-gray-900 tracking-wider">CAPSULE</h1>
         <p className="text-gray-400 mt-2 text-lg">Station Kiosk</p>
       </div>
 
       {/* PIN Display */}
       <div className="mb-8 w-full max-w-sm">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-5 text-center">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm px-6 py-5 text-center">
           <p className="text-gray-400 text-sm mb-2">Enter Station PIN</p>
           <div className="flex justify-center gap-3">
             {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -63,8 +63,8 @@ export default function StationLogin() {
                 key={i}
                 className={`w-5 h-5 rounded-full border-2 transition-colors ${
                   i < pin.length
-                    ? 'bg-amber-500 border-amber-500'
-                    : 'border-gray-600'
+                    ? 'bg-gray-900 border-gray-900'
+                    : 'border-gray-200'
                 }`}
               />
             ))}
@@ -79,7 +79,7 @@ export default function StationLogin() {
             <button
               key={digit}
               onClick={() => handleDigit(digit)}
-              className="h-20 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-2xl font-semibold rounded-xl transition-colors touch-manipulation"
+              className="w-16 h-16 mx-auto text-2xl rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 hover:bg-gray-50 active:scale-[0.97] transition-all text-gray-900 font-semibold touch-manipulation"
             >
               {digit}
             </button>
@@ -88,21 +88,21 @@ export default function StationLogin() {
           {/* Bottom row: Clear, 0, Backspace */}
           <button
             onClick={handleClear}
-            className="h-20 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-gray-400 text-sm font-medium rounded-xl transition-colors touch-manipulation"
+            className="w-16 h-16 mx-auto text-sm font-medium rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 hover:bg-gray-50 active:scale-[0.97] transition-all text-gray-400 touch-manipulation"
           >
             CLEAR
           </button>
           <button
             onClick={() => handleDigit('0')}
-            className="h-20 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-white text-2xl font-semibold rounded-xl transition-colors touch-manipulation"
+            className="w-16 h-16 mx-auto text-2xl rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 hover:bg-gray-50 active:scale-[0.97] transition-all text-gray-900 font-semibold touch-manipulation"
           >
             0
           </button>
           <button
             onClick={handleBackspace}
-            className="h-20 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-gray-400 rounded-xl transition-colors flex items-center justify-center touch-manipulation"
+            className="w-16 h-16 mx-auto rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 hover:bg-gray-50 active:scale-[0.97] transition-all text-gray-400 flex items-center justify-center touch-manipulation"
           >
-            <Delete className="w-6 h-6" />
+            <Backspace className="w-6 h-6" />
           </button>
         </div>
 
@@ -110,13 +110,13 @@ export default function StationLogin() {
         <button
           onClick={handleSubmit}
           disabled={pin.length < 4 || isLoading}
-          className={`mt-4 w-full h-16 rounded-xl text-lg font-semibold flex items-center justify-center gap-3 transition-colors touch-manipulation ${
+          className={`mt-4 w-full py-3 px-6 text-base rounded-2xl font-semibold flex items-center justify-center gap-3 transition-all touch-manipulation ${
             pin.length >= 4 && !isLoading
-              ? 'bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-black'
-              : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+              ? 'bg-gray-900 hover:bg-gray-800 active:scale-[0.97] text-white'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
-          <LogIn className="w-5 h-5" />
+          <SignIn className="w-5 h-5" />
           {isLoading ? 'Authenticating...' : 'Login'}
         </button>
       </div>
@@ -124,7 +124,7 @@ export default function StationLogin() {
       {/* Back link */}
       <a
         href="/"
-        className="mt-8 text-gray-500 hover:text-gray-400 text-sm transition-colors"
+        className="mt-8 text-gray-400 hover:text-gray-600 text-sm transition-colors"
       >
         Back to main app
       </a>

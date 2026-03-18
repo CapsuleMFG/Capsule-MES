@@ -8,10 +8,10 @@ import * as productionService from '../../services/production.service';
 import * as engineeringService from '../../services/engineering.service';
 import type { TrackedPart, StationQueuePart, WorkOrder } from '../../../../shared/types';
 import {
-  LogOut, Search, Clock, ArrowDownToLine, ArrowUpFromLine,
-  CheckCircle, XCircle, Ban, PauseCircle, ArrowLeft, Download,
-  ChevronRight,
-} from 'lucide-react';
+  SignOut, MagnifyingGlass, Clock, ArrowFatLinesDown, ArrowFatLinesUp,
+  CheckCircle, XCircle, Prohibit, PauseCircle, ArrowLeft, DownloadSimple,
+  CaretRight,
+} from '@phosphor-icons/react';
 
 export default function StationDashboard() {
   const { station, clearMachine, logout } = useKiosk();
@@ -54,8 +54,8 @@ export default function StationDashboard() {
     return allWorkOrders
       .filter(wo => wo.assignedMachineId === station.machineId && wo.productionStatus !== 'Discarded')
       .sort((a, b) => {
-        const ap = priorityOrder[(a.productionPriority || a.priority) as string] ?? 4;
-        const bp = priorityOrder[(b.productionPriority || b.priority) as string] ?? 4;
+        const ap = priorityOrder[(a.productionPriority || (a as any).priority) as string] ?? 4;
+        const bp = priorityOrder[(b.productionPriority || (b as any).priority) as string] ?? 4;
         return ap - bp;
       });
   }, [allWorkOrders, station?.machineId]);
@@ -95,19 +95,19 @@ export default function StationDashboard() {
 
   const getPriorityColor = (priority?: string) => {
     switch (priority) {
-      case 'Critical': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'High': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'Medium': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'Critical': return 'bg-red-50 text-red-500 border-red-200';
+      case 'High': return 'bg-orange-50 text-orange-500 border-orange-200';
+      case 'Medium': return 'bg-blue-50 text-blue-500 border-blue-200';
+      default: return 'bg-gray-50 text-gray-400 border-gray-200';
     }
   };
 
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'Completed': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'In Progress': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'Discarded': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'Completed': return 'bg-green-50 text-green-500 border-green-200';
+      case 'In Progress': return 'bg-blue-50 text-blue-500 border-blue-200';
+      case 'Discarded': return 'bg-red-50 text-red-500 border-red-200';
+      default: return 'bg-gray-50 text-gray-400 border-gray-200';
     }
   };
 
@@ -285,16 +285,16 @@ export default function StationDashboard() {
 
   // ---- RENDER ----
   return (
-    <div className="h-screen bg-gray-950 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* Header Bar */}
-      <header className="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center justify-between shrink-0">
+      <header className="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-amber-500">CAPSULE</h1>
-          <div className="h-8 w-px bg-gray-700" />
-          <h2 className="text-xl font-semibold text-white">{station.stationName}</h2>
+          <h1 className="text-2xl font-bold text-gray-900">CAPSULE</h1>
+          <div className="h-8 w-px bg-gray-100" />
+          <h2 className="text-xl font-semibold text-gray-900">{station.stationName}</h2>
           {station.machineName && (
             <>
-              <div className="h-8 w-px bg-gray-700" />
+              <div className="h-8 w-px bg-gray-100" />
               <span className="text-gray-400">{station.machineName}</span>
             </>
           )}
@@ -303,15 +303,15 @@ export default function StationDashboard() {
           <span className="text-gray-400 font-mono text-lg">{formatTime(currentTime)}</span>
           <button
             onClick={clearMachine}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors touch-manipulation"
+            className="flex items-center gap-2 py-3 px-6 text-base bg-white border border-gray-100 hover:bg-gray-50 text-gray-600 rounded-lg transition-colors touch-manipulation"
           >
             Switch Machine
           </button>
           <button
             onClick={logout}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors touch-manipulation"
+            className="flex items-center gap-2 py-3 px-6 text-base bg-white border border-gray-100 hover:bg-gray-50 text-gray-600 rounded-lg transition-colors touch-manipulation"
           >
-            <LogOut className="w-4 h-4" />
+            <SignOut className="w-4 h-4" />
             Log Out
           </button>
         </div>
@@ -321,15 +321,15 @@ export default function StationDashboard() {
       {!selectedWO && (
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-lg font-semibold text-white mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Work Orders ({machineWOs.length})
             </h3>
 
             {machineWOs.length === 0 ? (
               <div className="text-center py-16">
                 <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                <p className="text-gray-400 text-lg">All caught up!</p>
-                <p className="text-gray-500 text-sm mt-2">No work orders assigned to this machine</p>
+                <p className="text-lg text-gray-400">All caught up!</p>
+                <p className="text-gray-400 text-sm mt-2">No work orders assigned to this machine</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -337,11 +337,11 @@ export default function StationDashboard() {
                   <button
                     key={wo.id}
                     onClick={() => setSelectedWO(wo)}
-                    className="w-full text-left bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-amber-500/50 rounded-xl p-5 transition-colors touch-manipulation"
+                    className="w-full text-left bg-white hover:bg-gray-50 border border-gray-100 hover:border-gray-200 rounded-xl p-5 transition-colors touch-manipulation"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-white font-semibold text-lg">{wo.woNumber}</span>
+                        <span className="text-gray-900 font-semibold text-lg">{wo.woNumber}</span>
                         {(wo.productionPriority || (wo as any).priority) && (
                           <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getPriorityColor(wo.productionPriority || (wo as any).priority)}`}>
                             {wo.productionPriority || (wo as any).priority}
@@ -351,28 +351,28 @@ export default function StationDashboard() {
                           {wo.productionStatus}
                         </span>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-gray-500" />
+                      <CaretRight className="w-5 h-5 text-gray-400" />
                     </div>
                     <div className="mt-2 text-sm text-gray-400">
-                      <span className="text-gray-500">Job:</span>{' '}
-                      <span className="text-white font-medium">{(wo as any).jobNumber}</span>
+                      <span className="text-gray-400">Job:</span>{' '}
+                      <span className="text-gray-900 font-medium">{(wo as any).jobNumber}</span>
                       {(wo as any).clientName && (
                         <>
                           {' \u2022 '}
-                          <span className="text-gray-500">Client:</span>{' '}
-                          <span className="text-white">{(wo as any).clientName}</span>
+                          <span className="text-gray-400">Client:</span>{' '}
+                          <span className="text-gray-900">{(wo as any).clientName}</span>
                         </>
                       )}
                     </div>
                     {wo.description && (
-                      <div className="mt-1 text-sm text-gray-500 truncate">{wo.description}</div>
+                      <div className="mt-1 text-sm text-gray-400 truncate">{wo.description}</div>
                     )}
                     <div className="mt-2 flex items-center gap-4">
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDownloadPdf(wo.jobId, wo.id); }}
-                        className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1"
+                        className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
                       >
-                        <Download className="w-3.5 h-3.5" />
+                        <DownloadSimple className="w-3.5 h-3.5" />
                         PDF
                       </button>
                     </div>
@@ -388,18 +388,18 @@ export default function StationDashboard() {
       {selectedWO && (
         <>
           {/* Sub-header: WO info + back + search/operator */}
-          <div className="bg-gray-900/50 border-b border-gray-800 px-6 py-3 shrink-0 space-y-3">
+          <div className="bg-white border-b border-gray-100 px-6 py-3 shrink-0 space-y-3">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => { setSelectedWO(null); setSelectedPart(null); setShowModal(false); setSelectedWaitingIds(new Set()); setSelectedCheckedInIds(new Set()); }}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-colors touch-manipulation"
+                className="flex items-center gap-2 py-3 px-6 text-base bg-white border border-gray-100 hover:bg-gray-50 text-gray-600 rounded-lg transition-colors touch-manipulation"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back
               </button>
               <div>
-                <span className="text-white font-semibold text-lg">{selectedWO.woNumber}</span>
-                <span className="text-gray-500 ml-3 text-sm">
+                <span className="text-gray-900 font-semibold text-lg">{selectedWO.woNumber}</span>
+                <span className="text-gray-400 ml-3 text-sm">
                   Job: {(selectedWO as any).jobNumber}
                   {(selectedWO as any).clientName && ` \u2022 ${(selectedWO as any).clientName}`}
                 </span>
@@ -410,20 +410,20 @@ export default function StationDashboard() {
               {/* Tracking ID Search */}
               <div className="flex items-center gap-2 flex-1 max-w-lg">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="text"
                     value={searchId}
                     onChange={(e) => setSearchId(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleLookup()}
                     placeholder="Scan or type Tracking ID..."
-                    className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white text-lg placeholder-gray-500 focus:outline-none focus:border-amber-500 touch-manipulation"
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-100 rounded-lg text-gray-900 text-lg placeholder-gray-400 focus:outline-none focus:border-blue-500 touch-manipulation"
                   />
                 </div>
                 <button
                   onClick={handleLookup}
                   disabled={!searchId.trim() || lookupMutation.isPending}
-                  className="px-6 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-700 disabled:text-gray-500 text-black font-semibold rounded-lg transition-colors touch-manipulation"
+                  className="py-3 px-6 text-base bg-gray-900 hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-lg transition-colors touch-manipulation"
                 >
                   Lookup
                 </button>
@@ -437,7 +437,7 @@ export default function StationDashboard() {
                   value={operatorName}
                   onChange={(e) => setOperatorName(e.target.value)}
                   placeholder="Name..."
-                  className="px-3 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 w-48 touch-manipulation"
+                  className="px-3 py-3 bg-white border border-gray-100 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 w-48 touch-manipulation"
                 />
               </div>
             </div>
@@ -446,11 +446,11 @@ export default function StationDashboard() {
           {/* Two-column parts layout */}
           <div className="flex-1 flex overflow-hidden">
             {/* Left Column: Waiting Queue */}
-            <div className="flex-1 border-r border-gray-800 flex flex-col overflow-hidden">
-              <div className="px-4 py-3 bg-gray-900/30 border-b border-gray-800 shrink-0">
+            <div className="flex-1 border-r border-gray-100 flex flex-col overflow-hidden">
+              <div className="px-4 py-3 bg-white border-b border-gray-100 shrink-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-blue-400 flex items-center gap-2">
-                    <ArrowDownToLine className="w-5 h-5" />
+                  <h3 className="text-lg font-semibold text-blue-500 flex items-center gap-2">
+                    <ArrowFatLinesDown className="w-5 h-5" />
                     Queue: Waiting ({waiting.length})
                   </h3>
                   {waiting.length > 0 && (
@@ -460,7 +460,7 @@ export default function StationDashboard() {
                           type="checkbox"
                           checked={selectedWaitingIds.size === waiting.length && waiting.length > 0}
                           onChange={toggleAllWaiting}
-                          className="w-5 h-5 rounded border-gray-600 accent-blue-500"
+                          className="w-5 h-5 rounded border-gray-200 accent-blue-500"
                         />
                         Select All
                       </label>
@@ -468,9 +468,9 @@ export default function StationDashboard() {
                         <button
                           onClick={handleBulkCheckIn}
                           disabled={isBulkProcessing}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-500 text-white font-semibold rounded-lg flex items-center gap-2 text-sm touch-manipulation"
+                          className="py-3 px-6 text-base bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                         >
-                          <ArrowDownToLine className="w-4 h-4" />
+                          <ArrowFatLinesDown className="w-4 h-4" />
                           {isBulkProcessing ? 'Processing...' : `Check In (${selectedWaitingIds.size})`}
                         </button>
                       )}
@@ -480,37 +480,37 @@ export default function StationDashboard() {
               </div>
               <div className="flex-1 overflow-y-auto p-3 space-y-2">
                 {waiting.length === 0 ? (
-                  <div className="text-center text-gray-500 py-12">No parts waiting</div>
+                  <div className="text-center text-gray-400 py-12">No parts waiting</div>
                 ) : (
                   waiting.map((part) => (
                     <div
                       key={part.id}
-                      className={`flex items-center gap-3 bg-gray-900 hover:bg-gray-800 border rounded-lg p-4 transition-colors touch-manipulation ${
-                        selectedWaitingIds.has(part.id) ? 'border-blue-500/50 bg-blue-500/5' : 'border-gray-800'
+                      className={`flex items-center gap-3 bg-white hover:bg-gray-50 border rounded-lg p-4 transition-colors touch-manipulation ${
+                        selectedWaitingIds.has(part.id) ? 'border-blue-500/50 bg-blue-50' : 'border-gray-100'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={selectedWaitingIds.has(part.id)}
                         onChange={() => toggleWaiting(part.id)}
-                        className="w-5 h-5 rounded border-gray-600 accent-blue-500 shrink-0"
+                        className="w-5 h-5 rounded border-gray-200 accent-blue-500 shrink-0"
                       />
                       <button
                         onClick={() => { setSelectedPart(part); setShowModal(true); }}
                         className="flex-1 text-left"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-amber-400 font-mono font-semibold text-lg">
+                          <span className="text-amber-500 font-mono font-semibold text-lg">
                             {part.trackingId || `#${part.id}`}
                           </span>
-                          <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">WAITING</span>
+                          <span className="text-xs bg-blue-50 text-blue-500 px-2 py-1 rounded">WAITING</span>
                         </div>
                         <div className="mt-1 text-gray-400 text-sm">
                           {part.partNumber && <span className="mr-3">{part.partNumber}</span>}
-                          {part.jobNumber && <span className="text-gray-500">{part.jobNumber}</span>}
+                          {part.jobNumber && <span className="text-gray-400">{part.jobNumber}</span>}
                         </div>
                         {part.serialNumber && (
-                          <div className="text-gray-500 text-xs mt-1">S/N: {part.serialNumber}</div>
+                          <div className="text-gray-400 text-xs mt-1">S/N: {part.serialNumber}</div>
                         )}
                       </button>
                     </div>
@@ -521,10 +521,10 @@ export default function StationDashboard() {
 
             {/* Right Column: Checked In */}
             <div className="flex-1 flex flex-col overflow-hidden">
-              <div className="px-4 py-3 bg-gray-900/30 border-b border-gray-800 shrink-0">
+              <div className="px-4 py-3 bg-white border-b border-gray-100 shrink-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-green-400 flex items-center gap-2">
-                    <ArrowUpFromLine className="w-5 h-5" />
+                  <h3 className="text-lg font-semibold text-green-500 flex items-center gap-2">
+                    <ArrowFatLinesUp className="w-5 h-5" />
                     Active: Checked In ({checkedIn.length})
                   </h3>
                   {checkedIn.length > 0 && (
@@ -534,7 +534,7 @@ export default function StationDashboard() {
                           type="checkbox"
                           checked={selectedCheckedInIds.size === checkedIn.length && checkedIn.length > 0}
                           onChange={toggleAllCheckedIn}
-                          className="w-5 h-5 rounded border-gray-600 accent-green-500"
+                          className="w-5 h-5 rounded border-gray-200 accent-green-500"
                         />
                         Select All
                       </label>
@@ -543,7 +543,7 @@ export default function StationDashboard() {
                           <button
                             onClick={() => handleBulkCheckOut('Pass')}
                             disabled={isBulkProcessing}
-                            className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:text-gray-500 text-white font-semibold rounded-lg flex items-center gap-2 text-sm touch-manipulation"
+                            className="py-3 px-6 text-base bg-green-600 hover:bg-green-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                           >
                             <CheckCircle className="w-4 h-4" />
                             {isBulkProcessing ? 'Processing...' : `Pass (${selectedCheckedInIds.size})`}
@@ -551,7 +551,7 @@ export default function StationDashboard() {
                           <button
                             onClick={() => handleBulkCheckOut('Fail')}
                             disabled={isBulkProcessing}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:text-gray-500 text-white font-semibold rounded-lg flex items-center gap-2 text-sm touch-manipulation"
+                            className="py-3 px-6 text-base bg-red-600 hover:bg-red-700 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                           >
                             <XCircle className="w-4 h-4" />
                             {isBulkProcessing ? '...' : `Fail (${selectedCheckedInIds.size})`}
@@ -564,40 +564,40 @@ export default function StationDashboard() {
               </div>
               <div className="flex-1 overflow-y-auto p-3 space-y-2">
                 {checkedIn.length === 0 ? (
-                  <div className="text-center text-gray-500 py-12">No parts checked in</div>
+                  <div className="text-center text-gray-400 py-12">No parts checked in</div>
                 ) : (
                   checkedIn.map((part) => (
                     <div
                       key={part.id}
-                      className={`flex items-center gap-3 bg-gray-900 hover:bg-gray-800 border rounded-lg p-4 transition-colors touch-manipulation ${
-                        selectedCheckedInIds.has(part.id) ? 'border-green-500/50 bg-green-500/5' : 'border-gray-800'
+                      className={`flex items-center gap-3 bg-white hover:bg-gray-50 border rounded-lg p-4 transition-colors touch-manipulation ${
+                        selectedCheckedInIds.has(part.id) ? 'border-green-500/50 bg-green-50' : 'border-gray-100'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={selectedCheckedInIds.has(part.id)}
                         onChange={() => toggleCheckedIn(part.id)}
-                        className="w-5 h-5 rounded border-gray-600 accent-green-500 shrink-0"
+                        className="w-5 h-5 rounded border-gray-200 accent-green-500 shrink-0"
                       />
                       <button
                         onClick={() => { setSelectedPart(part); setShowModal(true); }}
                         className="flex-1 text-left"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-amber-400 font-mono font-semibold text-lg">
+                          <span className="text-amber-500 font-mono font-semibold text-lg">
                             {part.trackingId || `#${part.id}`}
                           </span>
-                          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded flex items-center gap-1">
+                          <span className="text-xs bg-green-50 text-green-500 px-2 py-1 rounded flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {getTimeElapsed(part.checkedInAt)}
                           </span>
                         </div>
                         <div className="mt-1 text-gray-400 text-sm">
                           {part.partNumber && <span className="mr-3">{part.partNumber}</span>}
-                          {part.jobNumber && <span className="text-gray-500">{part.jobNumber}</span>}
+                          {part.jobNumber && <span className="text-gray-400">{part.jobNumber}</span>}
                         </div>
                         {part.operatorName && (
-                          <div className="text-gray-500 text-xs mt-1">Operator: {part.operatorName}</div>
+                          <div className="text-gray-400 text-xs mt-1">Operator: {part.operatorName}</div>
                         )}
                       </button>
                     </div>
@@ -609,10 +609,10 @@ export default function StationDashboard() {
 
           {/* Bottom Action Bar */}
           {selectedPart && !showModal && (
-            <div className="bg-gray-900 border-t border-gray-800 px-6 py-4 shrink-0">
+            <div className="bg-white border-t border-gray-100 px-6 py-4 shrink-0">
               <div className="flex items-center justify-between">
-                <div className="text-white">
-                  <span className="font-mono text-amber-400">{selectedPart.trackingId || `Part #${selectedPart.id}`}</span>
+                <div className="text-gray-900">
+                  <span className="font-mono text-amber-500">{selectedPart.trackingId || `Part #${selectedPart.id}`}</span>
                   {selectedPart.partNumber && <span className="ml-3 text-gray-400">{selectedPart.partNumber}</span>}
                 </div>
                 <div className="flex items-center gap-3">
@@ -620,9 +620,9 @@ export default function StationDashboard() {
                     <button
                       onClick={() => handleCheckIn(selectedPart)}
                       disabled={checkIn.isPending}
-                      className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center gap-2 text-lg touch-manipulation"
+                      className="py-3 px-8 text-base bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                     >
-                      <ArrowDownToLine className="w-5 h-5" />
+                      <ArrowFatLinesDown className="w-5 h-5" />
                       CHECK IN
                     </button>
                   )}
@@ -631,7 +631,7 @@ export default function StationDashboard() {
                       <button
                         onClick={() => handleCheckOut(selectedPart, 'Pass')}
                         disabled={checkOut.isPending}
-                        className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg flex items-center gap-2 text-lg touch-manipulation"
+                        className="py-3 px-8 text-base bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                       >
                         <CheckCircle className="w-5 h-5" />
                         PASS
@@ -639,7 +639,7 @@ export default function StationDashboard() {
                       <button
                         onClick={() => handleCheckOut(selectedPart, 'Fail')}
                         disabled={checkOut.isPending}
-                        className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg flex items-center gap-2 text-lg touch-manipulation"
+                        className="py-3 px-8 text-base bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                       >
                         <XCircle className="w-5 h-5" />
                         FAIL
@@ -648,14 +648,14 @@ export default function StationDashboard() {
                   )}
                   <button
                     onClick={() => handleStatusChange(selectedPart, 'Scrapped')}
-                    className="px-6 py-3 bg-red-900 hover:bg-red-800 text-red-300 font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
+                    className="py-3 px-6 text-base bg-red-50 hover:bg-red-100 text-red-500 font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                   >
-                    <Ban className="w-5 h-5" />
+                    <Prohibit className="w-5 h-5" />
                     Scrap
                   </button>
                   <button
                     onClick={() => handleStatusChange(selectedPart, 'On Hold')}
-                    className="px-6 py-3 bg-yellow-900 hover:bg-yellow-800 text-yellow-300 font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
+                    className="py-3 px-6 text-base bg-amber-50 hover:bg-amber-100 text-amber-500 font-semibold rounded-lg flex items-center gap-2 touch-manipulation"
                   >
                     <PauseCircle className="w-5 h-5" />
                     Hold

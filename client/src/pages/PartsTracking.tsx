@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Plus, Trash2, ExternalLink } from 'lucide-react';
+import { MagnifyingGlass, Trash, ArrowSquareOut } from '@phosphor-icons/react';
 import { useToast } from '../contexts/ToastContext';
 import { useTrackedParts, useDeleteTrackedPart, useLookupByTrackingId } from '../hooks/usePartsTracking';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import Badge from '../components/ui/Badge';
 import type { TrackedPartStatus } from '../../../shared/types';
 
 const STATUS_COLORS: Record<TrackedPartStatus, string> = {
-  'Pending': 'bg-gray-500/20 text-gray-300',
-  'In Progress': 'bg-blue-500/20 text-blue-300',
-  'Completed': 'bg-green-500/20 text-green-300',
-  'Scrapped': 'bg-red-500/20 text-red-300',
-  'On Hold': 'bg-yellow-500/20 text-yellow-300',
+  'Pending': 'text-gray-400',
+  'In Progress': 'text-amber-500',
+  'Completed': 'text-emerald-500',
+  'Scrapped': 'text-red-500',
+  'On Hold': 'text-amber-500',
 };
 
 export default function PartsTracking() {
@@ -66,27 +65,27 @@ export default function PartsTracking() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Parts Tracking</h1>
+          <h1 className="text-lg font-semibold text-gray-900">Parts Tracking</h1>
           <p className="text-gray-400 mt-1">Track individual parts through manufacturing stations</p>
         </div>
       </div>
 
       {/* Tracking ID Lookup */}
-      <div className="bg-rivian-soft-black rounded-lg p-4 mb-6 border border-gray-700">
-        <label className="block text-sm font-medium text-gray-300 mb-2">Quick Lookup by Tracking ID</label>
+      <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-4 mb-6">
+        <label className="block text-sm font-medium text-gray-600 mb-2">Quick Lookup by Tracking ID</label>
         <div className="flex gap-2">
           <input
             type="text"
             value={trackingIdSearch}
             onChange={(e) => setTrackingIdSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleTrackingLookup()}
-            className="flex-1 bg-rivian-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+            className="flex-1 bg-gray-50 border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             placeholder="Enter QR code, engraved number, or sticker ID..."
           />
           <button
             onClick={handleTrackingLookup}
             disabled={lookupMutation.isPending}
-            className="btn-primary"
+            className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-[10px] active:scale-[0.98] transition-all"
           >
             {lookupMutation.isPending ? 'Searching...' : 'Lookup'}
           </button>
@@ -96,19 +95,19 @@ export default function PartsTracking() {
       {/* Filters */}
       <div className="flex gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-rivian-soft-black border border-gray-600 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+            className="w-full bg-white border border-gray-100 rounded-lg pl-10 pr-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
             placeholder="Search by tracking ID, part number, or description..."
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-rivian-soft-black border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-rivian-accent"
+          className="bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
         >
           <option value="">All Statuses</option>
           <option value="Pending">Pending</option>
@@ -121,14 +120,14 @@ export default function PartsTracking() {
 
       {/* Results */}
       {parts?.length === 0 ? (
-        <div className="bg-rivian-soft-black rounded-lg p-12 text-center">
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-12 text-center">
           <p className="text-gray-400">No tracked parts found. Create parts from a job's detail page.</p>
         </div>
       ) : (
-        <div className="bg-rivian-soft-black rounded-lg border border-gray-700 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700">
+              <tr className="border-b border-gray-100">
                 <th className="text-left p-4 text-sm font-medium text-gray-400">Tracking ID</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-400">Part Number</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-400">Job</th>
@@ -141,33 +140,33 @@ export default function PartsTracking() {
             </thead>
             <tbody>
               {parts?.map((part) => (
-                <tr key={part.id} className="border-b border-gray-700/50 hover:bg-rivian-hover transition-colors">
+                <tr key={part.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                   <td className="p-4">
-                    <Link to={`/parts/${part.id}`} className="text-rivian-accent hover:underline font-mono">
+                    <Link to={`/parts/${part.id}`} className="text-blue-500 hover:underline font-mono">
                       {part.trackingId || `#${part.id}`}
                     </Link>
                   </td>
-                  <td className="p-4 text-white">{part.partNumber || '-'}</td>
+                  <td className="p-4 text-gray-900">{part.partNumber || '-'}</td>
                   <td className="p-4">
-                    <Link to={`/jobs/${part.jobId}`} className="text-rivian-accent hover:underline">
+                    <Link to={`/jobs/${part.jobId}`} className="text-blue-500 hover:underline">
                       {part.jobNumber || `Job #${part.jobId}`}
                     </Link>
                   </td>
-                  <td className="p-4 text-gray-300">{part.routeTemplateName || '-'}</td>
-                  <td className="p-4 text-gray-300">{part.currentStationName || '-'}</td>
+                  <td className="p-4 text-gray-600">{part.routeTemplateName || '-'}</td>
+                  <td className="p-4 text-gray-600">{part.currentStationName || '-'}</td>
                   <td className="p-4">
-                    <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${STATUS_COLORS[part.status]}`}>
+                    <span className={`text-xs font-medium ${STATUS_COLORS[part.status]}`}>
                       {part.status}
                     </span>
                   </td>
                   <td className="p-4 text-gray-400 text-sm">{part.identificationType}</td>
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link to={`/parts/${part.id}`} className="text-gray-400 hover:text-white transition-colors">
-                        <ExternalLink className="w-4 h-4" />
+                      <Link to={`/parts/${part.id}`} className="text-gray-400 hover:text-gray-900 transition-colors">
+                        <ArrowSquareOut className="w-4 h-4" />
                       </Link>
-                      <button onClick={() => handleDelete(part.id)} className="text-red-400 hover:text-red-300 transition-colors">
-                        <Trash2 className="w-4 h-4" />
+                      <button onClick={() => handleDelete(part.id)} className="text-red-400 hover:text-red-500 transition-colors">
+                        <Trash className="w-4 h-4" />
                       </button>
                     </div>
                   </td>

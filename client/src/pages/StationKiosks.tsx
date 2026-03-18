@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStationKiosks, useCreateStationKiosk, useUpdateStationKiosk, useDeleteStationKiosk } from '../hooks/usePartsTracking';
 import { useToast } from '../contexts/ToastContext';
 import type { StationKiosk, CreateStationKioskRequest } from '../../../shared/types';
-import { Plus, Pencil, Trash2, Monitor, ExternalLink } from 'lucide-react';
+import { Plus, PencilSimple, Trash, Monitor, ArrowSquareOut } from '@phosphor-icons/react';
 
 export default function StationKiosks() {
   const { data: kiosks = [], isLoading } = useStationKiosks();
@@ -68,7 +68,7 @@ export default function StationKiosks() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Station Kiosks</h1>
+          <h1 className="text-lg font-semibold text-gray-900">Station Kiosks</h1>
           <p className="text-gray-400 mt-1">Manage kiosk PIN codes for factory floor stations</p>
         </div>
         <div className="flex items-center gap-3">
@@ -76,14 +76,14 @@ export default function StationKiosks() {
             href="/kiosk"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-100 hover:bg-gray-50 text-gray-600 rounded-lg transition-colors"
           >
-            <ExternalLink className="w-4 h-4" />
+            <ArrowSquareOut className="w-4 h-4" />
             Open Kiosk
           </a>
           <button
             onClick={() => { resetForm(); setShowForm(true); }}
-            className="btn-primary flex items-center gap-2"
+            className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-[10px] active:scale-[0.98] transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Add Kiosk
@@ -93,8 +93,8 @@ export default function StationKiosks() {
 
       {/* Add/Edit Form */}
       {showForm && (
-        <div className="bg-rivian-soft-black border border-gray-700 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-6">
+          <h3 className="text-sm font-medium text-gray-900 mb-4">
             {editingId ? 'Edit Kiosk' : 'New Kiosk'}
           </h3>
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
@@ -135,12 +135,12 @@ export default function StationKiosks() {
               />
             </div>
             <div className="col-span-2 flex items-center gap-3">
-              <label className="flex items-center gap-2 text-gray-300">
+              <label className="flex items-center gap-2 text-gray-600">
                 <input
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-                  className="rounded border-gray-600"
+                  className="rounded border-gray-200"
                 />
                 Active
               </label>
@@ -149,11 +149,11 @@ export default function StationKiosks() {
               <button
                 type="submit"
                 disabled={createKiosk.isPending || updateKiosk.isPending}
-                className="btn-primary"
+                className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-[10px] active:scale-[0.98] transition-all"
               >
                 {editingId ? 'Update' : 'Create'} Kiosk
               </button>
-              <button type="button" onClick={resetForm} className="btn-secondary">
+              <button type="button" onClick={resetForm} className="bg-white border border-gray-100 hover:bg-gray-50 text-gray-600 text-sm font-medium px-3 py-1.5 rounded-[10px] transition-all">
                 Cancel
               </button>
             </div>
@@ -166,15 +166,15 @@ export default function StationKiosks() {
         <div className="text-gray-400 text-center py-12">Loading kiosks...</div>
       ) : kiosks.length === 0 ? (
         <div className="text-center py-12">
-          <Monitor className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+          <Monitor className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-400">No station kiosks configured</p>
-          <p className="text-gray-500 text-sm mt-1">Create a kiosk to assign a PIN code to a station</p>
+          <p className="text-gray-400 text-sm mt-1">Create a kiosk to assign a PIN code to a station</p>
         </div>
       ) : (
-        <div className="bg-rivian-soft-black border border-gray-700 rounded-lg overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700">
+              <tr className="border-b border-gray-100">
                 <th className="text-left px-4 py-3 text-gray-400 text-sm font-medium">Station Name</th>
                 <th className="text-left px-4 py-3 text-gray-400 text-sm font-medium">PIN Code</th>
                 <th className="text-left px-4 py-3 text-gray-400 text-sm font-medium">Status</th>
@@ -184,12 +184,12 @@ export default function StationKiosks() {
             </thead>
             <tbody>
               {kiosks.map((kiosk) => (
-                <tr key={kiosk.id} className="border-b border-gray-800 hover:bg-gray-800/50">
-                  <td className="px-4 py-3 text-white font-medium">{kiosk.stationName}</td>
-                  <td className="px-4 py-3 font-mono text-amber-400 text-lg">{kiosk.pinCode}</td>
+                <tr key={kiosk.id} className="border-b border-gray-50 hover:bg-gray-50">
+                  <td className="px-4 py-3 text-gray-900 font-medium">{kiosk.stationName}</td>
+                  <td className="px-4 py-3 font-mono text-amber-500 text-lg">{kiosk.pinCode}</td>
                   <td className="px-4 py-3">
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      kiosk.isActive ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                    <span className={`text-xs font-medium ${
+                      kiosk.isActive ? 'text-emerald-500' : 'text-gray-400'
                     }`}>
                       {kiosk.isActive ? 'Active' : 'Inactive'}
                     </span>
@@ -199,17 +199,17 @@ export default function StationKiosks() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleEdit(kiosk)}
-                        className="p-2 hover:bg-gray-700 rounded transition-colors"
+                        className="p-2 hover:bg-gray-50 rounded transition-colors"
                         title="Edit"
                       >
-                        <Pencil className="w-4 h-4 text-gray-400" />
+                        <PencilSimple className="w-4 h-4 text-gray-400" />
                       </button>
                       <button
                         onClick={() => handleDelete(kiosk)}
-                        className="p-2 hover:bg-gray-700 rounded transition-colors"
+                        className="p-2 hover:bg-gray-50 rounded transition-colors"
                         title="Delete"
                       >
-                        <Trash2 className="w-4 h-4 text-red-400" />
+                        <Trash className="w-4 h-4 text-red-400" />
                       </button>
                     </div>
                   </td>

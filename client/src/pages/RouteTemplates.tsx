@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Trash, CaretDown, CaretRight } from '@phosphor-icons/react';
 import { useToast } from '../contexts/ToastContext';
 import {
   useRouteTemplates,
   useRouteTemplate,
   useCreateRouteTemplate,
-  useUpdateRouteTemplate,
   useDeleteRouteTemplate,
   useAddRouteStep,
   useUpdateRouteStep,
@@ -71,19 +70,19 @@ export default function RouteTemplates() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Route Templates</h1>
+          <h1 className="text-lg font-semibold text-gray-900">Route Templates</h1>
           <p className="text-gray-400 mt-1">Define reusable manufacturing routes for parts tracking</p>
         </div>
-        <button onClick={() => { setEditingTemplate(null); setIsModalOpen(true); }} className="btn-primary flex items-center gap-2">
+        <button onClick={() => { setEditingTemplate(null); setIsModalOpen(true); }} className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-[10px] active:scale-[0.98] transition-all flex items-center gap-2">
           <Plus className="w-4 h-4" />
           New Template
         </button>
       </div>
 
       {templates?.length === 0 && (
-        <div className="bg-rivian-soft-black rounded-lg p-12 text-center">
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-12 text-center">
           <p className="text-gray-400 mb-4">No route templates yet. Create one to define a manufacturing route.</p>
-          <button onClick={() => setIsModalOpen(true)} className="btn-primary">
+          <button onClick={() => setIsModalOpen(true)} className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-[10px] active:scale-[0.98] transition-all">
             Create First Template
           </button>
         </div>
@@ -119,7 +118,7 @@ function TemplateRow({
   machines,
   isExpanded,
   onToggle,
-  onEdit,
+  onEdit: _onEdit,
   onDelete,
 }: {
   template: RouteTemplate;
@@ -131,31 +130,21 @@ function TemplateRow({
 }) {
   const toast = useToast();
   const { data: fullTemplate } = useRouteTemplate(isExpanded ? template.id : 0);
-  const updateMutation = useUpdateRouteTemplate(template.id);
   const addStepMutation = useAddRouteStep(template.id);
   const updateStepMutation = useUpdateRouteStep(template.id);
   const deleteStepMutation = useDeleteRouteStep(template.id);
   const reorderMutation = useReorderRouteSteps(template.id);
 
-  const handleEditSave = async (data: { name: string; description: string }) => {
-    try {
-      await updateMutation.mutateAsync(data);
-      toast.success('Template updated');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to update');
-    }
-  };
-
   return (
-    <div className="bg-rivian-soft-black rounded-lg border border-gray-700">
+    <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02]">
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-rivian-hover transition-colors rounded-lg"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors rounded-2xl"
         onClick={onToggle}
       >
         <div className="flex items-center gap-3">
-          {isExpanded ? <ChevronDown className="w-5 h-5 text-gray-400" /> : <ChevronRight className="w-5 h-5 text-gray-400" />}
+          {isExpanded ? <CaretDown className="w-5 h-5 text-gray-400" /> : <CaretRight className="w-5 h-5 text-gray-400" />}
           <div>
-            <h3 className="text-white font-medium">{template.name}</h3>
+            <h3 className="text-gray-900 font-medium">{template.name}</h3>
             {template.description && <p className="text-sm text-gray-400">{template.description}</p>}
           </div>
         </div>
@@ -163,15 +152,15 @@ function TemplateRow({
           <span className="text-sm text-gray-400">{template.stepCount || 0} steps</span>
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="text-red-400 hover:text-red-300 transition-colors"
+            className="text-red-400 hover:text-red-500 transition-colors"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {isExpanded && fullTemplate && (
-        <div className="border-t border-gray-700 p-4">
+        <div className="border-t border-gray-100 p-4">
           <RouteStepEditor
             steps={fullTemplate.steps || []}
             machines={machines}
