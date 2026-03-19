@@ -948,3 +948,70 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+// ============================================================
+// PRODUCTION DASHBOARD
+// ============================================================
+
+export type MachineStatus = 'running' | 'idle' | 'down';
+
+export interface ProductionDashboardData {
+  kpis: {
+    activeJobs: number;
+    partsCompletedToday: number;
+    onTimeRate: number;
+    blockedJobs: number;
+  };
+  machines: DashboardMachine[];
+  jobQueue: DashboardJob[];
+  bottlenecks: Bottleneck[];
+}
+
+export interface DashboardMachine {
+  id: number;
+  name: string;
+  type: string;
+  status: MachineStatus;
+  currentJob: { id: number; jobNumber: string; description: string } | null;
+  currentOperator: string | null;
+  currentPart: { description: string; completed: number; total: number } | null;
+  nextJob: { id: number; jobNumber: string } | null;
+  downReason: string | null;
+  downSince: string | null;
+}
+
+export interface DashboardJob {
+  id: number;
+  jobNumber: string;
+  clientName: string;
+  description: string;
+  priority: string;
+  currentStage: string;
+  stageStatus: string;
+  targetEndDate: string | null;
+}
+
+export interface Bottleneck {
+  type: 'machine_down' | 'job_blocked' | 'job_overdue';
+  message: string;
+  severity: 'critical' | 'warning';
+  relatedId: number;
+}
+
+// ============================================================
+// REPORTS
+// ============================================================
+
+export interface KpiReport {
+  jobsCompleted: number;
+  avgCycleTimeDays: number;
+  onTimeRate: number;
+  scrapRate: number;
+  totalLaborHours: number;
+  laborByStage: Record<string, number>;
+}
+
+export interface ReportFilters {
+  from?: string;
+  to?: string;
+}
