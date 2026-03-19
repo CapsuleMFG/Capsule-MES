@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute, executeTransaction } from '../models/database';
+import { generateEntriesForJob } from './scheduling.controller';
 import type { Job, JobWorkflowProgress, JobMaterial, JobLabor, CreateJobRequest, UpdateJobRequest, UpdateWorkflowStageRequest, CreateMaterialRequest, UpdateMaterialRequest, CreateLaborRequest } from '../../../shared/types';
 
 /**
@@ -488,6 +489,17 @@ export async function updateWorkflowStage(req: Request, res: Response): Promise<
         params.push(id, stageId);
 
         await execute(sql, params);
+
+        // Auto-generate schedule entries when Production starts
+        if (status === 'In Progress') {
+            const stage = await queryOne<{ name: string }>(
+                'SELECT name FROM workflow_stages WHERE id = ?',
+                [stageId]
+            );
+            if (stage?.name === 'Production') {
+                await generateEntriesForJob(parseInt(id));
+            }
+        }
 
         // Fetch updated workflow progress
         const updated = await queryOne(
