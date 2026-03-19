@@ -1015,3 +1015,60 @@ export interface ReportFilters {
   from?: string;
   to?: string;
 }
+
+// ============================================================
+// SCHEDULING
+// ============================================================
+
+export type ScheduleEntryStatus = 'Queued' | 'In Progress' | 'Completed' | 'Blocked';
+
+export interface ScheduleEntry {
+  id: number;
+  jobId: number;
+  machineId: number;
+  routeStepId: number | null;
+  stepName: string;
+  position: number;
+  status: ScheduleEntryStatus;
+  blockedReason: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ScheduleEntryWithJob extends ScheduleEntry {
+  jobNumber: string;
+  jobDescription: string;
+  clientName: string;
+  priority: string;
+  targetEndDate: string | null;
+  routeSteps: {
+    id: number;
+    stepName: string;
+    stepOrder: number;
+    status: ScheduleEntryStatus;
+    machineId: number;
+  }[];
+}
+
+export interface MachineQueue {
+  machineId: number;
+  machineName: string;
+  machineType: string;
+  entries: ScheduleEntryWithJob[];
+}
+
+export interface UpdatePositionRequest {
+  position: number;
+}
+
+export interface MoveEntryRequest {
+  machineId: number;
+  position: number;
+}
+
+export interface UpdateScheduleStatusRequest {
+  status: ScheduleEntryStatus;
+  blockedReason?: string;
+}
