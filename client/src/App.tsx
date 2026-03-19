@@ -18,6 +18,7 @@ import PartDetail from './pages/PartDetail';
 import RouteTemplates from './pages/RouteTemplates';
 import StationKiosks from './pages/StationKiosks';
 import ProductionDashboard from './pages/ProductionDashboard';
+import SchedulingBoard from './pages/SchedulingBoard';
 import Reports from './pages/Reports';
 import UserManagement from './pages/UserManagement';
 import AuditLogPage from './pages/AuditLog';
@@ -71,6 +72,11 @@ function App() {
                 <Route path="dashboard/production" element={
                   <ProtectedRoute roles={['admin', 'manager']}>
                     <ProductionDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="scheduling" element={
+                  <ProtectedRoute roles={['admin', 'manager']}>
+                    <SchedulingBoard />
                   </ProtectedRoute>
                 } />
                 <Route path="reports" element={

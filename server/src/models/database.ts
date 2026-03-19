@@ -115,6 +115,29 @@ export async function executeTransaction(sqlStatements: string[]): Promise<void>
 }
 
 /**
+ * Execute multiple parameterized SQL statements in a transaction
+ */
+export async function executeTransactionWithParams(
+    statements: Array<{ sql: string; params: any[] }>
+): Promise<void> {
+    const client: PoolClient = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        for (const { sql, params } of statements) {
+            const converted = convertPlaceholders(sql);
+            await client.query(converted, params);
+        }
+        await client.query('COMMIT');
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Transaction error:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+/**
  * No-op: PostgreSQL doesn't need file saving
  */
 export function saveDatabase(): void {

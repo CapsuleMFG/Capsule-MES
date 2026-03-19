@@ -4,6 +4,7 @@ import { useKiosk } from '../../contexts/KioskContext';
 import { useToast } from '../../contexts/ToastContext';
 import { useStationQueue, useCheckInPart, useCheckOutPart, useUpdateTrackedPart, useLookupByTrackingId } from '../../hooks/usePartsTracking';
 import KioskPartModal from '../../components/kiosk/KioskPartModal';
+import KioskQueue from '../../components/kiosk/KioskQueue';
 import * as productionService from '../../services/production.service';
 import * as engineeringService from '../../services/engineering.service';
 import type { TrackedPart, StationQueuePart, WorkOrder } from '../../../../shared/types';
@@ -27,6 +28,7 @@ export default function StationDashboard() {
   const [selectedWaitingIds, setSelectedWaitingIds] = useState<Set<number>>(new Set());
   const [selectedCheckedInIds, setSelectedCheckedInIds] = useState<Set<number>>(new Set());
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
+  const [kioskView, setKioskView] = useState<'schedule' | 'parts'>('schedule');
 
   // Fetch WOs for the machine
   const { data: allWorkOrders, refetch: refetchWOs } = useQuery({
@@ -300,6 +302,20 @@ export default function StationDashboard() {
           )}
         </div>
         <div className="flex items-center gap-3">
+          <div className="flex gap-2 mr-4">
+            <button
+              onClick={() => setKioskView('schedule')}
+              className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors ${kioskView === 'schedule' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}
+            >
+              Schedule
+            </button>
+            <button
+              onClick={() => setKioskView('parts')}
+              className={`px-4 py-2 text-sm font-medium rounded-xl transition-colors ${kioskView === 'parts' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'}`}
+            >
+              Parts Tracking
+            </button>
+          </div>
           <span className="text-gray-400 font-mono text-lg">{formatTime(currentTime)}</span>
           <button
             onClick={clearMachine}
@@ -317,8 +333,17 @@ export default function StationDashboard() {
         </div>
       </header>
 
+      {/* ========== SCHEDULE VIEW ========== */}
+      {kioskView === 'schedule' && station?.machineId && (
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-4xl mx-auto">
+            <KioskQueue machineId={station.machineId} machineName={station.machineName || ''} />
+          </div>
+        </div>
+      )}
+
       {/* ========== WO LIST VIEW ========== */}
-      {!selectedWO && (
+      {kioskView === 'parts' && !selectedWO && (
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-4xl mx-auto">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -385,7 +410,7 @@ export default function StationDashboard() {
       )}
 
       {/* ========== PARTS VIEW (WO selected) ========== */}
-      {selectedWO && (
+      {kioskView === 'parts' && selectedWO && (
         <>
           {/* Sub-header: WO info + back + search/operator */}
           <div className="bg-white border-b border-gray-100 px-6 py-3 shrink-0 space-y-3">

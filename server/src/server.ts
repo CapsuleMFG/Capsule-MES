@@ -24,6 +24,7 @@ import profilesRouter from './routes/profiles.routes';
 import auditLogRouter from './routes/audit-log.routes';
 import productionDashboardRouter from './routes/production-dashboard.routes';
 import reportsRouter from './routes/reports.routes';
+import schedulingRouter from './routes/scheduling.routes';
 
 // Load environment variables
 dotenv.config();
@@ -97,6 +98,7 @@ app.use('/api/profiles', profilesRouter);
 app.use('/api/audit-log', auditLogRouter);
 app.use('/api/dashboard/production', productionDashboardRouter);
 app.use('/api/reports', reportsRouter);
+app.use('/api/scheduling', schedulingRouter);
 app.use('/api/dashboard/production', productionDashboardRouter);
 
 // 404 handler
