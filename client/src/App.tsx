@@ -17,6 +17,8 @@ import PartsTracking from './pages/PartsTracking';
 import PartDetail from './pages/PartDetail';
 import RouteTemplates from './pages/RouteTemplates';
 import StationKiosks from './pages/StationKiosks';
+import ProductionDashboard from './pages/ProductionDashboard';
+import Reports from './pages/Reports';
 import UserManagement from './pages/UserManagement';
 import AuditLogPage from './pages/AuditLog';
 import { KioskProvider } from './contexts/KioskContext';
@@ -66,6 +68,16 @@ function App() {
                 <Route path="parts/:id" element={<PartDetail />} />
                 <Route path="route-templates" element={<RouteTemplates />} />
                 <Route path="station-kiosks" element={<StationKiosks />} />
+                <Route path="dashboard/production" element={
+                  <ProtectedRoute roles={['admin', 'manager']}>
+                    <ProductionDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="reports" element={
+                  <ProtectedRoute roles={['admin', 'manager']}>
+                    <Reports />
+                  </ProtectedRoute>
+                } />
                 <Route path="clients" element={<Clients />} />
                 <Route path="admin/users" element={
                   <ProtectedRoute roles={['admin']}>

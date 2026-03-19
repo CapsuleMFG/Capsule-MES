@@ -13,6 +13,8 @@ import {
   SignOut,
   Shield,
   ClipboardText,
+  ChartBar,
+  ChartLineUp,
 } from '@phosphor-icons/react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import QuickAddJobModal from '../jobs/QuickAddJobModal';
@@ -31,8 +33,10 @@ const navigation: NavItem[] = [
   { name: 'Engineering', href: '/engineering', icon: Wrench, roles: ['admin', 'manager', 'engineer'] },
   { name: 'Supply Chain', href: '/supply-chain', icon: Package, roles: ['admin', 'manager', 'engineer'] },
   { name: 'Production', href: '/production', icon: Factory, roles: ['admin', 'manager'] },
+  { name: 'Prod Dashboard', href: '/dashboard/production', icon: ChartBar, roles: ['admin', 'manager'] },
   { name: 'Station Kiosks', href: '/station-kiosks', icon: Monitor, roles: ['admin', 'manager'] },
   { name: 'Clients', href: '/clients', icon: Users, roles: ['admin', 'manager'] },
+  { name: 'Reports', href: '/reports', icon: ChartLineUp, roles: ['admin', 'manager'] },
 ];
 
 const adminNavigation: NavItem[] = [
