@@ -1,63 +1,42 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
-import Card from '../components/ui/Card';
-import Select from '../components/ui/Select';
-import { Factory, Package, Briefcase, Scan, GitBranch, CaretUp, CaretDown } from '@phosphor-icons/react';
-import { useToast } from '../contexts/ToastContext';
+import { Link } from 'react-router-dom';
 import { useJobs } from '../hooks/useJobs';
 import { useTrackedParts } from '../hooks/usePartsTracking';
-import * as productionService from '../services/production.service';
-import ProductionProjects from '../components/production/ProductionProjects';
-import PartsTracking from './PartsTracking';
-import RouteTemplates from './RouteTemplates';
-import type { Machine } from '../types';
-
-type ProductionTab = 'projects' | 'scheduling' | 'parts' | 'routes';
+import { useSchedule, useBlockedCount } from '../hooks/useScheduling';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import Badge from '../components/ui/Badge';
+import Input from '../components/ui/Input';
+import { ArrowSquareOut, CalendarBlank, ChartBar, Scan, Warning } from '@phosphor-icons/react';
+import { useState } from 'react';
+import type { Job } from '../types';
 
 export default function Production() {
-  const [activeTab, setActiveTab] = useState<ProductionTab>('projects');
-  const [schedulingView, setSchedulingView] = useState<'pool' | 'overview'>('pool');
-  // Fetch production pool
-  const { data: workOrders, isLoading, error } = useQuery({
-    queryKey: ['productionPool'],
-    queryFn: productionService.getProductionPool,
-  });
-
-  // Fetch machines
-  const { data: machines } = useQuery({
-    queryKey: ['machines'],
-    queryFn: productionService.getMachines,
-  });
-
-  // Fetch jobs for metrics
-  const { data: allJobs } = useJobs();
-
-  // Fetch all parts for metrics
+  const [search, setSearch] = useState('');
+  const { data: allJobs, isLoading } = useJobs();
   const { data: allParts } = useTrackedParts({});
+  const { data: scheduleQueues } = useSchedule(30000);
+  const { data: blockedCount } = useBlockedCount();
 
-  // Count production jobs
-  const productionJobCount = allJobs?.filter((job) => {
+  // Jobs in Production stage
+  const productionJobs = allJobs?.filter((job) => {
     const stage = job.workflowProgress?.find((p) => p.stageName === 'Production');
     return stage && (stage.status === 'In Progress' || stage.status === 'Not Started');
-  }).length || 0;
+  }) || [];
 
-  // Group work orders by machine type for pool view
-  const workOrdersByMachineType = workOrders?.reduce((acc, wo) => {
-    const type = wo.machineType || 'Unassigned';
-    if (!acc[type]) acc[type] = [];
-    acc[type].push(wo);
-    return acc;
-  }, {} as Record<string, any[]>) || {};
+  // Apply search
+  const filteredJobs = productionJobs.filter((job) => {
+    if (!search) return true;
+    const s = search.toLowerCase();
+    return (
+      job.jobNumber.toLowerCase().includes(s) ||
+      job.description?.toLowerCase().includes(s) ||
+      job.clientName?.toLowerCase().includes(s)
+    );
+  });
 
-  // Get unassigned work orders (In Pool)
-  const unassignedWorkOrders = workOrders?.filter(wo => wo.productionStatus === 'In Pool') || [];
-
-  // Calculate metrics
-  const totalWOs = workOrders?.length || 0;
-  const inPoolWOs = unassignedWorkOrders.length;
+  // Metrics
   const activeParts = allParts?.filter(p => p.status === 'In Progress').length || 0;
   const completedParts = allParts?.filter(p => p.status === 'Completed').length || 0;
+  const totalScheduled = scheduleQueues?.reduce((sum, q) => sum + q.entries.length, 0) || 0;
 
   if (isLoading) {
     return (
@@ -67,481 +46,133 @@ export default function Production() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-center text-red-500 p-8">
-        Error loading production data. Please try again.
-      </div>
-    );
-  }
-
-  const tabs: { key: ProductionTab; label: string; icon: React.ReactNode; badge?: number }[] = [
-    { key: 'projects', label: 'Projects', icon: <Briefcase size={16} />, badge: productionJobCount },
-    { key: 'scheduling', label: 'Scheduling', icon: <Factory size={16} />, badge: inPoolWOs },
-    { key: 'parts', label: 'Parts Tracking', icon: <Scan size={16} /> },
-    { key: 'routes', label: 'Route Templates', icon: <GitBranch size={16} /> },
-  ];
-
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Production Management</h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Manage projects, scheduling, parts tracking, and route templates
-        </p>
-      </div>
-
-      {/* Summary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="p-4">
-          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Jobs in Production</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">{productionJobCount}</p>
-        </Card>
-
-        <Card className="p-4">
-          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Total Work Orders</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">{totalWOs}</p>
-        </Card>
-
-        <Card className="p-4">
-          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Active Parts</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">{activeParts}</p>
-        </Card>
-
-        <Card className="p-4">
-          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400">Completed Parts</p>
-          <p className="text-xl font-semibold text-gray-900 mt-1">{completedParts}</p>
-        </Card>
-      </div>
-
-      {/* Tab Bar */}
-      <div className="flex border-b border-gray-100 mb-6">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap border-b-2 flex items-center gap-2 ${
-              activeTab === tab.key
-                ? 'border-gray-900 text-gray-900 bg-gray-50'
-                : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            {tab.icon}
-            {tab.label}
-            {tab.badge !== undefined && tab.badge > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 rounded text-xs bg-gray-100 text-gray-600">
-                {tab.badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'projects' && (
-        <ProductionProjects />
-      )}
-
-      {activeTab === 'scheduling' && (
-        <Card className="p-0 overflow-hidden">
-          {/* Sub-toggle: Pool vs Machines Overview */}
-          <div className="flex border-b border-gray-100">
-            <button
-              onClick={() => setSchedulingView('pool')}
-              className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap border-b-2 flex items-center gap-2 ${
-                schedulingView === 'pool'
-                  ? 'border-gray-900 text-gray-900 bg-gray-50'
-                  : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <Package size={16} />
-              Pool ({inPoolWOs})
-            </button>
-
-            <button
-              onClick={() => setSchedulingView('overview')}
-              className={`px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap border-b-2 flex items-center gap-2 ${
-                schedulingView === 'overview'
-                  ? 'border-gray-900 text-gray-900 bg-gray-50'
-                  : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <Factory size={16} />
-              Machines Overview
-            </button>
+      {/* Quick Links */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Link
+          to="/scheduling"
+          className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-5 hover:shadow-md transition-shadow group"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <CalendarBlank size={20} weight="light" className="text-gray-400" />
+            <ArrowSquareOut size={14} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
           </div>
+          <p className="text-2xl font-semibold text-gray-900">{totalScheduled}</p>
+          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mt-1">Scheduled Steps</p>
+          {(blockedCount || 0) > 0 && (
+            <div className="flex items-center gap-1.5 mt-2">
+              <Warning size={12} className="text-red-500" />
+              <span className="text-xs text-red-600 font-medium">{blockedCount} blocked</span>
+            </div>
+          )}
+        </Link>
 
-          <div className="p-6">
-            {schedulingView === 'pool' ? (
-              <PoolView
-                workOrdersByMachineType={workOrdersByMachineType}
-                machines={machines || []}
-              />
-            ) : (
-              <MachinesOverview
-                machines={machines || []}
-                workOrders={workOrders || []}
-              />
-            )}
+        <Link
+          to="/dashboard/production"
+          className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-5 hover:shadow-md transition-shadow group"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <ChartBar size={20} weight="light" className="text-gray-400" />
+            <ArrowSquareOut size={14} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
           </div>
-        </Card>
-      )}
+          <p className="text-2xl font-semibold text-gray-900">{activeParts}</p>
+          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mt-1">Active Parts</p>
+          <p className="text-xs text-gray-400 mt-1">{completedParts} completed</p>
+        </Link>
 
-      {activeTab === 'parts' && (
-        <PartsTracking />
-      )}
+        <Link
+          to="/parts"
+          className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-5 hover:shadow-md transition-shadow group"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <Scan size={20} weight="light" className="text-gray-400" />
+            <ArrowSquareOut size={14} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
+          </div>
+          <p className="text-2xl font-semibold text-gray-900">{productionJobs.length}</p>
+          <p className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mt-1">Jobs in Production</p>
+        </Link>
+      </div>
 
-      {activeTab === 'routes' && (
-        <RouteTemplates />
+      {/* Search */}
+      <div className="mb-4">
+        <Input
+          placeholder="Search jobs by number, description, or client..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-md"
+        />
+      </div>
+
+      {/* Job List */}
+      {filteredJobs.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          <p className="text-lg">No jobs in production</p>
+          <p className="text-sm mt-1">Jobs appear here when their Production stage is active</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredJobs.map((job) => (
+            <ProductionJobRow key={job.id} job={job} />
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
-// Pool View Component
-interface PoolViewProps {
-  workOrdersByMachineType: Record<string, any[]>;
-  machines: Machine[];
-}
+function ProductionJobRow({ job }: { job: Job }) {
+  const productionStage = job.workflowProgress?.find(p => p.stageName === 'Production');
 
-function PoolView({ workOrdersByMachineType, machines }: PoolViewProps) {
-  const queryClient = useQueryClient();
-  const toast = useToast();
-
-  const assignMutation = useMutation({
-    mutationFn: ({ woId, machineId }: { woId: number; machineId: number }) =>
-      productionService.assignToMachine(woId, machineId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['productionPool'] });
-      toast.success('Work order assigned to machine');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to assign work order');
-    },
-  });
-
-  const updatePriorityMutation = useMutation({
-    mutationFn: ({ woId, priority }: { woId: number; priority: any }) =>
-      productionService.updateProductionPriority(woId, priority),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['productionPool'] });
-      toast.success('Production priority updated');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update priority');
-    },
-  });
-
-  const handleAssign = (woId: number, machineId: number) => {
-    assignMutation.mutate({ woId, machineId });
-  };
-
-  const handlePriorityChange = (woId: number, priority: any) => {
-    updatePriorityMutation.mutate({ woId, priority });
-  };
-
-  if (Object.keys(workOrdersByMachineType).length === 0) {
-    return (
-      <div className="text-center py-12">
-        <Package size={48} className="text-gray-400 mx-auto mb-3" />
-        <p className="text-gray-600 text-lg">No work orders in pool</p>
-        <p className="text-gray-400 text-sm mt-2">
-          Work orders will appear here after being sent from Engineering
-        </p>
-      </div>
-    );
-  }
+  const daysLeft = job.targetEndDate
+    ? Math.ceil((new Date(job.targetEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null;
 
   return (
-    <div className="space-y-6">
-      {Object.entries(workOrdersByMachineType).map(([machineType, wos]) => {
-        const machinesOfType = machines.filter(m => m.type === machineType);
-        return (
-          <div key={machineType}>
-            <div className="flex items-center gap-2 mb-3">
-              <Factory size={16} className="text-gray-400" />
-              <h3 className="text-sm font-medium text-gray-900">{machineType}</h3>
-              <span className="text-sm text-gray-400">({wos.length} WO{wos.length !== 1 ? 's' : ''})</span>
-            </div>
-            <div className="space-y-2">
-              {wos.map((wo) => (
-                <div
-                  key={wo.id}
-                  className="p-4 rounded-lg bg-white border border-gray-100"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <p className="font-semibold text-gray-900">{wo.woNumber}</p>
-                        {/* Production Priority Badge (if set) */}
-                        {wo.productionPriority && (
-                          <span className={`px-2 py-1 rounded-md text-xs font-medium border ${
-                            wo.productionPriority === 'Critical'
-                              ? 'bg-red-50 text-red-600 border-red-200'
-                              : wo.productionPriority === 'High'
-                              ? 'bg-orange-50 text-orange-600 border-orange-200'
-                              : wo.productionPriority === 'Medium'
-                              ? 'bg-blue-50 text-blue-600 border-blue-200'
-                              : 'bg-gray-50 text-gray-500 border-gray-200'
-                          }`}>
-                            Prod: {wo.productionPriority}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500 mb-1">
-                        Job: <span className="text-gray-900 font-medium">{wo.jobNumber}</span>
-                        {' • '}
-                        Client: <span className="text-gray-900">{wo.clientName}</span>
-                      </p>
-                      {wo.description && (
-                        <p className="text-sm text-gray-500 mb-3">{wo.description}</p>
-                      )}
-                      {/* Production Priority Control */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <label className="text-xs text-gray-400">Prod Priority:</label>
-                        <Select
-                          value={wo.productionPriority || ''}
-                          onChange={(e) => handlePriorityChange(wo.id, e.target.value)}
-                          options={[
-                            { value: '', label: 'Not set' },
-                            { value: 'Critical', label: 'Critical' },
-                            { value: 'High', label: 'High' },
-                            { value: 'Medium', label: 'Medium' },
-                            { value: 'Low', label: 'Low' },
-                          ]}
-                          className="text-sm min-w-[130px]"
-                          disabled={updatePriorityMutation.isPending}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs text-gray-400 whitespace-nowrap">Assign to:</label>
-                      <Select
-                        value=""
-                        onChange={(e) => {
-                          const machineId = parseInt(e.target.value);
-                          if (machineId) handleAssign(wo.id, machineId);
-                        }}
-                        options={[
-                          { value: '', label: 'Select machine...' },
-                          ...machinesOfType.map((m) => ({
-                            value: m.id.toString(),
-                            label: m.name,
-                          })),
-                        ]}
-                        className="text-sm min-w-[180px]"
-                        disabled={assignMutation.isPending}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// Machines Overview Component
-interface MachinesOverviewProps {
-  machines: Machine[];
-  workOrders: any[];
-}
-
-function MachinesOverview({ machines, workOrders }: MachinesOverviewProps) {
-  const [expandedMachine, setExpandedMachine] = React.useState<number | null>(null);
-
-  const getWorkOrdersForMachine = (machineId: number) => {
-    const priorityOrder = { Critical: 0, High: 1, Medium: 2, Low: 3 };
-    return workOrders
-      .filter(wo => wo.assignedMachineId === machineId)
-      .sort((a, b) => {
-        const aPriority = priorityOrder[a.productionPriority as keyof typeof priorityOrder] ?? 4;
-        const bPriority = priorityOrder[b.productionPriority as keyof typeof priorityOrder] ?? 4;
-        return aPriority - bPriority;
-      });
-  };
-
-  const getInProgressCount = (machineId: number) => {
-    return workOrders.filter(
-      wo => wo.assignedMachineId === machineId && wo.productionStatus === 'In Progress'
-    ).length;
-  };
-
-  const getQueuedCount = (machineId: number) => {
-    return workOrders.filter(
-      wo => wo.assignedMachineId === machineId && wo.productionStatus === 'Assigned'
-    ).length;
-  };
-
-  const getCompletedCount = (machineId: number) => {
-    return workOrders.filter(
-      wo => wo.assignedMachineId === machineId && wo.productionStatus === 'Completed'
-    ).length;
-  };
-
-  return (
-    <div>
-      <div className="mb-6">
-        <h3 className="text-[11px] uppercase tracking-wider font-medium text-gray-400 mb-2">All Machines Overview</h3>
-        <p className="text-sm text-gray-500">
-          Detailed view of all machines and their work orders - expand to see full details
-        </p>
+    <Link
+      to={`/jobs/${job.id}`}
+      className="block bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] p-5 hover:shadow-md transition-shadow"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-semibold text-gray-900">{job.jobNumber}</span>
+          <Badge variant="priority" priority={job.priority || undefined}>{job.priority}</Badge>
+          {productionStage && (
+            <Badge variant="status" status={productionStage.status}>{productionStage.status}</Badge>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {daysLeft !== null && (
+            <span className={`text-xs ${daysLeft <= 2 ? 'text-red-600 font-medium' : daysLeft <= 7 ? 'text-amber-600' : 'text-gray-400'}`}>
+              {daysLeft <= 0 ? 'Overdue' : `${daysLeft}d left`}
+            </span>
+          )}
+          <ArrowSquareOut size={14} className="text-gray-300" />
+        </div>
       </div>
 
-      <div className="space-y-4">
-        {machines.map((machine) => {
-          const machineWOs = getWorkOrdersForMachine(machine.id);
-          const inProgress = getInProgressCount(machine.id);
-          const queued = getQueuedCount(machine.id);
-          const completed = getCompletedCount(machine.id);
-          const isExpanded = expandedMachine === machine.id;
+      <p className="text-sm text-gray-600">{job.description}</p>
+      <p className="text-xs text-gray-400 mt-1">{job.clientName}</p>
 
-          return (
-            <Card key={machine.id} className="p-0 overflow-hidden">
-              {/* Machine Header - Clickable */}
-              <div
-                className="p-5 cursor-pointer hover:bg-gray-50 transition-colors"
-                onClick={() => setExpandedMachine(isExpanded ? null : machine.id)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 flex-1">
-                    <Factory size={16} className="text-gray-400 flex-shrink-0" />
-                    <div className="flex-1">
-                      <h4 className="text-sm font-medium text-gray-900">{machine.name}</h4>
-                      <p className="text-sm text-gray-500">{machine.type}</p>
-                    </div>
-                  </div>
-
-                  {/* Stats Row */}
-                  <div className="flex items-center gap-4 mr-4">
-                    <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {inProgress}
-                      </div>
-                      <div className="text-xs text-gray-400">In Progress</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {queued}
-                      </div>
-                      <div className="text-xs text-gray-400">Queued</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {completed}
-                      </div>
-                      <div className="text-xs text-gray-400">Completed</div>
-                    </div>
-                    <div className="text-center border-l border-gray-100 pl-4">
-                      <div className="text-sm font-semibold text-gray-900">{machineWOs.length}</div>
-                      <div className="text-xs text-gray-400">Total</div>
-                    </div>
-                  </div>
-
-                  {/* Expand Icon */}
-                  <div>
-                    {isExpanded ? (
-                      <CaretUp size={20} className="text-gray-400" />
-                    ) : (
-                      <CaretDown size={20} className="text-gray-400" />
-                    )}
-                  </div>
+      {/* Workflow progress bar */}
+      {job.workflowProgress && job.workflowProgress.length > 0 && (
+        <div className="flex gap-1 mt-3">
+          {job.workflowProgress
+            .sort((a, b) => (a.stageOrder || 0) - (b.stageOrder || 0))
+            .map((stage) => {
+              const color = stage.status === 'Completed' ? 'bg-emerald-500'
+                : stage.status === 'In Progress' ? 'bg-amber-500'
+                : stage.status === 'Blocked' ? 'bg-red-500'
+                : 'bg-gray-200';
+              return (
+                <div key={stage.stageId} className="flex-1" title={`${stage.stageName}: ${stage.status}`}>
+                  <div className={`h-1.5 rounded-full ${color}`} />
+                  <p className="text-[9px] text-gray-400 mt-0.5 truncate">{stage.stageName}</p>
                 </div>
-              </div>
-
-              {/* Expanded Content - Work Orders List */}
-              {isExpanded && (
-                <div className="border-t border-gray-100 bg-gray-50 p-5">
-                  {machineWOs.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
-                      No work orders assigned to this machine
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between mb-4">
-                        <h5 className="text-sm font-medium text-gray-600">
-                          Work Orders (sorted by priority)
-                        </h5>
-                      </div>
-
-                      {machineWOs.map((wo) => (
-                        <div
-                          key={wo.id}
-                          className="p-4 rounded-lg bg-white border border-gray-100"
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              {/* WO Header */}
-                              <div className="flex items-center gap-3 mb-2">
-                                <span className="font-semibold text-gray-900">{wo.woNumber}</span>
-
-                                {/* Production Priority */}
-                                {wo.productionPriority && (
-                                  <span className={`px-2 py-1 rounded-md text-xs font-medium border ${
-                                    wo.productionPriority === 'Critical'
-                                      ? 'bg-red-50 text-red-600 border-red-200'
-                                      : wo.productionPriority === 'High'
-                                      ? 'bg-orange-50 text-orange-600 border-orange-200'
-                                      : wo.productionPriority === 'Medium'
-                                      ? 'bg-blue-50 text-blue-600 border-blue-200'
-                                      : 'bg-gray-50 text-gray-500 border-gray-200'
-                                  }`}>
-                                    {wo.productionPriority}
-                                  </span>
-                                )}
-
-                                {/* Status */}
-                                <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-                                  wo.productionStatus === 'Completed'
-                                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                                    : wo.productionStatus === 'In Progress'
-                                    ? 'bg-blue-50 text-blue-600 border border-blue-200'
-                                    : wo.productionStatus === 'Discarded'
-                                    ? 'bg-red-50 text-red-600 border border-red-200'
-                                    : 'bg-gray-50 text-gray-500 border border-gray-200'
-                                }`}>
-                                  {wo.productionStatus === 'Assigned' ? 'Queued' : wo.productionStatus}
-                                </span>
-                              </div>
-
-                              {/* Job Info */}
-                              <div className="text-sm text-gray-500 space-y-1">
-                                <p>
-                                  <span className="text-gray-400">Job:</span>{' '}
-                                  <span className="text-gray-900 font-medium">{wo.jobNumber}</span>
-                                  {' • '}
-                                  <span className="text-gray-400">Client:</span>{' '}
-                                  <span className="text-gray-900">{wo.clientName}</span>
-                                </p>
-                                {wo.description && (
-                                  <p className="text-gray-600">{wo.description}</p>
-                                )}
-                                {wo.assignedAt && (
-                                  <p className="text-xs text-gray-400">
-                                    Assigned: {new Date(wo.assignedAt).toLocaleString()}
-                                  </p>
-                                )}
-                                {wo.productionStartedAt && (
-                                  <p className="text-xs text-gray-400">
-                                    Started: {new Date(wo.productionStartedAt).toLocaleString()}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </Card>
-          );
-        })}
-      </div>
-    </div>
+              );
+            })}
+        </div>
+      )}
+    </Link>
   );
 }
