@@ -22,6 +22,8 @@ import purchaseOrdersRouter from './routes/purchase-orders.routes';
 import { authMiddleware } from './middleware/auth';
 import profilesRouter from './routes/profiles.routes';
 import auditLogRouter from './routes/audit-log.routes';
+import productionDashboardRouter from './routes/production-dashboard.routes';
+import reportsRouter from './routes/reports.routes';
 
 // Load environment variables
 dotenv.config();
@@ -93,6 +95,9 @@ app.use('/api/supply-chain', supplyChainRouter);
 app.use('/api/purchase-orders', purchaseOrdersRouter);
 app.use('/api/profiles', profilesRouter);
 app.use('/api/audit-log', auditLogRouter);
+app.use('/api/dashboard/production', productionDashboardRouter);
+app.use('/api/reports', reportsRouter);
+app.use('/api/dashboard/production', productionDashboardRouter);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
