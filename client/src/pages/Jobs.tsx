@@ -7,7 +7,8 @@ import Input from '../components/ui/Input';
 import Select from '../components/ui/Select';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EditJobModal from '../components/jobs/EditJobModal';
-import { PencilSimple, Trash, ArrowSquareOut } from '@phosphor-icons/react';
+import { PencilSimple, Trash, ArrowSquareOut, DownloadSimple } from '@phosphor-icons/react';
+import { exportToCsv } from '../utils/exportCsv';
 import type { Job, JobStatus } from '../types';
 
 export default function Jobs() {
@@ -152,7 +153,8 @@ export default function Jobs() {
       )}
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
         <Input
           placeholder="Search by job number, description, or client..."
           value={search}
@@ -169,6 +171,14 @@ export default function Jobs() {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as JobStatus | '')}
         />
+        </div>
+        <button
+          onClick={() => exportToCsv('jobs', ['Job Number', 'Client', 'Description', 'Priority', 'Status', 'Target Start', 'Target End'], (jobs || []).map(j => [j.jobNumber, j.clientName || '', j.description, j.priority || '', j.status, j.targetStartDate || '', j.targetEndDate || '']))}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-white ring-1 ring-gray-200 rounded-[10px] hover:bg-gray-50"
+        >
+          <DownloadSimple size={16} weight="regular" />
+          Export
+        </button>
       </div>
 
       {/* Jobs Table */}

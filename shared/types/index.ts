@@ -874,3 +874,144 @@ export interface StationQueuePart extends TrackedPart {
     operatorName?: string;
     timeElapsedMinutes?: number;
 }
+
+// ============================================================
+// AUTH & PROFILES
+// ============================================================
+
+export type UserRole = 'admin' | 'manager' | 'engineer' | 'operator';
+
+export interface Profile {
+  id: string;         // UUID from auth.users
+  email: string;      // From auth.users, joined at query time
+  name: string;
+  role: UserRole;
+  pin: string | null;  // Always masked in API responses
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+}
+
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  name: string;
+  role: UserRole;
+  pin?: string;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  role?: UserRole;
+  pin?: string;
+  isActive?: boolean;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  userId: string | null;
+  userName: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  tableName: string;
+  recordId: string | null;
+  oldValues: Record<string, unknown> | null;
+  newValues: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+export interface AuditLogFilters {
+  userId?: string;
+  action?: string;
+  tableName?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// ============================================================
+// PRODUCTION DASHBOARD
+// ============================================================
+
+export type MachineStatus = 'running' | 'idle' | 'down';
+
+export interface ProductionDashboardData {
+  kpis: {
+    activeJobs: number;
+    partsCompletedToday: number;
+    onTimeRate: number;
+    blockedJobs: number;
+  };
+  machines: DashboardMachine[];
+  jobQueue: DashboardJob[];
+  bottlenecks: Bottleneck[];
+}
+
+export interface DashboardMachine {
+  id: number;
+  name: string;
+  type: string;
+  status: MachineStatus;
+  currentJob: { id: number; jobNumber: string; description: string } | null;
+  currentOperator: string | null;
+  currentPart: { description: string; completed: number; total: number } | null;
+  nextJob: { id: number; jobNumber: string } | null;
+  downReason: string | null;
+  downSince: string | null;
+}
+
+export interface DashboardJob {
+  id: number;
+  jobNumber: string;
+  clientName: string;
+  description: string;
+  priority: string;
+  currentStage: string;
+  stageStatus: string;
+  targetEndDate: string | null;
+}
+
+export interface Bottleneck {
+  type: 'machine_down' | 'job_blocked' | 'job_overdue';
+  message: string;
+  severity: 'critical' | 'warning';
+  relatedId: number;
+}
+
+// ============================================================
+// REPORTS
+// ============================================================
+
+export interface KpiReport {
+  jobsCompleted: number;
+  avgCycleTimeDays: number;
+  onTimeRate: number;
+  scrapRate: number;
+  totalLaborHours: number;
+  laborByStage: Record<string, number>;
+}
+
+export interface ReportFilters {
+  from?: string;
+  to?: string;
+}

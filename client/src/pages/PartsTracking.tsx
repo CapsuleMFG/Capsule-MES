@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MagnifyingGlass, Trash, ArrowSquareOut } from '@phosphor-icons/react';
+import { MagnifyingGlass, Trash, ArrowSquareOut, DownloadSimple } from '@phosphor-icons/react';
+import { exportToCsv } from '../utils/exportCsv';
 import { useToast } from '../contexts/ToastContext';
 import { useTrackedParts, useDeleteTrackedPart, useLookupByTrackingId } from '../hooks/usePartsTracking';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -68,6 +69,13 @@ export default function PartsTracking() {
           <h1 className="text-lg font-semibold text-gray-900">Parts Tracking</h1>
           <p className="text-gray-400 mt-1">Track individual parts through manufacturing stations</p>
         </div>
+        <button
+          onClick={() => exportToCsv('parts-tracking', ['Tracking ID', 'Job Number', 'Part Number', 'Description', 'Status', 'Route Template'], (parts || []).map(p => [p.trackingId || '', p.jobNumber || '', p.partNumber || '', p.description || '', p.status, p.routeTemplateName || '']))}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-white ring-1 ring-gray-200 rounded-[10px] hover:bg-gray-50"
+        >
+          <DownloadSimple size={16} weight="regular" />
+          Export
+        </button>
       </div>
 
       {/* Tracking ID Lookup */}

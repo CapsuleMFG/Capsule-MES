@@ -6,11 +6,13 @@ interface KioskState {
   kioskId: number;
   machineId?: number;
   machineName?: string;
+  userId?: string;
+  userName?: string;
 }
 
 interface KioskContextType {
   station: KioskState | null;
-  login: (stationName: string, kioskId: number) => void;
+  login: (stationName: string, kioskId: number, userId?: string, userName?: string) => void;
   selectMachine: (machineId: number, machineName: string) => void;
   clearMachine: () => void;
   logout: () => void;
@@ -33,8 +35,8 @@ export function KioskProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const login = useCallback((stationName: string, kioskId: number) => {
-    const state = { stationName, kioskId };
+  const login = useCallback((stationName: string, kioskId: number, userId?: string, userName?: string) => {
+    const state: KioskState = { stationName, kioskId, userId, userName };
     setStation(state);
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     navigate('/kiosk/machine');

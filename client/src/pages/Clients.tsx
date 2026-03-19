@@ -7,7 +7,8 @@ import Input from '../components/ui/Input';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import AddClientModal from '../components/clients/AddClientModal';
 import EditClientModal from '../components/clients/EditClientModal';
-import { Plus, PencilSimple, Trash } from '@phosphor-icons/react';
+import { Plus, PencilSimple, Trash, DownloadSimple } from '@phosphor-icons/react';
+import { exportToCsv } from '../utils/exportCsv';
 import type { Client } from '../types';
 
 export default function Clients() {
@@ -59,14 +60,23 @@ export default function Clients() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">Clients</h1>
-        <Button
-          variant="primary"
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2"
-        >
-          <Plus size={16} />
-          Add Client
-        </Button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => exportToCsv('clients', ['Name', 'Contact', 'Email', 'Phone', 'Address'], (filteredClients || []).map(c => [c.name, c.contactName || '', c.email || '', c.phone || '', c.address || '']))}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-white ring-1 ring-gray-200 rounded-[10px] hover:bg-gray-50"
+          >
+            <DownloadSimple size={16} weight="regular" />
+            Export
+          </button>
+          <Button
+            variant="primary"
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center gap-2"
+          >
+            <Plus size={16} />
+            Add Client
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
