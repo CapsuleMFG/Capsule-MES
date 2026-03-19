@@ -33,7 +33,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
   }
 
   // When auth is not required, attach a dev user and pass through
-  if (process.env.AUTH_REQUIRED !== 'true') {
+  if (process.env.AUTH_REQUIRED?.toLowerCase() !== 'true') {
     req.user = DEV_USER;
     return next();
   }
