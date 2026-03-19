@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuditLog } from '../hooks/useAuth';
 import { useProfiles } from '../hooks/useAuth';
+import { exportToCsv } from '../utils/exportCsv';
+import { DownloadSimple } from '@phosphor-icons/react';
 import type { AuditLogFilters } from '../../../shared/types';
 
 function formatDate(iso: string) {
@@ -33,6 +35,20 @@ export default function AuditLogPage() {
           <h1 className="text-lg font-semibold text-gray-900">Audit Log</h1>
           <p className="text-sm text-gray-500 mt-0.5">Track all data changes in the system</p>
         </div>
+        <button
+          onClick={() => {
+            if (!data?.data) return;
+            exportToCsv('audit_log',
+              ['Timestamp', 'User', 'Action', 'Table', 'Record ID'],
+              data.data.map(e => [e.createdAt, e.userName, e.action, e.tableName, e.recordId || ''])
+            );
+          }}
+          disabled={!data?.data?.length}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-500 bg-white ring-1 ring-gray-200 rounded-[10px] hover:bg-gray-50 disabled:opacity-50"
+        >
+          <DownloadSimple size={16} weight="regular" />
+          Export
+        </button>
       </div>
 
       {/* Filters */}
