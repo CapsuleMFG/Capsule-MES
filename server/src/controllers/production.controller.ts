@@ -118,7 +118,7 @@ export async function assignToMachine(req: Request, res: Response): Promise<void
     }
 
     // Verify machine exists
-    const machine = await queryOne('SELECT id FROM machines WHERE id = ? AND active = 1', [machineId]);
+    const machine = await queryOne('SELECT id FROM machines WHERE id = ? AND active = true', [machineId]);
     if (!machine) {
       res.status(404).json({ error: 'Machine not found or inactive' });
       return;
@@ -268,7 +268,7 @@ export async function updateProductionPriority(req: Request, res: Response): Pro
 export async function getMachines(req: Request, res: Response): Promise<void> {
   try {
     const rows = await query(
-      `SELECT * FROM machines WHERE active = 1 ORDER BY display_order`
+      `SELECT * FROM machines WHERE active = true ORDER BY display_order`
     );
 
     const machines = rows.map(row => ({

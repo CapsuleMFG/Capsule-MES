@@ -26,7 +26,7 @@ export async function getEngineers(req: Request, res: Response): Promise<void> {
     try {
         const activeOnly = req.query.active === 'true';
         const sql = activeOnly
-            ? 'SELECT * FROM engineers WHERE active = 1 ORDER BY name ASC'
+            ? 'SELECT * FROM engineers WHERE active = true ORDER BY name ASC'
             : 'SELECT * FROM engineers ORDER BY name ASC';
         const rows = await query(sql);
         res.json(rows.map(mapRowToEngineer));

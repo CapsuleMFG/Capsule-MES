@@ -29,7 +29,7 @@ export const getProductionDashboard = async (req: Request, res: Response): Promi
     const machines = await query<{
       id: number; name: string; type: string; active: number;
       is_down: boolean; down_reason: string | null; down_since: string | null;
-    }>('SELECT * FROM machines WHERE active = 1 ORDER BY display_order, name');
+    }>('SELECT * FROM machines WHERE active = true ORDER BY display_order, name');
 
     const machineData = await Promise.all(machines.map(async (m) => {
       if (m.is_down) {
