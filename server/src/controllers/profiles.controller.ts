@@ -3,6 +3,8 @@ import { supabaseAdmin } from '../lib/supabase';
 import { query, queryOne } from '../models/database';
 import { logAudit } from '../middleware/audit';
 import bcrypt from 'bcrypt';
+import { logger } from '../lib/logger';
+import { validatePassword } from '../lib/validation';
 
 interface ProfileRow {
   id: string;
@@ -39,7 +41,7 @@ export const getProfiles = async (req: Request, res: Response): Promise<void> =>
     );
     res.json(rows.map(mapProfile));
   } catch (error) {
-    console.error('Error fetching profiles:', error);
+    logger.error('Error fetching profiles', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch profiles' });
   }
 };
@@ -61,7 +63,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
     }
     res.json(mapProfile(row));
   } catch (error) {
-    console.error('Error fetching profile:', error);
+    logger.error('Error fetching profile', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 };
@@ -77,9 +79,15 @@ export const createProfile = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const validRoles = ['admin', 'manager', 'engineer', 'operator'];
+    const validRoles = ['admin', 'manager', 'engineer', 'supply_chain', 'operator'];
     if (!validRoles.includes(role)) {
       res.status(400).json({ error: `Invalid role. Must be one of: ${validRoles.join(', ')}` });
+      return;
+    }
+
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      res.status(400).json({ error: passwordCheck.error });
       return;
     }
 
@@ -126,7 +134,7 @@ export const createProfile = async (req: Request, res: Response): Promise<void> 
 
     res.status(201).json(mapProfile(row!));
   } catch (error) {
-    console.error('Error creating profile:', error);
+    logger.error('Error creating profile', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to create user' });
   }
 };
@@ -152,7 +160,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       params.push(name);
     }
     if (role !== undefined) {
-      const validRoles = ['admin', 'manager', 'engineer', 'operator'];
+      const validRoles = ['admin', 'manager', 'engineer', 'supply_chain', 'operator'];
       if (!validRoles.includes(role)) {
         res.status(400).json({ error: `Invalid role. Must be one of: ${validRoles.join(', ')}` });
         return;
@@ -199,7 +207,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 
     res.json(mapProfile(row!));
   } catch (error) {
-    console.error('Error updating profile:', error);
+    logger.error('Error updating profile', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to update profile' });
   }
 };
@@ -221,7 +229,7 @@ export const getMyProfile = async (req: Request, res: Response): Promise<void> =
     }
     res.json(mapProfile(row));
   } catch (error) {
-    console.error('Error fetching my profile:', error);
+    logger.error('Error fetching my profile', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 };
