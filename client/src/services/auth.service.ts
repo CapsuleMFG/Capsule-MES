@@ -2,18 +2,34 @@ import { supabase } from '../lib/supabase';
 import api from './api';
 import type { Profile, CreateUserRequest, UpdateProfileRequest, AuditLogFilters, PaginatedResponse, AuditLogEntry } from '../../../shared/types';
 
-// Auth operations (via Supabase client singleton)
+// Auth operations (via Express API → Supabase)
 export async function login(email: string, password: string) {
   if (!supabase) throw new Error('Auth not configured');
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  const { data } = await api.post('/auth/login', { email, password });
+  await supabase.auth.setSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+  });
   return data;
 }
 
 export async function logout() {
-  if (!supabase) return;
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+  try {
+    await api.post('/auth/logout');
+  } catch {
+    // Logout should always succeed on the client side
+  }
+  if (supabase) {
+    await supabase.auth.signOut();
+  }
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  await api.post('/auth/forgot-password', { email });
+}
+
+export async function resetPassword(accessToken: string, password: string): Promise<void> {
+  await api.post('/auth/reset-password', { access_token: accessToken, password });
 }
 
 export async function getSession() {

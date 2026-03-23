@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, useCallback, type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
-import { getMyProfile } from '../services/auth.service';
+import { getMyProfile, logout as authLogout, login as authLogin } from '../services/auth.service';
 import type { AuthUser } from '../../../shared/types';
 
 interface AuthContextType {
@@ -16,6 +16,22 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const fetchingRef = useRef(false);
+
+  async function loadProfile() {
+    // Prevent concurrent profile fetches (React Strict Mode / lock race)
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+    try {
+      const profile = await getMyProfile();
+      setUser({ id: profile.id, email: profile.email, name: profile.name, role: profile.role });
+    } catch {
+      setUser(null);
+    } finally {
+      fetchingRef.current = false;
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (!supabase) {
@@ -23,22 +39,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Check for existing session first (no lock needed)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        loadProfile();
+      } else {
+        setIsLoading(false);
+      }
+    }).catch(() => {
+      setIsLoading(false);
+    });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session?.user) {
-          try {
-            const profile = await getMyProfile();
-            setUser({ id: profile.id, email: profile.email, name: profile.name, role: profile.role });
-          } catch {
-            setUser(null);
-          } finally {
-            setIsLoading(false);
-          }
+      (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          loadProfile();
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
-          setIsLoading(false);
-        } else if (event === 'INITIAL_SESSION' && !session) {
-          // No session on first check
           setIsLoading(false);
         }
       }
@@ -49,14 +66,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     if (!supabase) throw new Error('Auth not configured');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    await authLogin(email, password);
   };
 
-  const logout = async () => {
-    if (supabase) await supabase.auth.signOut();
+  const logout = useCallback(async () => {
+    await authLogout();
     setUser(null);
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, login, logout }}>
