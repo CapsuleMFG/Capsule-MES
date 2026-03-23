@@ -21,6 +21,7 @@ import pbomOrdersRouter from './routes/pbom-orders.routes';
 import supplyChainRouter from './routes/supplychain.routes';
 import purchaseOrdersRouter from './routes/purchase-orders.routes';
 import { authMiddleware } from './middleware/auth';
+import { operatorScope } from './middleware/operatorScope';
 import { logger, httpLogger } from './lib/logger';
 import profilesRouter from './routes/profiles.routes';
 import auditLogRouter from './routes/audit-log.routes';
@@ -89,6 +90,7 @@ app.use('/api/auth', authRouter);
 
 // Auth middleware — applied globally, behavior controlled by AUTH_REQUIRED env var
 app.use(authMiddleware);
+app.use(operatorScope);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
