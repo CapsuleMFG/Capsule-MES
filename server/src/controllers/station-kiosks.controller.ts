@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { query, queryOne, execute } from "../models/database";
 import type { StationKiosk, CreateStationKioskRequest, UpdateStationKioskRequest, StationAuthRequest } from "../../../shared/types";
+import { logger } from '../lib/logger';
 
 const BCRYPT_ROUNDS = 10;
 
@@ -17,7 +19,7 @@ export const getStationKiosks = async (_req: Request, res: Response) => {
     const rows = await query<any>("SELECT sk.id, sk.station_name, sk.pin_code, sk.machine_id, m.name as machine_name, sk.is_active, sk.notes, sk.created_at, sk.updated_at FROM station_kiosks sk LEFT JOIN machines m ON sk.machine_id = m.id ORDER BY sk.station_name ASC");
     res.json(rows.map(row => mapKiosk(row)));
   } catch (error) {
-    console.error("Error fetching station kiosks:", error);
+    logger.error("Error fetching station kiosks", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to fetch station kiosks" });
   }
 };
@@ -36,7 +38,7 @@ export const createStationKiosk = async (req: Request, res: Response) => {
     const row = await queryOne<any>("SELECT sk.id, sk.station_name, sk.pin_code, sk.machine_id, m.name as machine_name, sk.is_active, sk.notes, sk.created_at, sk.updated_at FROM station_kiosks sk LEFT JOIN machines m ON sk.machine_id = m.id WHERE sk.id = ?", [result.lastID]);
     res.status(201).json(mapKiosk(row));
   } catch (error) {
-    console.error("Error creating station kiosk:", error);
+    logger.error("Error creating station kiosk", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to create station kiosk" });
   }
 };
@@ -70,7 +72,7 @@ export const updateStationKiosk = async (req: Request, res: Response) => {
     const row = await queryOne<any>("SELECT sk.id, sk.station_name, sk.pin_code, sk.machine_id, m.name as machine_name, sk.is_active, sk.notes, sk.created_at, sk.updated_at FROM station_kiosks sk LEFT JOIN machines m ON sk.machine_id = m.id WHERE sk.id = ?", [id]);
     res.json(mapKiosk(row));
   } catch (error) {
-    console.error("Error updating station kiosk:", error);
+    logger.error("Error updating station kiosk", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to update station kiosk" });
   }
 };
@@ -84,7 +86,7 @@ export const deleteStationKiosk = async (req: Request, res: Response) => {
     await execute("DELETE FROM station_kiosks WHERE id = ?", [id]);
     res.json({ message: "Station kiosk deleted successfully" });
   } catch (error) {
-    console.error("Error deleting station kiosk:", error);
+    logger.error("Error deleting station kiosk", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to delete station kiosk" });
   }
 };
@@ -98,34 +100,82 @@ export const authenticateStation = async (req: Request, res: Response) => {
       return;
     }
 
-    // Look up PIN against profiles table (not station_kiosks)
+    const KIOSK_JWT_SECRET = process.env.KIOSK_JWT_SECRET;
+    if (!KIOSK_JWT_SECRET) {
+      logger.error('KIOSK_JWT_SECRET is not configured');
+      res.status(500).json({ error: 'Kiosk authentication not configured' });
+      return;
+    }
+
+    // Step 1: Check station kiosk PINs (station identification)
+    const kiosks = await query<{ id: number; station_name: string; pin_code: string; machine_id: number | null }>(
+      `SELECT id, station_name, pin_code, machine_id FROM station_kiosks WHERE pin_code IS NOT NULL AND is_active = true`
+    );
+
+    for (const kiosk of kiosks) {
+      const match = await bcrypt.compare(pinCode, kiosk.pin_code);
+      if (match) {
+        const token = jwt.sign(
+          {
+            type: 'kiosk',
+            kioskId: kiosk.id,
+            stationName: kiosk.station_name.trim(),
+            machineId: kiosk.machine_id,
+            authType: 'station',
+            role: 'operator',
+          },
+          KIOSK_JWT_SECRET,
+          { expiresIn: '8h' }
+        );
+
+        res.json({
+          kioskId: kiosk.id,
+          stationName: kiosk.station_name.trim(),
+          machineId: kiosk.machine_id,
+          authType: 'station',
+          token,
+        });
+        return;
+      }
+    }
+
+    // Step 2: Check operator profile PINs (operator identification)
     const profilesWithPin = await query<{ id: string; name: string; pin: string }>(
       `SELECT id, name, pin FROM profiles WHERE pin IS NOT NULL AND is_active = true`
     );
 
-    let matchedProfile: { id: string; name: string } | null = null;
     for (const profile of profilesWithPin) {
       const match = await bcrypt.compare(pinCode, profile.pin);
       if (match) {
-        matchedProfile = { id: profile.id, name: profile.name };
-        break;
+        const token = jwt.sign(
+          {
+            type: 'kiosk',
+            kioskId: 0,
+            stationName: profile.name,
+            userId: profile.id,
+            userName: profile.name,
+            authType: 'operator',
+            role: 'operator',
+          },
+          KIOSK_JWT_SECRET,
+          { expiresIn: '8h' }
+        );
+
+        res.json({
+          kioskId: 0,
+          stationName: profile.name,
+          userId: profile.id,
+          userName: profile.name,
+          authType: 'operator',
+          token,
+        });
+        return;
       }
     }
 
-    if (!matchedProfile) {
-      res.status(401).json({ error: 'Invalid PIN' });
-      return;
-    }
-
-    // Return user identity — legacy fields retained for backward compatibility with kiosk UI
-    res.json({
-      userId: matchedProfile.id,
-      userName: matchedProfile.name,
-      kioskId: 0,
-      stationName: matchedProfile.name,
-    });
+    res.status(401).json({ error: 'Invalid PIN' });
   } catch (error) {
-    console.error('Kiosk auth error:', error);
+    logger.error('Kiosk auth error', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Authentication failed' });
   }
 };
