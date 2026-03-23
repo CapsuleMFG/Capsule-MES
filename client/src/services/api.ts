@@ -39,13 +39,17 @@ api.interceptors.response.use(
     const isKioskRoute = window.location.pathname.startsWith('/kiosk');
 
     if (status === 401 && !isKioskRoute) {
-      // Token expired or invalid — clear session (skip for kiosk pages)
-      try { await api.post('/auth/logout'); } catch { /* fire-and-forget */ }
-      if (supabase) {
-        await supabase.auth.signOut();
-      }
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      // Skip interceptor for auth endpoints (login failures are handled by the calling component)
+      const requestUrl = error.config?.url || '';
+      if (!requestUrl.startsWith('/auth/')) {
+        // Token expired or invalid — notify server then clear session
+        try { await api.post('/auth/logout'); } catch { /* fire-and-forget */ }
+        if (supabase) {
+          await supabase.auth.signOut();
+        }
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
       }
     }
 

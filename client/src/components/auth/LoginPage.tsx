@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import { useAuthContext } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
@@ -28,7 +29,9 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Login failed';
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.error || err.message
+        : err instanceof Error ? err.message : 'Login failed';
       setError(message);
     } finally {
       setSubmitting(false);

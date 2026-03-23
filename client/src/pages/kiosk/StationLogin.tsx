@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { useKiosk } from '../../contexts/KioskContext';
 import { useToast } from '../../contexts/ToastContext';
 import { authenticateStation } from '../../services/parts-tracking.service';
@@ -34,8 +35,10 @@ export default function StationLogin() {
     try {
       const result = await authenticateStation({ pinCode: pin });
       login(result);
-    } catch (err: any) {
-      const message = err?.response?.data?.error || 'Invalid PIN code';
+    } catch (err: unknown) {
+      const message = axios.isAxiosError(err)
+        ? err.response?.data?.error || err.message
+        : 'Invalid PIN code';
       toast.error(message);
       setPin('');
     } finally {
