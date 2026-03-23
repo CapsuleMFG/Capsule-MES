@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { initializeDatabase, closeDatabase } from './models/database';
 import jobsRouter from './routes/jobs.routes';
@@ -20,11 +21,16 @@ import pbomOrdersRouter from './routes/pbom-orders.routes';
 import supplyChainRouter from './routes/supplychain.routes';
 import purchaseOrdersRouter from './routes/purchase-orders.routes';
 import { authMiddleware } from './middleware/auth';
+import { logger, httpLogger } from './lib/logger';
 import profilesRouter from './routes/profiles.routes';
 import auditLogRouter from './routes/audit-log.routes';
 import productionDashboardRouter from './routes/production-dashboard.routes';
 import reportsRouter from './routes/reports.routes';
 import schedulingRouter from './routes/scheduling.routes';
+import shippingRouter from './routes/shipping.routes';
+import notificationsRouter from './routes/notifications.routes';
+import downtimeRouter from './routes/downtime.routes';
+import authRouter from './routes/auth.routes';
 
 // Load environment variables
 dotenv.config();
@@ -36,6 +42,7 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
+    'http://10.0.1.213:5173',
     'http://localhost:3000'
 ];
 
@@ -60,14 +67,25 @@ app.use(cors({
     },
     credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Request logging middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-    next();
+// Global rate limiting
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 500, // generous limit for ERP usage
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later' },
+    skip: (req) => req.path === '/health', // don't rate limit health checks
 });
+app.use('/api/', apiLimiter);
+
+// Structured request logging
+app.use(httpLogger);
+
+// Auth routes — mounted BEFORE authMiddleware since login/forgot-password are unauthenticated
+app.use('/api/auth', authRouter);
 
 // Auth middleware — applied globally, behavior controlled by AUTH_REQUIRED env var
 app.use(authMiddleware);
@@ -99,7 +117,9 @@ app.use('/api/audit-log', auditLogRouter);
 app.use('/api/dashboard/production', productionDashboardRouter);
 app.use('/api/reports', reportsRouter);
 app.use('/api/scheduling', schedulingRouter);
-app.use('/api/dashboard/production', productionDashboardRouter);
+app.use('/api/shipments', shippingRouter);
+app.use('/api/notifications', notificationsRouter);
+app.use('/api/downtime', downtimeRouter);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
@@ -111,7 +131,7 @@ app.use((req: Request, res: Response) => {
 
 // Global error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error('Error:', err);
+    logger.error('Unhandled error', { error: err.message, stack: err.stack, path: req.path });
 
     res.status(500).json({
         error: 'Internal Server Error',
@@ -122,39 +142,43 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // Initialize database and start server
 async function startServer() {
     try {
-        console.log('Initializing database...');
+        // Production safety: refuse to start without auth properly configured
+        if (process.env.NODE_ENV === 'production') {
+          if (!process.env.SUPABASE_URL) {
+            logger.error('FATAL: SUPABASE_URL is not set. Cannot start in production without auth backend.');
+            process.exit(1);
+          }
+          if (process.env.AUTH_REQUIRED?.toLowerCase() !== 'true') {
+            logger.error('FATAL: AUTH_REQUIRED must be "true" in production. Dev bypass would be active.');
+            process.exit(1);
+          }
+        }
+
+        logger.info('Initializing database...');
         await initializeDatabase();
 
         app.listen(PORT, () => {
-            console.log(`
-╔════════════════════════════════════════════════════════╗
-║                                                        ║
-║           CAPSULE ERP SERVER RUNNING                   ║
-║                                                        ║
-║   Server: http://localhost:${PORT}                      ║
-║   Health: http://localhost:${PORT}/health               ║
-║   API:    http://localhost:${PORT}/api                  ║
-║                                                        ║
-║   Environment: ${process.env.NODE_ENV || 'development'}                              ║
-║                                                        ║
-╚════════════════════════════════════════════════════════╝
-            `);
+            logger.info(`Capsule ERP server running`, {
+                port: PORT,
+                env: process.env.NODE_ENV || 'development',
+                health: `http://localhost:${PORT}/health`,
+            });
         });
     } catch (error) {
-        console.error('Failed to start server:', error);
+        logger.error('Failed to start server', { error });
         process.exit(1);
     }
 }
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-    console.log('\nShutting down gracefully...');
+    logger.info('Shutting down gracefully...');
     closeDatabase();
     process.exit(0);
 });
 
 process.on('SIGTERM', () => {
-    console.log('\nShutting down gracefully...');
+    logger.info('Shutting down gracefully...');
     closeDatabase();
     process.exit(0);
 });
