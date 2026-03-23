@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import type { StationAuthResponse } from '../../../shared/types';
 
 interface KioskState {
   stationName: string;
@@ -12,7 +13,7 @@ interface KioskState {
 
 interface KioskContextType {
   station: KioskState | null;
-  login: (stationName: string, kioskId: number, userId?: string, userName?: string) => void;
+  login: (result: StationAuthResponse) => void;
   selectMachine: (machineId: number, machineName: string) => void;
   clearMachine: () => void;
   logout: () => void;
@@ -22,6 +23,7 @@ interface KioskContextType {
 const KioskContext = createContext<KioskContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'capsule_kiosk_station';
+const TOKEN_KEY = 'capsule_kiosk_token';
 
 export function KioskProvider({ children }: { children: ReactNode }) {
   const [station, setStation] = useState<KioskState | null>(() => {
@@ -35,10 +37,16 @@ export function KioskProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const login = useCallback((stationName: string, kioskId: number, userId?: string, userName?: string) => {
-    const state: KioskState = { stationName, kioskId, userId, userName };
+  const login = useCallback((result: StationAuthResponse) => {
+    const state: KioskState = {
+      stationName: result.stationName,
+      kioskId: result.kioskId,
+      userId: result.userId,
+      userName: result.userName,
+    };
     setStation(state);
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    sessionStorage.setItem(TOKEN_KEY, result.token);
     navigate('/kiosk/machine');
   }, [navigate]);
 
@@ -66,6 +74,7 @@ export function KioskProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     setStation(null);
     sessionStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     navigate('/kiosk');
   }, [navigate]);
 

@@ -33,7 +33,7 @@ export default function StationLogin() {
     setIsLoading(true);
     try {
       const result = await authenticateStation({ pinCode: pin });
-      login(result.stationName, result.kioskId);
+      login(result);
     } catch (err: any) {
       const message = err?.response?.data?.error || 'Invalid PIN code';
       toast.error(message);
