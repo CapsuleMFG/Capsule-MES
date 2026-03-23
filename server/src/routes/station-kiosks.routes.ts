@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import * as controller from '../controllers/station-kiosks.controller.js';
+import { requireRole } from '../middleware/roles';
 
 const router = Router();
 
@@ -13,9 +14,9 @@ const pinAuthLimiter = rateLimit({
 });
 
 router.get('/', controller.getStationKiosks);
-router.post('/', controller.createStationKiosk);
+router.post('/', requireRole('admin', 'manager'), controller.createStationKiosk);
 router.post('/auth', pinAuthLimiter, controller.authenticateStation);
-router.put('/:id', controller.updateStationKiosk);
-router.delete('/:id', controller.deleteStationKiosk);
+router.put('/:id', requireRole('admin', 'manager'), controller.updateStationKiosk);
+router.delete('/:id', requireRole('admin', 'manager'), controller.deleteStationKiosk);
 
 export default router;
