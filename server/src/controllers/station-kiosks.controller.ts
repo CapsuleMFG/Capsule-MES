@@ -151,7 +151,7 @@ export const authenticateStation = async (req: Request, res: Response) => {
           {
             type: 'kiosk',
             kioskId: 0,
-            stationName: profile.name,
+            stationName: null,
             userId: profile.id,
             userName: profile.name,
             authType: 'operator',
