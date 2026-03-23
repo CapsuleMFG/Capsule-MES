@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
@@ -88,6 +88,11 @@ export default function LoginPage() {
             >
               {submitting ? 'Signing in...' : 'Sign in'}
             </button>
+            <div className="text-center mt-2">
+              <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+                Forgot password?
+              </Link>
+            </div>
           </form>
         </div>
       </div>

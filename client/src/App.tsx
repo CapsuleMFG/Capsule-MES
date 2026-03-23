@@ -3,9 +3,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/ui/ToastContainer';
 import { AuthProvider } from './contexts/AuthContext';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import AppLayout from './components/layout/AppLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LoginPage from './components/auth/LoginPage';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import JobDetail from './pages/JobDetail';
@@ -22,6 +25,7 @@ import SchedulingBoard from './pages/SchedulingBoard';
 import Reports from './pages/Reports';
 import UserManagement from './pages/UserManagement';
 import AuditLogPage from './pages/AuditLog';
+import Shipping from './pages/Shipping';
 import { KioskProvider } from './contexts/KioskContext';
 import StationLogin from './pages/kiosk/StationLogin';
 import MachineSelect from './pages/kiosk/MachineSelect';
@@ -38,6 +42,7 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <AuthProvider>
@@ -45,6 +50,8 @@ function App() {
             <Routes>
               {/* Public routes */}
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
 
               {/* Kiosk routes — standalone, no sidebar, no auth required */}
               <Route element={<KioskProvider><Outlet /></KioskProvider>}>
@@ -84,6 +91,7 @@ function App() {
                     <Reports />
                   </ProtectedRoute>
                 } />
+                <Route path="shipping" element={<Shipping />} />
                 <Route path="clients" element={<Clients />} />
                 <Route path="admin/users" element={
                   <ProtectedRoute roles={['admin']}>
@@ -102,6 +110,7 @@ function App() {
         </AuthProvider>
       </ToastProvider>
     </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
