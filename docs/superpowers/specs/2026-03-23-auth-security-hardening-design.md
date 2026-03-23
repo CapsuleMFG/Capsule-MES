@@ -92,13 +92,13 @@ Replace forgeable raw headers with signed JWTs issued at PIN authentication time
   - If verified and `payload.type === "kiosk"`: construct `req.user` from the payload, call `next()`
   - If verification fails with `TokenExpiredError` or `JsonWebTokenError` AND the token's decoded payload has `type === "kiosk"`: return **401 immediately** ("Kiosk session expired" or "Invalid kiosk token"). Do NOT fall through to Supabase — an expired kiosk JWT is not a Supabase token.
   - If the token does not decode as a kiosk JWT at all (no `type` claim, or decoding fails because it's a Supabase JWT format): fall through to `supabaseAdmin.auth.getUser(token)` validation as before.
-- Use `jwt.decode(token)` (no verification) first to peek at the `type` claim for routing, then `jwt.verify()` only if `type === "kiosk"`.
+- Use `jwt.decode(token)` (no verification) first to peek at the `type` claim for routing, then `jwt.verify()` only if `type === "kiosk"`. If `jwt.decode()` returns `null` (malformed token) or the decoded payload has no `type` field, skip kiosk handling entirely and fall through to Supabase validation.
 
 **Existing PIN rate limiter preservation:** The rate limiter (10/min) is currently defined in `server/src/routes/station-kiosks.routes.ts` as `pinAuthLimiter` applied to the `POST /auth` route. This must be preserved when modifying the controller — no changes needed to the route file.
 
 **Frontend kiosk changes:**
-- `KioskContext.tsx` must be updated: `login()` method receives the JWT from the PIN auth response and stores it in sessionStorage under `capsule_kiosk_token`. The existing `capsule_kiosk_station` key can remain for non-auth kiosk state (station name, machine ID) but is no longer used for authentication.
-- `StationLogin.tsx` calls `login()` from `KioskContext` as before — the JWT storage happens inside `KioskContext.login()`.
+- `KioskContext.tsx` must be updated: `login()` method signature changes to accept the full `StationAuthResponse` object (which now includes `token`). Inside `login()`, store the JWT in sessionStorage under `capsule_kiosk_token`, and continue storing non-auth state (station name, machine ID) under `capsule_kiosk_station` as before.
+- `StationLogin.tsx` passes the full PIN auth response to `login(result)` instead of destructured positional arguments. The JWT storage happens inside `KioskContext.login()`.
 - Axios interceptor in `api.ts` checks for `capsule_kiosk_token` in sessionStorage and sends it as `Authorization: Bearer <token>`. Remove all `X-Kiosk-User` / `X-Kiosk-Id` header logic.
 - `shared/types/index.ts`: Update `StationAuthResponse` to include `token: string` field.
 
@@ -222,7 +222,7 @@ ALTER TABLE profiles ADD COLUMN locked_until TIMESTAMPTZ NULL;
 | `client/src/App.tsx` | New routes for `/forgot-password`, `/reset-password` |
 | `client/src/pages/kiosk/StationLogin.tsx` | Store JWT from PIN auth response |
 | `client/src/contexts/KioskContext.tsx` | Update `login()` to accept and store JWT from PIN auth; read from `capsule_kiosk_token` |
-| `shared/types/index.ts` | Add `token: string` to `StationAuthResponse` type |
+| `shared/types/index.ts` | Add `token: string` to `StationAuthResponse`; expand `AuditLogEntry.action` union to include auth event types (`LOGIN_SUCCESS`, `LOGIN_FAILURE`, `ACCOUNT_LOCKED`, `LOGOUT`, `PASSWORD_RESET_REQUEST`, `PASSWORD_RESET_COMPLETE`) |
 | `server/package.json` | Add `jsonwebtoken` + `@types/jsonwebtoken` dependencies |
 
 ---
