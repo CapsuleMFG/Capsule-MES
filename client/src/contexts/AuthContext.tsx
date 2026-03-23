@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, useRef, useCallback, type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 import { getMyProfile, logout as authLogout, login as authLogin } from '../services/auth.service';
+import { useIdleTimeout } from '../hooks/useIdleTimeout';
 import type { AuthUser } from '../../../shared/types';
 
 interface AuthContextType {
@@ -73,6 +74,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await authLogout();
     setUser(null);
   }, []);
+
+  const handleIdleTimeout = useCallback(async () => {
+    await logout();
+    window.location.href = '/login';
+  }, [logout]);
+
+  useIdleTimeout(handleIdleTimeout, !!user);
 
   return (
     <AuthContext.Provider value={{ user, isLoading, isAuthenticated: !!user, login, logout }}>
