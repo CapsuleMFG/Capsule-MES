@@ -44,18 +44,23 @@ Move the login flow from client-side Supabase SDK to an Express API endpoint for
 
 **New endpoint:** `POST /api/auth/login`
 - Accepts `{ email, password }`
-- Proxies to `supabaseAdmin.auth.signInWithPassword()` (or `supabaseAdmin.auth.admin.signInWithPassword()`)
+- Proxies to `supabaseAdmin.auth.signInWithPassword({ email, password })` — the non-admin method, which works with the service role key. Note: `admin.signInWithPassword()` does not exist in the Supabase JS SDK.
 - Returns the Supabase session (access_token, refresh_token) on success
 - Rate limited: **5 attempts per minute per IP**
+- Before calling Supabase, check `locked_until` on profiles (join via email on `auth.users`). If locked and `locked_until > NOW()`, return 401 immediately without attempting sign-in.
 - Track failed attempts in `login_attempts` table (email, ip_address, attempted_at, success)
-- After **10 failed attempts** for an email within 15 minutes, set `locked_until` on the profiles table (15-minute lockout)
+- After **10 failed attempts** for an email within 15 minutes, set `locked_until = NOW() + 15min` on the profiles table
 - Always return generic `"Invalid credentials"` on failure — never reveal whether email exists
 - Log auth events to audit_log: `LOGIN_SUCCESS`, `LOGIN_FAILURE`, `ACCOUNT_LOCKED`
 
-**Frontend change:** `AuthContext.login()` calls `POST /api/auth/login` instead of `supabase.auth.signInWithPassword()` directly. The response contains the tokens which are set into the Supabase client session.
+**Frontend change:** `AuthContext.login()` calls `POST /api/auth/login` instead of `supabase.auth.signInWithPassword()` directly. The response contains the tokens which are set into the Supabase client via `supabase.auth.setSession({ access_token, refresh_token })`.
+
+**Note on client-side bypass:** The frontend still exports a Supabase client (`client/src/lib/supabase.ts`) which could theoretically be used from the browser console to call `supabase.auth.signInWithPassword()` directly, bypassing rate limiting and lockout. This is acceptable for an internal manufacturing ERP (physical access required, known user base). The server-side rate limiter and lockout are defense-in-depth, not the sole control — Supabase's own rate limiting also applies.
 
 **New endpoint:** `POST /api/auth/logout`
-- Accepts the Bearer token, calls `supabaseAdmin.auth.admin.signOut()`
+- Added to `publicPaths` in auth middleware — must be accessible even with an expired token (e.g., idle timeout triggers logout after token expiry)
+- Accepts the Bearer token (if valid), resolves user for audit logging. If token is expired/invalid, still succeeds (fire-and-forget sign-out).
+- Calls `supabaseAdmin.auth.admin.signOut(userId)` if user was resolved
 - Logs `LOGOUT` audit event
 
 ### 2. Kiosk JWT Authentication
@@ -82,14 +87,20 @@ Replace forgeable raw headers with signed JWTs issued at PIN authentication time
 - Return the JWT in the response alongside existing fields
 
 **Auth middleware changes:**
-- Remove the `X-Kiosk-User` / `X-Kiosk-Id` header handling
-- When a Bearer token is present, first attempt to decode as a kiosk JWT (check for `type === "kiosk"` claim). If valid, construct `req.user` from the payload.
-- If not a kiosk JWT (no `type` claim or verification fails with `KIOSK_JWT_SECRET`), fall through to Supabase `getUser(token)` validation as before.
+- Remove the `X-Kiosk-User` / `X-Kiosk-Id` header handling entirely
+- When a Bearer token is present, first attempt to decode as a kiosk JWT using `jwt.verify(token, KIOSK_JWT_SECRET)`:
+  - If verified and `payload.type === "kiosk"`: construct `req.user` from the payload, call `next()`
+  - If verification fails with `TokenExpiredError` or `JsonWebTokenError` AND the token's decoded payload has `type === "kiosk"`: return **401 immediately** ("Kiosk session expired" or "Invalid kiosk token"). Do NOT fall through to Supabase — an expired kiosk JWT is not a Supabase token.
+  - If the token does not decode as a kiosk JWT at all (no `type` claim, or decoding fails because it's a Supabase JWT format): fall through to `supabaseAdmin.auth.getUser(token)` validation as before.
+- Use `jwt.decode(token)` (no verification) first to peek at the `type` claim for routing, then `jwt.verify()` only if `type === "kiosk"`.
+
+**Existing PIN rate limiter preservation:** The rate limiter (10/min) is currently defined in `server/src/routes/station-kiosks.routes.ts` as `pinAuthLimiter` applied to the `POST /auth` route. This must be preserved when modifying the controller — no changes needed to the route file.
 
 **Frontend kiosk changes:**
-- `StationLogin` stores the JWT in sessionStorage (key: `capsule_kiosk_token`)
-- Axios interceptor sends it as `Authorization: Bearer <token>` instead of raw `X-Kiosk-*` headers
-- Remove raw kiosk header logic from `api.ts`
+- `KioskContext.tsx` must be updated: `login()` method receives the JWT from the PIN auth response and stores it in sessionStorage under `capsule_kiosk_token`. The existing `capsule_kiosk_station` key can remain for non-auth kiosk state (station name, machine ID) but is no longer used for authentication.
+- `StationLogin.tsx` calls `login()` from `KioskContext` as before — the JWT storage happens inside `KioskContext.login()`.
+- Axios interceptor in `api.ts` checks for `capsule_kiosk_token` in sessionStorage and sends it as `Authorization: Bearer <token>`. Remove all `X-Kiosk-User` / `X-Kiosk-Id` header logic.
+- `shared/types/index.ts`: Update `StationAuthResponse` to include `token: string` field.
 
 ### 3. Password Strength Enforcement
 
@@ -119,8 +130,10 @@ Leverages Supabase's built-in reset token mechanism. No custom token generation.
 
 **New endpoint:** `POST /api/auth/reset-password`
 - Accepts `{ access_token, password }` (Supabase puts tokens in the URL hash after email link click)
-- Validates password strength
-- Calls Supabase to update the password
+- Validates password strength via `validatePassword()`
+- Exchanges the access_token for a user ID: `const { data: { user } } = await supabaseAdmin.auth.getUser(access_token)`
+- Updates the password via admin API: `await supabaseAdmin.auth.admin.updateUserById(user.id, { password })`
+- This keeps password reset server-authoritative — the client never calls Supabase auth directly for this flow
 - Logs `PASSWORD_RESET_COMPLETE` audit event
 
 **Supabase reset token expiry:** 1 hour (Supabase default). No custom expiry needed.
@@ -141,9 +154,12 @@ Leverages Supabase's built-in reset token mechanism. No custom token generation.
 
 ### 6. Dev Bypass Safety
 
-**Startup guard:** If `NODE_ENV === 'production'` and `SUPABASE_URL` is not set, **refuse to start the server** with a clear error message.
+**Startup guard:** If `NODE_ENV === 'production'`, enforce two checks before starting the server:
+1. `SUPABASE_URL` must be set (otherwise no auth backend exists)
+2. `AUTH_REQUIRED` must be `'true'` (otherwise the dev bypass in `auth.ts` will be active)
+If either check fails, log a fatal error and call `process.exit(1)`. This is critical because the dev bypass logic in `auth.ts` depends on `AUTH_REQUIRED`, not `SUPABASE_URL` — a production deployment with `SUPABASE_URL` set but `AUTH_REQUIRED` unset would silently run with auth disabled.
 
-**Loud warning:** When dev bypass is active, log: `logger.warn('AUTH DISABLED — dev bypass active. Set AUTH_REQUIRED=true for production.')`
+**Loud warning:** When dev bypass is active (non-production, `AUTH_REQUIRED !== 'true'`), log on every request: `logger.warn('AUTH DISABLED — dev bypass active. Set AUTH_REQUIRED=true for production.')`  — but only log once at startup to avoid spam, not per-request.
 
 **Debug header:** Add `X-Auth-Mode: dev-bypass` response header in dev mode so it's visible in browser devtools. Never send in production.
 
@@ -198,13 +214,15 @@ ALTER TABLE profiles ADD COLUMN locked_until TIMESTAMPTZ NULL;
 | `server/src/controllers/station-kiosks.controller.ts` | Issue signed JWT on successful PIN auth |
 | `server/src/controllers/profiles.controller.ts` | Password validation on user creation |
 | `server/src/server.ts` | Mount auth routes, production startup guard |
-| `server/src/middleware/audit.ts` | Expand action types for auth events |
+| `server/src/middleware/audit.ts` | Expand `action` type union to: `'CREATE' \| 'UPDATE' \| 'DELETE' \| 'LOGIN_SUCCESS' \| 'LOGIN_FAILURE' \| 'ACCOUNT_LOCKED' \| 'LOGOUT' \| 'PASSWORD_RESET_REQUEST' \| 'PASSWORD_RESET_COMPLETE'` |
 | `client/src/contexts/AuthContext.tsx` | Login via Express API; idle timeout integration |
 | `client/src/services/auth.service.ts` | New forgot/reset functions, login via API |
 | `client/src/services/api.ts` | Send kiosk JWT as Bearer; remove raw header logic |
 | `client/src/components/auth/LoginPage.tsx` | Add "Forgot password?" link |
 | `client/src/App.tsx` | New routes for `/forgot-password`, `/reset-password` |
 | `client/src/pages/kiosk/StationLogin.tsx` | Store JWT from PIN auth response |
+| `client/src/contexts/KioskContext.tsx` | Update `login()` to accept and store JWT from PIN auth; read from `capsule_kiosk_token` |
+| `shared/types/index.ts` | Add `token: string` to `StationAuthResponse` type |
 | `server/package.json` | Add `jsonwebtoken` + `@types/jsonwebtoken` dependencies |
 
 ---
