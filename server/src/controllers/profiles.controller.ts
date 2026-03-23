@@ -151,6 +151,12 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    // Prevent self-role-escalation — another admin/manager must change your role
+    if (id === req.user?.id && role !== undefined && role !== existing.role) {
+      res.status(403).json({ error: 'Cannot change your own role' });
+      return;
+    }
+
     const updates: string[] = [];
     const params: (string | boolean | null)[] = [];
     let paramIdx = 1;
