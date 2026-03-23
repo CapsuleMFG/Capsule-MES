@@ -63,6 +63,7 @@ A new middleware `operatorScope` that runs globally after `authMiddleware`. For 
 | `GET /api/jobs/:id` | DB check: job must have at least one tracked part at operator's station |
 | `GET /api/notifications` | Pass through — controller already filters by user_id |
 | `GET /api/notifications/unread-count` | Pass through — controller already filters by user_id |
+| `PUT /api/notifications/read-all` | Pass through — controller already scopes by user_id |
 | `PUT /api/notifications/:id/read` | Pass through — ownership checked in controller |
 | `DELETE /api/notifications/:id` | Pass through — ownership checked in controller |
 | `GET /api/workflow/stages` | Allow — reference data needed by kiosk UI |
@@ -71,15 +72,49 @@ A new middleware `operatorScope` that runs globally after `authMiddleware`. For 
 
 All other paths return: `403 { error: "Insufficient permissions for this resource" }`
 
-**Station identity extraction:**
-- For kiosk JWT tokens (where `decoded.type === 'kiosk'`), the station name is in `decoded.stationName`
-- The middleware reads station context from `req.user.name` (set by auth middleware from the kiosk JWT payload)
-- For station-scoped DB checks, query `tracked_parts` where `current_station` matches the operator's station name
+**Explicitly excluded from operator whitelist** (security-relevant omissions):
+- `GET /api/tracked-parts` (root list) — operators must not see all parts across all stations. They use the station-specific endpoint instead.
+
+**Station identity extraction — requires changes to `AuthenticatedUser` and `auth.ts`:**
+
+The current `AuthenticatedUser` type has only `id`, `email`, `name`, `role`. The operator scope middleware needs `stationName` and `authType` to function. These must be added:
+
+1. **Extend `AuthenticatedUser`** in `server/src/middleware/auth.ts`:
+   ```typescript
+   export interface AuthenticatedUser {
+     id: string;
+     email: string;
+     name: string;
+     role: 'admin' | 'manager' | 'engineer' | 'supply_chain' | 'operator';
+     stationName?: string;   // Set for kiosk JWT tokens only
+     authType?: 'station' | 'operator';  // Set for kiosk JWT tokens only
+   }
+   ```
+
+2. **Populate in auth middleware** when verifying kiosk JWTs (in the `type === 'kiosk'` branch):
+   ```typescript
+   req.user = {
+     id: payload.userId || `kiosk-${payload.kioskId}`,
+     email: '',
+     name: payload.userName || payload.stationName,
+     role: (payload.role as AuthenticatedUser['role']) || 'operator',
+     stationName: payload.stationName,  // Always the station name from JWT
+     authType: payload.authType,
+   };
+   ```
+
+3. **Station name resolution for operator-PIN tokens:**
+   - For `authType: 'station'` tokens: `req.user.stationName` is the actual station name (e.g., "Laser Bay 1"). Use directly.
+   - For `authType: 'operator'` tokens: `req.user.stationName` in the JWT is set to the operator's personal name (e.g., "John Smith") by the current `authenticateStation` controller — this is **semantically wrong** for station scoping. However, operator-PIN users go through a two-step kiosk flow: first they enter a station PIN (establishing the station), then select a machine. The operator-PIN flow is for identifying *who* is operating, not *where* they're operating. The `stationName` in operator-PIN JWTs should be fixed in the `authenticateStation` controller to not set `stationName` to the operator's name. Instead, operator-PIN tokens should omit `stationName` (set to `null`).
+   - **Operator-PIN users with no `stationName`:** The `operatorScope` middleware blocks all station-scoped endpoints (tracked parts by station, check-in/out) since there's no station to validate against. This is correct — an operator who authenticated only with their personal PIN (not through a station-first flow) has no station context and should not access station-scoped data. They can only access notifications and reference data.
+
+4. **The middleware reads `req.user.stationName`** (not `req.user.name`) for all station-scoped path checks and DB queries.
 
 **Implementation details:**
 - The middleware uses path pattern matching (not regex on every request — a simple prefix check + split)
 - DB checks only run for paths that need them (`:id` lookups). Whitelist paths without `:id` params pass without DB queries.
 - If `KIOSK_JWT_SECRET` is not configured, operators cannot authenticate at all (handled by auth middleware), so the scope middleware never runs for unauthenticated kiosk users
+- The middleware checks `req.user.role === 'operator'` — this catches both kiosk-authenticated operators and any Supabase user with the operator role. Both are subject to the same restrictions.
 
 ### 2. Missing Role Restrictions
 
@@ -99,9 +134,10 @@ Note: `POST /tracked-parts/:id/check-in` and `POST /tracked-parts/:id/check-out`
 
 In the notifications controller, for `PUT /:id/read` and `DELETE /:id`:
 
-1. Fetch the notification by ID
+1. Fetch the notification by ID — the existing queries (`SELECT id FROM notifications WHERE id = ?`) must be changed to `SELECT id, user_id FROM notifications WHERE id = ?` to include the `user_id` column
 2. Compare `notification.user_id` with `req.user.id`
-3. If mismatch, return `403 { error: "Cannot modify another user's notification" }`
+3. If `notification.user_id` is `NULL` (broadcast notification), allow the operation — any user can dismiss a broadcast notification directed at them
+4. If `notification.user_id` is not `NULL` and does not match `req.user.id`, return `403 { error: "Cannot modify another user's notification" }`
 
 This applies to ALL roles, not just operators. An admin should not be able to dismiss a manager's notifications.
 
@@ -127,11 +163,13 @@ In `PUT /api/profiles/:id` (profiles controller `updateProfile`):
 
 | File | Change |
 |------|--------|
+| `server/src/middleware/auth.ts` | Extend `AuthenticatedUser` with `stationName?` and `authType?` fields; populate from kiosk JWT payload |
+| `server/src/controllers/station-kiosks.controller.ts` | Fix operator-PIN JWT: set `stationName` to `null` instead of operator's personal name |
 | `server/src/server.ts` | Mount `operatorScope` middleware after `authMiddleware` |
 | `server/src/routes/station-kiosks.routes.ts` | Add `requireRole('admin', 'manager')` to POST/PUT/DELETE |
 | `server/src/routes/route-templates.routes.ts` | Add `requireRole('admin', 'manager', 'engineer')` to CUD operations |
 | `server/src/routes/tracked-parts.routes.ts` | Add `requireRole('admin', 'manager', 'engineer')` to PUT/DELETE |
-| `server/src/controllers/notifications.controller.ts` | Add ownership verification on PUT /:id/read and DELETE /:id |
+| `server/src/controllers/notifications.controller.ts` | Add ownership verification on PUT /:id/read and DELETE /:id; change SELECT queries to include `user_id` |
 | `server/src/controllers/profiles.controller.ts` | Add self-role-escalation prevention in updateProfile |
 
 ### No migration needed
