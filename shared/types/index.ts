@@ -866,6 +866,10 @@ export interface StationAuthRequest {
 export interface StationAuthResponse {
     stationName: string;
     kioskId: number;
+    userId?: string;
+    userName?: string;
+    authType?: 'station' | 'operator';
+    token: string;
 }
 
 export interface StationQueuePart extends TrackedPart {
@@ -879,7 +883,7 @@ export interface StationQueuePart extends TrackedPart {
 // AUTH & PROFILES
 // ============================================================
 
-export type UserRole = 'admin' | 'manager' | 'engineer' | 'operator';
+export type UserRole = 'admin' | 'manager' | 'engineer' | 'supply_chain' | 'operator';
 
 export interface Profile {
   id: string;         // UUID from auth.users
@@ -919,11 +923,17 @@ export interface LoginRequest {
   password: string;
 }
 
+export type AuditAction =
+  | 'CREATE' | 'UPDATE' | 'DELETE'
+  | 'LOGIN_SUCCESS' | 'LOGIN_FAILURE' | 'ACCOUNT_LOCKED'
+  | 'LOGOUT'
+  | 'PASSWORD_RESET_REQUEST' | 'PASSWORD_RESET_COMPLETE';
+
 export interface AuditLogEntry {
   id: number;
   userId: string | null;
   userName: string;
-  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  action: AuditAction;
   tableName: string;
   recordId: string | null;
   oldValues: Record<string, unknown> | null;
@@ -1071,4 +1081,143 @@ export interface MoveEntryRequest {
 export interface UpdateScheduleStatusRequest {
   status: ScheduleEntryStatus;
   blockedReason?: string;
+}
+
+// ============================================================
+// SHIPPING
+// ============================================================
+
+export type ShipmentStatus = 'Pending' | 'Packing' | 'Packed' | 'Shipped' | 'Delivered';
+
+export interface Shipment {
+  id: number;
+  jobId: number;
+  status: ShipmentStatus;
+  shippingMethod: string | null;
+  trackingNumber: string | null;
+  carrier: string | null;
+  shipDate: string | null;
+  deliveryDate: string | null;
+  shippingNotes: string | null;
+  packedBy: string | null;
+  shippedBy: string | null;
+  packingList: PackingListItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShipmentWithJob extends Shipment {
+  jobNumber: string;
+  clientName: string;
+  jobDescription: string;
+}
+
+export interface PackingListItem {
+  partId?: number;
+  description: string;
+  quantity: number;
+  trackingId?: string;
+}
+
+export interface CreateShipmentRequest {
+  jobId: number;
+  shippingMethod?: string;
+  carrier?: string;
+  shippingNotes?: string;
+}
+
+export interface UpdateShipmentRequest {
+  status?: ShipmentStatus;
+  shippingMethod?: string;
+  trackingNumber?: string;
+  carrier?: string;
+  shipDate?: string;
+  deliveryDate?: string;
+  shippingNotes?: string;
+  packedBy?: string;
+  shippedBy?: string;
+  packingList?: PackingListItem[];
+}
+
+// ============================================================
+// DOWNTIME EVENTS
+// ============================================================
+
+export type DowntimeCategory =
+  | 'Mechanical'
+  | 'Electrical'
+  | 'Material'
+  | 'Changeover'
+  | 'Planned Maintenance'
+  | 'Operator'
+  | 'Quality'
+  | 'Other';
+
+export interface DowntimeEvent {
+  id: number;
+  machineId: number;
+  machineName?: string;
+  category: DowntimeCategory;
+  reason: string | null;
+  startedAt: string;
+  endedAt: string | null;
+  durationMinutes: number | null;
+  reportedBy: string | null;
+  resolvedBy: string | null;
+  resolutionNotes: string | null;
+  createdAt: string;
+}
+
+export interface DowntimeAnalytics {
+  totalDowntimeMinutes: number;
+  totalEvents: number;
+  mttr: number; // Mean Time To Repair (minutes)
+  mtbf: number; // Mean Time Between Failures (minutes)
+  byCategory: { category: DowntimeCategory; count: number; totalMinutes: number }[];
+  byMachine: { machineId: number; machineName: string; count: number; totalMinutes: number }[];
+  trend: { date: string; totalMinutes: number; eventCount: number }[];
+}
+
+// ============================================================
+// OEE (Overall Equipment Effectiveness)
+// ============================================================
+
+export interface OeeMetrics {
+  availability: number; // 0-100%
+  performance: number;  // 0-100%
+  quality: number;      // 0-100%
+  oee: number;          // 0-100% (availability * performance * quality / 10000)
+  details: {
+    plannedMinutes: number;
+    downtimeMinutes: number;
+    totalPartsProduced: number;
+    goodParts: number;
+    rejectedParts: number;
+  };
+}
+
+export interface OeeByMachine extends OeeMetrics {
+  machineId: number;
+  machineName: string;
+  machineType: string;
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+export type NotificationType = 'info' | 'warning' | 'error' | 'success';
+export type NotificationCategory = 'machine_down' | 'quality_fail' | 'po_received' | 'job_completed' | 'shipment' | 'system';
+
+export interface Notification {
+  id: number;
+  userId: string | null;
+  title: string;
+  message: string;
+  type: NotificationType;
+  category: NotificationCategory | null;
+  referenceType: string | null;
+  referenceId: number | null;
+  isRead: boolean;
+  createdAt: string;
 }

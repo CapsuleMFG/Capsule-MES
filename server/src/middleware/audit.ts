@@ -1,5 +1,7 @@
 import { query } from '../models/database';
 import type { AuthenticatedUser } from './auth';
+import { logger } from '../lib/logger';
+import type { AuditAction } from '../../../shared/types';
 
 /**
  * Logs an action to the audit_log table. Fire-and-forget — errors are
@@ -7,7 +9,7 @@ import type { AuthenticatedUser } from './auth';
  */
 export async function logAudit(params: {
   user: AuthenticatedUser | undefined;
-  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  action: AuditAction;
   tableName: string;
   recordId: string | number | null;
   oldValues?: Record<string, unknown> | null;
@@ -29,7 +31,7 @@ export async function logAudit(params: {
       ]
     );
   } catch (error) {
-    console.error('Audit log write failed (non-fatal):', error);
+    logger.error('Audit log write failed (non-fatal)', { error: error instanceof Error ? error.message : error });
   }
 }
 
