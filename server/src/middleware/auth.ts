@@ -9,6 +9,8 @@ export interface AuthenticatedUser {
   email: string;
   name: string;
   role: 'admin' | 'manager' | 'engineer' | 'supply_chain' | 'operator';
+  stationName?: string;
+  authType?: 'station' | 'operator';
 }
 
 // Extend Express Request to include user
@@ -23,7 +25,7 @@ declare global {
 interface KioskJwtPayload {
   type: 'kiosk';
   kioskId: number;
-  stationName: string;
+  stationName: string | null;
   userId?: string;
   userName?: string;
   authType: 'station' | 'operator';
@@ -84,8 +86,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       req.user = {
         id: payload.userId || `kiosk-${payload.kioskId}`,
         email: '',
-        name: payload.userName || payload.stationName,
+        name: payload.userName || payload.stationName || '',
         role: (payload.role as AuthenticatedUser['role']) || 'operator',
+        stationName: payload.authType === 'station' ? (payload.stationName ?? undefined) : undefined,
+        authType: payload.authType,
       };
       return next();
     } catch (err) {
