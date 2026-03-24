@@ -2,11 +2,11 @@
   "name": "capsule-mes-server",
   "version": "1.0.0",
   "description": "Backend server for Capsule MES system",
-  "main": "dist/server.js",
+  "main": "dist/server/src/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/server/src/server.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
