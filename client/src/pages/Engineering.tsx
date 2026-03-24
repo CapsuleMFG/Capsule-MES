@@ -37,6 +37,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../contexts/ToastContext';
 import * as jobsService from '../services/jobs.service';
 import * as engineeringService from '../services/engineering.service';
+import api from '../services/api';
 import type { Job, WorkOrderStatus, WorkOrder } from '../types';
 import { Menu } from '@headlessui/react';
 import { useNavigate } from 'react-router-dom';
@@ -670,8 +671,8 @@ function ExpandedJobContent({ job }: ExpandedJobContentProps) {
   const { data: trackedParts } = useQuery({
     queryKey: ['trackedParts', 'list', { jobId: job.id }],
     queryFn: async () => {
-      const response = await fetch(`http://localhost:3001/api/tracked-parts?jobId=${job.id}`);
-      return response.json();
+      const { data } = await api.get(`/tracked-parts?jobId=${job.id}`);
+      return data;
     },
   });
 

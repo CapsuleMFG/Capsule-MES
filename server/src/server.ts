@@ -39,12 +39,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// CORS configuration - allow multiple localhost ports for development
+// CORS configuration
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
     'http://10.0.1.213:5173',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    // Production origins from env (comma-separated)
+    ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',').map(s => s.trim()) : []),
 ];
 
 // Middleware
