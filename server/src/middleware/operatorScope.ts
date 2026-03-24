@@ -22,7 +22,9 @@ export const operatorScope = async (req: Request, res: Response, next: NextFunct
   if (method === 'GET' && (
     path === '/api/workflow/stages' ||
     path === '/api/machines' ||
-    path.startsWith('/api/machines/')
+    path.startsWith('/api/machines/') ||
+    path === '/api/production/machines' ||
+    path === '/api/production/pool'
   )) {
     return next();
   }
