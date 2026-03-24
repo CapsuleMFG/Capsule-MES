@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { query, queryOne, execute, executeTransaction } from '../models/database';
 import { generateEntriesForJob } from './scheduling.controller';
 import type { Job, JobWorkflowProgress, JobMaterial, JobLabor, CreateJobRequest, UpdateJobRequest, UpdateWorkflowStageRequest, CreateMaterialRequest, UpdateMaterialRequest, CreateLaborRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Auto-complete a workflow stage for a job.
@@ -30,9 +31,9 @@ export async function autoCompleteStage(jobId: number, stageName: string): Promi
             [row.id]
         );
 
-        console.log(`[autoCompleteStage] Job ${jobId}: ${stageName} auto-completed`);
+        logger.info('[autoCompleteStage] Stage auto-completed', { jobId, stageName });
     } catch (error) {
-        console.error(`[autoCompleteStage] Error auto-completing ${stageName} for job ${jobId}:`, error);
+        logger.error('[autoCompleteStage] Error auto-completing stage', { jobId, stageName, error: error instanceof Error ? error.message : error });
     }
 }
 
@@ -142,7 +143,7 @@ export async function getJobAnalytics(req: Request, res: Response): Promise<void
             },
         });
     } catch (error) {
-        console.error('Error fetching job analytics:', error);
+        logger.error('Error fetching job analytics', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch job analytics' });
     }
 }
@@ -222,7 +223,7 @@ export async function getJobs(req: Request, res: Response): Promise<void> {
 
         res.json(jobs);
     } catch (error) {
-        console.error('Error fetching jobs:', error);
+        logger.error('Error fetching jobs', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch jobs' });
     }
 }
@@ -302,7 +303,7 @@ export async function createJob(req: Request, res: Response): Promise<void> {
 
         res.status(201).json(mapRowToJob(job));
     } catch (error) {
-        console.error('Error creating job:', error);
+        logger.error('Error creating job', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create job' });
     }
 }
@@ -356,7 +357,7 @@ export async function getJobById(req: Request, res: Response): Promise<void> {
 
         res.json(mappedJob);
     } catch (error) {
-        console.error('Error fetching job:', error);
+        logger.error('Error fetching job', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch job' });
     }
 }
@@ -405,7 +406,7 @@ export async function updateJob(req: Request, res: Response): Promise<void> {
 
         res.json(mapRowToJob(job));
     } catch (error) {
-        console.error('Error updating job:', error);
+        logger.error('Error updating job', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update job' });
     }
 }
@@ -427,7 +428,7 @@ export async function deleteJob(req: Request, res: Response): Promise<void> {
 
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting job:', error);
+        logger.error('Error deleting job', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete job' });
     }
 }
@@ -450,7 +451,7 @@ export async function getJobWorkflow(req: Request, res: Response): Promise<void>
 
         res.json(workflowProgress);
     } catch (error) {
-        console.error('Error fetching workflow:', error);
+        logger.error('Error fetching workflow', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch workflow' });
     }
 }
@@ -512,7 +513,7 @@ export async function updateWorkflowStage(req: Request, res: Response): Promise<
 
         res.json(updated);
     } catch (error) {
-        console.error('Error updating workflow stage:', error);
+        logger.error('Error updating workflow stage', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update workflow stage' });
     }
 }
@@ -531,7 +532,7 @@ export async function getJobMaterials(req: Request, res: Response): Promise<void
 
         res.json(materials);
     } catch (error) {
-        console.error('Error fetching materials:', error);
+        logger.error('Error fetching materials', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch materials' });
     }
 }
@@ -566,7 +567,7 @@ export async function createMaterial(req: Request, res: Response): Promise<void>
 
         res.status(201).json(created);
     } catch (error) {
-        console.error('Error creating material:', error);
+        logger.error('Error creating material', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create material' });
     }
 }
@@ -611,7 +612,7 @@ export async function updateMaterial(req: Request, res: Response): Promise<void>
 
         res.json(updated);
     } catch (error) {
-        console.error('Error updating material:', error);
+        logger.error('Error updating material', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update material' });
     }
 }
@@ -627,7 +628,7 @@ export async function deleteMaterial(req: Request, res: Response): Promise<void>
 
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting material:', error);
+        logger.error('Error deleting material', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete material' });
     }
 }
@@ -650,7 +651,7 @@ export async function getJobLabor(req: Request, res: Response): Promise<void> {
 
         res.json(labor);
     } catch (error) {
-        console.error('Error fetching labor:', error);
+        logger.error('Error fetching labor', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch labor' });
     }
 }
@@ -686,7 +687,7 @@ export async function createLabor(req: Request, res: Response): Promise<void> {
 
         res.status(201).json(created);
     } catch (error) {
-        console.error('Error creating labor:', error);
+        logger.error('Error creating labor', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create labor' });
     }
 }
@@ -702,7 +703,7 @@ export async function deleteLabor(req: Request, res: Response): Promise<void> {
 
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting labor:', error);
+        logger.error('Error deleting labor', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete labor' });
     }
 }

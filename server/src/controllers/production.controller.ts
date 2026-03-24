@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { WorkOrder, ProductionStatus } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Convert database row to WorkOrder object
@@ -70,7 +71,7 @@ export async function sendToProduction(req: Request, res: Response): Promise<voi
 
     res.json(mapRowToWorkOrder(workOrderRow));
   } catch (error) {
-    console.error('Error sending work order to production:', error);
+    logger.error('Error sending work order to production', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to send work order to production' });
   }
 }
@@ -99,7 +100,7 @@ export async function getProductionPool(req: Request, res: Response): Promise<vo
 
     res.json(workOrders);
   } catch (error) {
-    console.error('Error fetching production pool:', error);
+    logger.error('Error fetching production pool', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch production pool' });
   }
 }
@@ -151,7 +152,7 @@ export async function assignToMachine(req: Request, res: Response): Promise<void
 
     res.json(mapRowToWorkOrder(workOrderRow));
   } catch (error) {
-    console.error('Error assigning work order to machine:', error);
+    logger.error('Error assigning work order to machine', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to assign work order to machine' });
   }
 }
@@ -209,7 +210,7 @@ export async function updateProductionStatus(req: Request, res: Response): Promi
 
     res.json(mapRowToWorkOrder(workOrderRow));
   } catch (error) {
-    console.error('Error updating production status:', error);
+    logger.error('Error updating production status', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to update production status' });
   }
 }
@@ -257,7 +258,7 @@ export async function updateProductionPriority(req: Request, res: Response): Pro
 
     res.json(mapRowToWorkOrder(workOrderRow));
   } catch (error) {
-    console.error('Error updating production priority:', error);
+    logger.error('Error updating production priority', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to update production priority' });
   }
 }
@@ -284,7 +285,7 @@ export async function getMachines(req: Request, res: Response): Promise<void> {
 
     res.json(machines);
   } catch (error) {
-    console.error('Error fetching machines:', error);
+    logger.error('Error fetching machines', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch machines' });
   }
 }

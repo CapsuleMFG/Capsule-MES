@@ -1,4 +1,4 @@
--- Seed data for Capsule ERP
+-- Seed data for Capsule MES
 
 -- Insert workflow stages (4-stage workflow)
 INSERT INTO workflow_stages (name, display_order, color) VALUES

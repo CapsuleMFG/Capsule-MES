@@ -1,4 +1,4 @@
-# Capsule ERP — Design System
+# Capsule MES — Design System
 
 **Theme:** Soft Structural Light
 **Last updated:** 2026-03-18

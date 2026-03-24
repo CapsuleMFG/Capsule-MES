@@ -1,0 +1,100 @@
+<h2>How to handle 13 machine columns?</h2>
+<p class="subtitle">13 columns won't fit on screen at once. How should we organize them?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Group by Type (Collapsible)</h3>
+      <p>Group machines into categories that expand/collapse. Your boss sees 5-6 groups instead of 13 columns, and expands the group he's working with.</p>
+      <div style="margin-top:12px; padding:16px; background:#f9fafb; border-radius:12px; font-size:12px;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <div style="border:1px solid #e5e7eb; border-radius:8px; padding:8px; min-width:120px;">
+            <div style="font-weight:600; color:#111; font-size:11px; cursor:pointer;">&#9660; CUTTING</div>
+            <div style="margin-top:6px; font-size:10px; color:#6b7280;">
+              <div style="padding:3px 0; border-bottom:1px solid #f3f4f6;">Laser (3 jobs)</div>
+              <div style="padding:3px 0;">Zund (1 job)</div>
+            </div>
+          </div>
+          <div style="border:1px solid #e5e7eb; border-radius:8px; padding:8px; min-width:120px;">
+            <div style="font-weight:600; color:#111; font-size:11px; cursor:pointer;">&#9660; FORMING</div>
+            <div style="margin-top:6px; font-size:10px; color:#6b7280;">
+              <div style="padding:3px 0; border-bottom:1px solid #f3f4f6;">Brake 1 (2 jobs)</div>
+              <div style="padding:3px 0;">Brake 2 (1 job)</div>
+            </div>
+          </div>
+          <div style="border:1px solid #e5e7eb; border-radius:8px; padding:8px; min-width:120px;">
+            <div style="font-weight:600; color:#111; font-size:11px; cursor:pointer;">&#9654; ROLL FORMING (5)</div>
+          </div>
+          <div style="border:1px solid #e5e7eb; border-radius:8px; padding:8px; min-width:120px;">
+            <div style="font-weight:600; color:#111; font-size:11px; cursor:pointer;">&#9654; FINISHING (4)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Filter Tabs + Horizontal Scroll</h3>
+      <p>Tab bar at top: "All Machines" | "Cutting" | "Forming" | "Roll Forming" | "CNC/Wood" | "Finishing". Each tab shows only those machine columns. "All" shows everything with horizontal scroll.</p>
+      <div style="margin-top:12px; padding:16px; background:#f9fafb; border-radius:12px; font-size:12px;">
+        <div style="display:flex; gap:4px; margin-bottom:12px; border-bottom:1px solid #e5e7eb; padding-bottom:8px;">
+          <div style="padding:4px 10px; background:#111; color:white; border-radius:6px; font-size:11px; font-weight:500;">All</div>
+          <div style="padding:4px 10px; color:#6b7280; font-size:11px;">Cutting</div>
+          <div style="padding:4px 10px; color:#6b7280; font-size:11px;">Forming</div>
+          <div style="padding:4px 10px; color:#6b7280; font-size:11px;">Roll Forming</div>
+          <div style="padding:4px 10px; color:#6b7280; font-size:11px;">CNC/Wood</div>
+          <div style="padding:4px 10px; color:#6b7280; font-size:11px;">Finishing</div>
+        </div>
+        <div style="display:flex; gap:8px; overflow-x:auto;">
+          <div style="min-width:140px; border:1px solid #e5e7eb; border-radius:8px; padding:8px;">
+            <div style="font-weight:600; color:#111; font-size:11px;">LASER</div>
+          </div>
+          <div style="min-width:140px; border:1px solid #e5e7eb; border-radius:8px; padding:8px;">
+            <div style="font-weight:600; color:#111; font-size:11px;">BRAKE 1</div>
+          </div>
+          <div style="min-width:140px; border:1px solid #e5e7eb; border-radius:8px; padding:8px;">
+            <div style="font-weight:600; color:#111; font-size:11px;">BRAKE 2</div>
+          </div>
+          <div style="min-width:100px; color:#9ca3af; font-size:11px; display:flex; align-items:center;">&#8594; scroll</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Horizontal Rows (Swim Lanes as Rows)</h3>
+      <p>Flip it: each machine is a horizontal row, jobs are cards going left-to-right in priority order. All 13 machines visible vertically — scroll down instead of sideways. Drag cards left/right to reorder, drag up/down to move between machines.</p>
+      <div style="margin-top:12px; padding:16px; background:#f9fafb; border-radius:12px; font-size:12px;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:80px; font-weight:600; color:#111; font-size:11px;">Laser</div>
+            <div style="display:flex; gap:4px; flex:1;">
+              <div style="background:white; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px;">CAP-001</div>
+              <div style="background:white; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px;">CAP-003</div>
+              <div style="background:white; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px;">CAP-007</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:80px; font-weight:600; color:#111; font-size:11px;">Brake 1</div>
+            <div style="display:flex; gap:4px; flex:1;">
+              <div style="background:white; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px;">CAP-002</div>
+              <div style="background:white; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px;">CAP-005</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:80px; font-weight:600; color:#111; font-size:11px;">Brake 2</div>
+            <div style="display:flex; gap:4px; flex:1;">
+              <div style="background:white; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px;">CAP-006</div>
+            </div>
+          </div>
+          <div style="color:#9ca3af; font-size:11px; padding:4px 0;">&#8595; 10 more machines below</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne } from '../models/database';
 import * as fs from 'fs';
+import { logger } from '../lib/logger';
 
 // pdf-parse doesn't have types, so we require it
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -190,7 +191,7 @@ export async function parsePdf(req: Request, res: Response): Promise<void> {
       isRecut,
     });
   } catch (error) {
-    console.error('Error parsing PDF:', error);
+    logger.error('Error parsing PDF', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to parse PDF' });
   }
 }

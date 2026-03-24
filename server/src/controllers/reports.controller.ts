@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query, queryOne } from '../models/database';
+import { logger } from '../lib/logger';
 
 export const getKpiReport = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -88,7 +89,7 @@ export const getKpiReport = async (req: Request, res: Response): Promise<void> =
       ),
     });
   } catch (error) {
-    console.error('Error fetching KPI report:', error);
+    logger.error('Error fetching KPI report', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch report data' });
   }
 };

@@ -1,0 +1,175 @@
+<h2>Design Direction</h2>
+<p class="subtitle">Pick the visual vibe for the Capsule MES redesign. Each applies taste-skill principles differently.</p>
+
+<div class="cards">
+  <!-- Option A: Editorial Minimalist -->
+  <div class="card" data-choice="editorial" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; overflow: hidden;">
+      <div style="background: #FAFAFA; padding: 32px; font-family: system-ui, sans-serif; min-height: 280px;">
+        <!-- Sidebar -->
+        <div style="display: flex; gap: 24px;">
+          <div style="width: 180px; flex-shrink: 0;">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #999; margin-bottom: 16px;">CAPSULE MES</div>
+            <div style="font-size: 13px; color: #111; font-weight: 500; padding: 6px 0; border-left: 2px solid #111; padding-left: 10px;">Dashboard</div>
+            <div style="font-size: 13px; color: #888; padding: 6px 0; padding-left: 12px;">Jobs</div>
+            <div style="font-size: 13px; color: #888; padding: 6px 0; padding-left: 12px;">Engineering</div>
+            <div style="font-size: 13px; color: #888; padding: 6px 0; padding-left: 12px;">Supply Chain</div>
+            <div style="font-size: 13px; color: #888; padding: 6px 0; padding-left: 12px;">Production</div>
+          </div>
+          <!-- Main content -->
+          <div style="flex: 1;">
+            <div style="font-size: 28px; font-weight: 600; letter-spacing: -0.03em; color: #111; margin-bottom: 4px;">Dashboard</div>
+            <div style="font-size: 13px; color: #999; margin-bottom: 24px;">March 18, 2026</div>
+            <!-- Metrics row -->
+            <div style="display: flex; gap: 0; border-top: 1px solid #E5E5E5; border-bottom: 1px solid #E5E5E5; margin-bottom: 24px;">
+              <div style="flex: 1; padding: 16px 16px 16px 0; border-right: 1px solid #E5E5E5;">
+                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Active Jobs</div>
+                <div style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: #111;">12</div>
+              </div>
+              <div style="flex: 1; padding: 16px; border-right: 1px solid #E5E5E5;">
+                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Critical</div>
+                <div style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: #111;">3</div>
+              </div>
+              <div style="flex: 1; padding: 16px; border-right: 1px solid #E5E5E5;">
+                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Material Issues</div>
+                <div style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: #E45858;">2</div>
+              </div>
+              <div style="flex: 1; padding: 16px 0 16px 16px;">
+                <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Labor Hours</div>
+                <div style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em; color: #111;">847</div>
+              </div>
+            </div>
+            <!-- Job rows -->
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 12px;">Recent Jobs</div>
+            <div style="border-top: 1px solid #E5E5E5;">
+              <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px;">
+                <span style="color: #111; font-weight: 500; width: 120px;">CAP-2025-001</span>
+                <span style="color: #666; flex: 1;">Lennar Homes — Custom Enclosure</span>
+                <span style="display: inline-flex; align-items: center; gap: 5px; color: #999; font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #F5A623;"></span>In Progress</span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px;">
+                <span style="color: #111; font-weight: 500; width: 120px;">CAP-2025-002</span>
+                <span style="color: #666; flex: 1;">DR Horton — Panel Assembly</span>
+                <span style="display: inline-flex; align-items: center; gap: 5px; color: #999; font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #4CAF82;"></span>Completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Editorial Minimalist</h3>
+      <p>Inspired by Linear & Notion. Monochrome palette, crisp 1px borders, generous whitespace. Metrics in divider-separated rows instead of cards. Typography does the heavy lifting. Quiet, confident, data-first.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Soft Structural -->
+  <div class="card" data-choice="soft-structural" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; overflow: hidden;">
+      <div style="background: #F8F9FB; padding: 32px; font-family: system-ui, sans-serif; min-height: 280px;">
+        <div style="display: flex; gap: 24px;">
+          <!-- Sidebar -->
+          <div style="width: 180px; flex-shrink: 0; background: white; border-radius: 16px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+            <div style="font-size: 14px; font-weight: 700; color: #111; margin-bottom: 16px; letter-spacing: -0.01em;">Capsule</div>
+            <div style="font-size: 13px; color: white; background: #111; border-radius: 8px; padding: 7px 10px; margin-bottom: 4px; font-weight: 500;">Dashboard</div>
+            <div style="font-size: 13px; color: #666; padding: 7px 10px;">Jobs</div>
+            <div style="font-size: 13px; color: #666; padding: 7px 10px;">Engineering</div>
+            <div style="font-size: 13px; color: #666; padding: 7px 10px;">Supply Chain</div>
+            <div style="font-size: 13px; color: #666; padding: 7px 10px;">Production</div>
+          </div>
+          <!-- Main -->
+          <div style="flex: 1;">
+            <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.03em; color: #111; margin-bottom: 20px;">Dashboard</div>
+            <!-- Metric cards -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+              <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Active Jobs</div>
+                <div style="font-size: 28px; font-weight: 700; color: #111; letter-spacing: -0.03em;">12</div>
+              </div>
+              <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Critical</div>
+                <div style="font-size: 28px; font-weight: 700; color: #111; letter-spacing: -0.03em;">3</div>
+              </div>
+              <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Material Issues</div>
+                <div style="font-size: 28px; font-weight: 700; color: #E45858; letter-spacing: -0.03em;">2</div>
+              </div>
+              <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Labor Hours</div>
+                <div style="font-size: 28px; font-weight: 700; color: #111; letter-spacing: -0.03em;">847</div>
+              </div>
+            </div>
+            <!-- Job list card -->
+            <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+              <div style="font-size: 13px; font-weight: 600; color: #111; margin-bottom: 12px;">Recent Jobs</div>
+              <div style="display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #F3F3F3; font-size: 13px;">
+                <span style="color: #111; font-weight: 500; width: 120px;">CAP-2025-001</span>
+                <span style="color: #666; flex: 1;">Lennar Homes — Custom Enclosure</span>
+                <span style="background: #FFF8EC; color: #B8860B; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 500;">In Progress</span>
+              </div>
+              <div style="display: flex; align-items: center; padding: 8px 0; font-size: 13px;">
+                <span style="color: #111; font-weight: 500; width: 120px;">CAP-2025-002</span>
+                <span style="color: #666; flex: 1;">DR Horton — Panel Assembly</span>
+                <span style="background: #ECFDF3; color: #16794A; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 500;">Completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Soft Structural</h3>
+      <p>Vercel/Arc Browser aesthetic. Warm white background, floating white cards with subtle shadows, generous border-radius (14-16px). Feels modern and approachable. Active nav uses solid fill. Soft color badges for status.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Hybrid Dark-Light -->
+  <div class="card" data-choice="hybrid" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; overflow: hidden;">
+      <div style="background: #F5F5F0; padding: 32px; font-family: system-ui, sans-serif; min-height: 280px;">
+        <div style="display: flex; gap: 0;">
+          <!-- Dark sidebar -->
+          <div style="width: 180px; flex-shrink: 0; background: #1A1A1A; border-radius: 16px 0 0 16px; padding: 20px 16px; color: white;">
+            <div style="font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px;">Capsule</div>
+            <div style="font-size: 13px; color: white; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 7px 10px; margin-bottom: 2px; font-weight: 500;">Dashboard</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.5); padding: 7px 10px;">Jobs</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.5); padding: 7px 10px;">Engineering</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.5); padding: 7px 10px;">Supply Chain</div>
+            <div style="font-size: 13px; color: rgba(255,255,255,0.5); padding: 7px 10px;">Production</div>
+          </div>
+          <!-- Light main area -->
+          <div style="flex: 1; background: white; border-radius: 0 16px 16px 0; padding: 24px;">
+            <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.03em; color: #111; margin-bottom: 20px;">Dashboard</div>
+            <!-- Metrics as asymmetric grid -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+              <div style="background: #F8F8F6; border-radius: 12px; padding: 16px; grid-row: span 2;">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;">Active Jobs</div>
+                <div style="font-size: 36px; font-weight: 700; color: #111; letter-spacing: -0.04em;">12</div>
+                <div style="font-size: 12px; color: #999; margin-top: 4px;">3 critical</div>
+              </div>
+              <div style="background: #F8F8F6; border-radius: 12px; padding: 14px;">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Material Issues</div>
+                <div style="font-size: 20px; font-weight: 700; color: #E45858; letter-spacing: -0.02em;">2</div>
+              </div>
+              <div style="background: #F8F8F6; border-radius: 12px; padding: 14px;">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;">Labor Hours</div>
+                <div style="font-size: 20px; font-weight: 700; color: #111; letter-spacing: -0.02em;">847</div>
+              </div>
+            </div>
+            <!-- Job rows -->
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 10px;">Recent Jobs</div>
+            <div style="display: flex; align-items: center; padding: 9px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px;">
+              <span style="color: #111; font-weight: 500; width: 120px;">CAP-2025-001</span>
+              <span style="color: #666; flex: 1;">Lennar Homes — Custom Enclosure</span>
+              <span style="display: inline-flex; align-items: center; gap: 5px; color: #B8860B; font-size: 12px;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #F5A623;"></span>In Progress</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Hybrid Contrast</h3>
+      <p>Dark sidebar + light content area (Stripe/GitHub style). Asymmetric bento grid for metrics. Warm off-white background (#F5F5F0). Combines the authority of dark chrome with the clarity of a light workspace. Best of both worlds.</p>
+    </div>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import type {
   UpdateTrackedPartRequest, CheckInRequest, CheckOutRequest, TrackedPartsSummary,
 } from "../../../shared/types";
 import { autoCompleteStage } from "./jobs.controller";
+import { logger } from '../lib/logger';
 
 function mapPart(row: any): TrackedPart {
   return {
@@ -53,7 +54,7 @@ export const getTrackedParts = async (req: Request, res: Response) => {
     const rows = await query<any>(sql, params);
     res.json(rows.map(mapPart));
   } catch (error) {
-    console.error("Error fetching tracked parts:", error);
+    logger.error("Error fetching tracked parts", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to fetch tracked parts" });
   }
 };
@@ -69,7 +70,7 @@ export const getTrackedPart = async (req: Request, res: Response) => {
     part.stationLogs = logs.map(mapLog);
     res.json(part);
   } catch (error) {
-    console.error("Error fetching tracked part:", error);
+    logger.error("Error fetching tracked part", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to fetch tracked part" });
   }
 };
@@ -82,7 +83,7 @@ export const lookupByTrackingId = async (req: Request, res: Response) => {
     if (!rows.length) return res.status(404).json({ error: "Part not found with this tracking ID" });
     res.json(rows.map(mapPart));
   } catch (error) {
-    console.error("Error looking up part:", error);
+    logger.error("Error looking up part", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to look up part" });
   }
 };
@@ -103,7 +104,7 @@ export const createTrackedPart = async (req: Request, res: Response) => {
     const row = await queryOne<any>(PART_SELECT + " WHERE tp.id = ?", [result.lastID]);
     res.status(201).json(mapPart(row));
   } catch (error) {
-    console.error("Error creating tracked part:", error);
+    logger.error("Error creating tracked part", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to create tracked part" });
   }
 };
@@ -132,7 +133,7 @@ export const bulkCreateTrackedParts = async (req: Request, res: Response) => {
     const rows = await query<any>(PART_SELECT + " WHERE tp.id IN (" + placeholders + ")", createdIds);
     res.status(201).json({ message: rows.length + " parts created", parts: rows.map(mapPart) });
   } catch (error) {
-    console.error("Error bulk creating tracked parts:", error);
+    logger.error("Error bulk creating tracked parts", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to bulk create tracked parts" });
   }
 };
@@ -163,7 +164,7 @@ export const updateTrackedPart = async (req: Request, res: Response) => {
     const row = await queryOne<any>(PART_SELECT + " WHERE tp.id = ?", [id]);
     res.json(mapPart(row));
   } catch (error) {
-    console.error("Error updating tracked part:", error);
+    logger.error("Error updating tracked part", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to update tracked part" });
   }
 };
@@ -177,7 +178,7 @@ export const deleteTrackedPart = async (req: Request, res: Response) => {
     await execute("DELETE FROM tracked_parts WHERE id = ?", [id]);
     res.json({ message: "Tracked part deleted successfully" });
   } catch (error) {
-    console.error("Error deleting tracked part:", error);
+    logger.error("Error deleting tracked part", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to delete tracked part" });
   }
 };
@@ -195,7 +196,7 @@ export const getTrackedPartsSummary = async (req: Request, res: Response) => {
     const byStation = stationRows.map((r: any) => ({ stationName: r.station_name, count: r.count }));
     res.json({ total, byStatus, byStation } as TrackedPartsSummary);
   } catch (error) {
-    console.error("Error fetching summary:", error);
+    logger.error("Error fetching summary", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to fetch tracked parts summary" });
   }
 };
@@ -222,7 +223,7 @@ export const getStationQueue = async (req: Request, res: Response) => {
 
     res.json({ checkedIn, waiting });
   } catch (error) {
-    console.error("Error fetching station queue:", error);
+    logger.error("Error fetching station queue", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to fetch station queue" });
   }
 };
@@ -285,7 +286,7 @@ export const checkIn = async (req: Request, res: Response) => {
     part.stationLogs = logs.map(mapLog);
     res.json(part);
   } catch (error) {
-    console.error("Error checking in:", error);
+    logger.error("Error checking in", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to check in part" });
   }
 };
@@ -359,7 +360,7 @@ export const checkOut = async (req: Request, res: Response) => {
     part.stationLogs = logs.map(mapLog);
     res.json(part);
   } catch (error) {
-    console.error("Error checking out:", error);
+    logger.error("Error checking out", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to check out part" });
   }
 };

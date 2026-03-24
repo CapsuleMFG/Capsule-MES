@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query } from '../models/database';
 import type { WorkflowStage } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * GET /api/workflow/stages - Get all workflow stages
@@ -21,7 +22,7 @@ export async function getWorkflowStages(req: Request, res: Response): Promise<vo
 
         res.json(stages);
     } catch (error) {
-        console.error('Error fetching workflow stages:', error);
+        logger.error('Error fetching workflow stages', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch workflow stages' });
     }
 }

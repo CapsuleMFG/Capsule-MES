@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { JobProcurement, CreateProcurementRequest, UpdateProcurementRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Convert database row to JobProcurement object
@@ -40,7 +41,7 @@ export async function getProcurementItems(req: Request, res: Response): Promise<
 
         res.json(items);
     } catch (error) {
-        console.error('Error fetching procurement items:', error);
+        logger.error('Error fetching procurement items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch procurement items' });
     }
 }
@@ -115,7 +116,7 @@ export async function createProcurementItem(req: Request, res: Response): Promis
         const newItem = await queryOne('SELECT * FROM job_procurement WHERE id = ?', [result.lastID]);
         res.status(201).json(mapRowToProcurement(newItem));
     } catch (error) {
-        console.error('Error creating procurement item:', error);
+        logger.error('Error creating procurement item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create procurement item' });
     }
 }
@@ -222,7 +223,7 @@ export async function updateProcurementItem(req: Request, res: Response): Promis
         const updated = await queryOne('SELECT * FROM job_procurement WHERE id = ?', [procId]);
         res.json(mapRowToProcurement(updated));
     } catch (error) {
-        console.error('Error updating procurement item:', error);
+        logger.error('Error updating procurement item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update procurement item' });
     }
 }
@@ -246,7 +247,7 @@ export async function deleteProcurementItem(req: Request, res: Response): Promis
         await execute('DELETE FROM job_procurement WHERE id = ?', [procId]);
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting procurement item:', error);
+        logger.error('Error deleting procurement item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete procurement item' });
     }
 }

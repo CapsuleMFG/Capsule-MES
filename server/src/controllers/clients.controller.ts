@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { Client, CreateClientRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Convert database row to Client object
@@ -28,7 +29,7 @@ export async function getClients(req: Request, res: Response): Promise<void> {
 
         res.json(clients);
     } catch (error) {
-        console.error('Error fetching clients:', error);
+        logger.error('Error fetching clients', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch clients' });
     }
 }
@@ -64,7 +65,7 @@ export async function createClient(req: Request, res: Response): Promise<void> {
 
         res.status(201).json(mapRowToClient(client));
     } catch (error) {
-        console.error('Error creating client:', error);
+        logger.error('Error creating client', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create client' });
     }
 }
@@ -85,7 +86,7 @@ export async function getClientById(req: Request, res: Response): Promise<void> 
 
         res.json(mapRowToClient(client));
     } catch (error) {
-        console.error('Error fetching client:', error);
+        logger.error('Error fetching client', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch client' });
     }
 }
@@ -127,7 +128,7 @@ export async function updateClient(req: Request, res: Response): Promise<void> {
 
         res.json(mapRowToClient(client));
     } catch (error) {
-        console.error('Error updating client:', error);
+        logger.error('Error updating client', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update client' });
     }
 }
@@ -157,7 +158,7 @@ export async function deleteClient(req: Request, res: Response): Promise<void> {
 
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting client:', error);
+        logger.error('Error deleting client', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete client' });
     }
 }

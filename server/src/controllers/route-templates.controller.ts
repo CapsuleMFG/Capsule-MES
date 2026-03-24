@@ -5,6 +5,7 @@ import type {
   UpdateRouteTemplateRequest, CreateRouteTemplateStepRequest,
   UpdateRouteTemplateStepRequest, ReorderStepsRequest,
 } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 function mapTemplate(row: any): RouteTemplate {
   return { id: row.id, name: row.name, description: row.description,
@@ -23,7 +24,7 @@ export const getRouteTemplates = async (req: Request, res: Response) => {
     const rows = await query<any>("SELECT rt.id, rt.name, rt.description, (SELECT COUNT(*) FROM route_template_steps WHERE route_template_id = rt.id) as stepCount, rt.created_at, rt.updated_at FROM route_templates rt ORDER BY rt.name ASC");
     res.json(rows.map(mapTemplate));
   } catch (error) {
-    console.error("Error fetching route templates:", error);
+    logger.error("Error fetching route templates", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to fetch route templates" });
   }
 };
@@ -39,7 +40,7 @@ export const getRouteTemplate = async (req: Request, res: Response) => {
     template.steps = stepRows.map(mapStep);
     res.json(template);
   } catch (error) {
-    console.error("Error fetching route template:", error);
+    logger.error("Error fetching route template", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to fetch route template" });
   }
 };
@@ -65,7 +66,7 @@ export const createRouteTemplate = async (req: Request, res: Response) => {
     template.steps = stepRows.map(mapStep);
     res.status(201).json(template);
   } catch (error) {
-    console.error("Error creating route template:", error);
+    logger.error("Error creating route template", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to create route template" });
   }
 };
@@ -91,7 +92,7 @@ export const updateRouteTemplate = async (req: Request, res: Response) => {
     const row = await queryOne<any>("SELECT rt.id, rt.name, rt.description, (SELECT COUNT(*) FROM route_template_steps WHERE route_template_id = rt.id) as stepCount, rt.created_at, rt.updated_at FROM route_templates rt WHERE rt.id = ?", [id]);
     res.json(mapTemplate(row));
   } catch (error) {
-    console.error("Error updating route template:", error);
+    logger.error("Error updating route template", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to update route template" });
   }
 };
@@ -109,7 +110,7 @@ export const deleteRouteTemplate = async (req: Request, res: Response) => {
     await execute("DELETE FROM route_templates WHERE id = ?", [id]);
     res.json({ message: "Route template deleted successfully" });
   } catch (error) {
-    console.error("Error deleting route template:", error);
+    logger.error("Error deleting route template", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to delete route template" });
   }
 };
@@ -134,7 +135,7 @@ export const addStep = async (req: Request, res: Response) => {
     const stepRow = await queryOne<any>("SELECT rts.id, rts.route_template_id, rts.step_order, rts.station_name, rts.machine_id, m.name as machine_name, rts.estimated_minutes, rts.notes, rts.created_at, rts.updated_at FROM route_template_steps rts LEFT JOIN machines m ON rts.machine_id = m.id WHERE rts.id = ?", [stepResult.lastID]);
     res.status(201).json(mapStep(stepRow));
   } catch (error) {
-    console.error("Error adding step:", error);
+    logger.error("Error adding step", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to add step" });
   }
 };
@@ -160,7 +161,7 @@ export const updateStep = async (req: Request, res: Response) => {
     const stepRow = await queryOne<any>("SELECT rts.id, rts.route_template_id, rts.step_order, rts.station_name, rts.machine_id, m.name as machine_name, rts.estimated_minutes, rts.notes, rts.created_at, rts.updated_at FROM route_template_steps rts LEFT JOIN machines m ON rts.machine_id = m.id WHERE rts.id = ?", [stepId]);
     res.json(mapStep(stepRow));
   } catch (error) {
-    console.error("Error updating step:", error);
+    logger.error("Error updating step", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to update step" });
   }
 };
@@ -175,7 +176,7 @@ export const deleteStep = async (req: Request, res: Response) => {
     await execute("UPDATE route_templates SET updated_at = NOW() WHERE id = ?", [id]);
     res.json({ message: "Step deleted successfully" });
   } catch (error) {
-    console.error("Error deleting step:", error);
+    logger.error("Error deleting step", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to delete step" });
   }
 };
@@ -193,7 +194,7 @@ export const reorderSteps = async (req: Request, res: Response) => {
     const stepRows = await query<any>("SELECT rts.id, rts.route_template_id, rts.step_order, rts.station_name, rts.machine_id, m.name as machine_name, rts.estimated_minutes, rts.notes, rts.created_at, rts.updated_at FROM route_template_steps rts LEFT JOIN machines m ON rts.machine_id = m.id WHERE rts.route_template_id = ? ORDER BY rts.step_order ASC", [id]);
     res.json(stepRows.map(mapStep));
   } catch (error) {
-    console.error("Error reordering steps:", error);
+    logger.error("Error reordering steps", { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: "Failed to reorder steps" });
   }
 };

@@ -44,7 +44,7 @@ export default function LoginPage() {
         <div className="bg-white border border-gray-100 rounded-lg p-8">
           <div className="text-center mb-6">
             <h1 className="text-xl font-semibold text-gray-900">CAPSULE</h1>
-            <p className="text-sm text-gray-500 mt-1">Manufacturing ERP</p>
+            <p className="text-sm text-gray-500 mt-1">Manufacturing MES</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

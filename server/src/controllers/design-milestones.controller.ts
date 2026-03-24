@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import { autoCompleteStage } from './jobs.controller';
+import { logger } from '../lib/logger';
 
 export interface DesignMilestone {
     id: number;
@@ -39,7 +40,7 @@ export async function getDesignMilestones(req: Request, res: Response): Promise<
 
         res.json(milestones);
     } catch (error) {
-        console.error('Error fetching design milestones:', error);
+        logger.error('Error fetching design milestones', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch design milestones' });
     }
 }
@@ -99,7 +100,7 @@ export async function initializeDesignMilestones(req: Request, res: Response): P
 
         res.status(201).json(milestones);
     } catch (error) {
-        console.error('Error initializing design milestones:', error);
+        logger.error('Error initializing design milestones', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to initialize design milestones' });
     }
 }
@@ -150,7 +151,7 @@ export async function createSingleMilestone(req: Request, res: Response): Promis
 
         res.status(201).json(milestone);
     } catch (error) {
-        console.error('Error creating milestone:', error);
+        logger.error('Error creating milestone', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create milestone' });
     }
 }
@@ -201,8 +202,8 @@ export async function updateDesignMilestone(req: Request, res: Response): Promis
 
         const sql = `UPDATE design_milestones SET ${updates.join(', ')} WHERE id = ? AND job_id = ?`;
 
-        console.log('[updateDesignMilestone] SQL:', sql);
-        console.log('[updateDesignMilestone] Params:', params);
+        logger.info('[updateDesignMilestone] SQL', { data: sql });
+        logger.info('[updateDesignMilestone] Params', { data: params });
 
         await execute(sql, params);
 
@@ -243,7 +244,7 @@ export async function updateDesignMilestone(req: Request, res: Response): Promis
 
         res.json(milestone);
     } catch (error) {
-        console.error('Error updating design milestone:', error);
+        logger.error('Error updating design milestone', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update design milestone' });
     }
 }
@@ -262,7 +263,7 @@ export async function deleteDesignMilestone(req: Request, res: Response): Promis
 
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting design milestone:', error);
+        logger.error('Error deleting design milestone', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete design milestone' });
     }
 }
@@ -302,8 +303,8 @@ async function updateJobStatusBasedOnMilestones(jobId: number): Promise<void> {
             [jobId]
         );
 
-        console.log(`[updateJobStatusBasedOnMilestones] Job ${jobId} milestone progress updated`);
+        logger.info('[updateJobStatusBasedOnMilestones] Job milestone progress updated', { jobId });
     } catch (error) {
-        console.error('Error updating job status based on milestones:', error);
+        logger.error('Error updating job status based on milestones', { error: error instanceof Error ? error.message : error });
     }
 }

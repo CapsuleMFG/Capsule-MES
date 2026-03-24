@@ -16,9 +16,11 @@ import {
   ChartBar,
   ChartLineUp,
   CalendarBlank,
+  Truck,
 } from '@phosphor-icons/react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import QuickAddJobModal from '../jobs/QuickAddJobModal';
+import NotificationBell from './NotificationBell';
 import type { UserRole } from '../../../../shared/types';
 
 interface NavItem {
@@ -32,11 +34,13 @@ const navigation: NavItem[] = [
   { name: 'Dashboard', href: '/', icon: SquaresFour },
   { name: 'Jobs', href: '/jobs', icon: Briefcase },
   { name: 'Engineering', href: '/engineering', icon: Wrench, roles: ['admin', 'manager', 'engineer'] },
-  { name: 'Supply Chain', href: '/supply-chain', icon: Package, roles: ['admin', 'manager', 'engineer'] },
-  { name: 'Production', href: '/production', icon: Factory, roles: ['admin', 'manager'] },
+  { name: 'Supply Chain', href: '/supply-chain', icon: Package, roles: ['admin', 'manager', 'engineer', 'supply_chain'] },
+  { name: 'Production', href: '/production', icon: Factory },
+  { name: 'Parts', href: '/parts', icon: Package, roles: ['admin', 'manager', 'engineer', 'operator'] },
   { name: 'Prod Dashboard', href: '/dashboard/production', icon: ChartBar, roles: ['admin', 'manager'] },
   { name: 'Scheduling', href: '/scheduling', icon: CalendarBlank, roles: ['admin', 'manager'] },
   { name: 'Station Kiosks', href: '/station-kiosks', icon: Monitor, roles: ['admin', 'manager'] },
+  { name: 'Shipping', href: '/shipping', icon: Truck, roles: ['admin', 'manager', 'engineer', 'supply_chain'] },
   { name: 'Clients', href: '/clients', icon: Users, roles: ['admin', 'manager'] },
   { name: 'Reports', href: '/reports', icon: ChartLineUp, roles: ['admin', 'manager'] },
 ];
@@ -64,7 +68,7 @@ export default function AppLayout() {
     !item.roles || (user && item.roles.includes(user.role))
   );
 
-  const currentPage = [...navigation, ...adminNavigation].find(item => isActive(item.href))?.name || 'Capsule ERP';
+  const currentPage = [...navigation, ...adminNavigation].find(item => isActive(item.href))?.name || 'Capsule MES';
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -72,7 +76,7 @@ export default function AppLayout() {
       <aside className="w-[220px] bg-white border-r border-gray-100 flex flex-col flex-shrink-0">
         <div className="px-4 py-4 border-b border-gray-100">
           <h1 className="text-sm font-semibold tracking-tight text-gray-900">CAPSULE</h1>
-          <p className="text-[11px] text-gray-400 mt-0.5">Manufacturing ERP</p>
+          <p className="text-[11px] text-gray-400 mt-0.5">Manufacturing MES</p>
         </div>
 
         <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
@@ -146,6 +150,7 @@ export default function AppLayout() {
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-medium text-gray-900">{currentPage}</h2>
             <div className="flex items-center gap-3">
+              <NotificationBell />
               <button
                 onClick={() => setIsAddJobModalOpen(true)}
                 className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-[10px] flex items-center gap-2 transition-colors active:scale-[0.98]"

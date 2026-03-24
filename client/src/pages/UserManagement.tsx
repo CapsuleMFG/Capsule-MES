@@ -7,6 +7,7 @@ const ROLES: { value: UserRole; label: string }[] = [
   { value: 'admin', label: 'Admin' },
   { value: 'manager', label: 'Manager' },
   { value: 'engineer', label: 'Engineer' },
+  { value: 'supply_chain', label: 'Supply Chain' },
   { value: 'operator', label: 'Operator' },
 ];
 
@@ -40,30 +41,30 @@ function AddUserModal({ onClose }: AddUserModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg border border-gray-100 w-full max-w-md p-6">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <h2 className="text-base font-semibold text-gray-900 mb-4">Add User</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-md p-3">{error}</div>}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input type="email" required value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input type="password" required value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input type="text" required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
             <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value as UserRole }))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none bg-white">
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none bg-white">
               {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
             </select>
           </div>
@@ -71,11 +72,11 @@ function AddUserModal({ onClose }: AddUserModalProps) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Kiosk PIN <span className="text-gray-400 font-normal">(optional, operators only)</span></label>
             <input type="password" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={form.pin || ''} onChange={e => setForm(f => ({ ...f, pin: e.target.value }))}
               placeholder="4–6 digits"
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none" />
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border border-gray-200 rounded-md text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={isPending} className="flex-1 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm rounded-md disabled:opacity-50">
+            <button type="button" onClick={onClose} className="flex-1 px-4 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
+            <button type="submit" disabled={isPending} className="flex-1 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm rounded-[10px] disabled:opacity-50">
               {isPending ? 'Creating...' : 'Create User'}
             </button>
           </div>
@@ -117,20 +118,20 @@ function EditUserModal({ profile, onClose }: EditUserModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg border border-gray-100 w-full max-w-md p-6">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
         <h2 className="text-base font-semibold text-gray-900 mb-4">Edit User</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-md p-3">{error}</div>}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input type="text" required value={form.name || ''} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
             <select value={form.role || 'operator'} onChange={e => setForm(f => ({ ...f, role: e.target.value as UserRole }))}
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none bg-white">
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none bg-white">
               {ROLES.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
             </select>
           </div>
@@ -138,7 +139,7 @@ function EditUserModal({ profile, onClose }: EditUserModalProps) {
             <label className="block text-sm font-medium text-gray-700 mb-1">Set new PIN <span className="text-gray-400 font-normal">(leave blank to keep current)</span></label>
             <input type="password" inputMode="numeric" pattern="[0-9]*" maxLength={6} value={form.pin} onChange={e => setForm(f => ({ ...f, pin: e.target.value }))}
               placeholder="4–6 digits"
-              className="w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-900 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none" />
+              className="w-full px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none" />
           </div>
           <div className="flex items-center justify-between py-1">
             <span className="text-sm font-medium text-gray-700">Active</span>
@@ -148,8 +149,8 @@ function EditUserModal({ profile, onClose }: EditUserModalProps) {
             </button>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border border-gray-200 rounded-md text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={isPending} className="flex-1 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm rounded-md disabled:opacity-50">
+            <button type="button" onClick={onClose} className="flex-1 px-4 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
+            <button type="submit" disabled={isPending} className="flex-1 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white text-sm rounded-[10px] disabled:opacity-50">
               {isPending ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
@@ -172,7 +173,7 @@ export default function UserManagement() {
           <p className="text-sm text-gray-500 mt-0.5">Manage user accounts and roles</p>
         </div>
         <button onClick={() => setIsAddOpen(true)}
-          className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-3 py-1.5 rounded-md">
+          className="bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 rounded-[10px] active:scale-[0.98] transition-all">
           Add User
         </button>
       </div>
@@ -181,7 +182,7 @@ export default function UserManagement() {
       {error && <p className="text-sm text-red-600">Failed to load users</p>}
 
       {profiles && (
-        <div className="bg-white border border-gray-100 rounded-lg overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
@@ -194,7 +195,7 @@ export default function UserManagement() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {profiles.map(profile => (
-                <tr key={profile.id} className="hover:bg-gray-50/50">
+                <tr key={profile.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-gray-900 font-medium">{profile.name}</td>
                   <td className="px-4 py-3 text-gray-500">{profile.email}</td>
                   <td className="px-4 py-3 text-gray-700">{capitalize(profile.role)}</td>

@@ -1,4 +1,4 @@
-// Shared TypeScript types for Capsule ERP
+// Shared TypeScript types for Capsule MES
 
 export type JobPriority = 'Critical' | 'High' | 'Medium' | 'Low';
 export type JobStatus = 'Active' | 'On Hold' | 'Completed' | 'Cancelled';

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { Machine, CreateMachineRequest, UpdateMachineRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Get all machines
@@ -28,7 +29,7 @@ export const getMachines = async (req: Request, res: Response) => {
     // Filter by active status if provided
     if (active !== undefined) {
       sql += ' WHERE active = ?';
-      params.push(active === 'true');
+      params.push(active === 'true' ? true : false);
     }
 
     sql += ' ORDER BY display_order ASC, name ASC';
@@ -48,7 +49,7 @@ export const getMachines = async (req: Request, res: Response) => {
 
     res.json(machinesList);
   } catch (error) {
-    console.error('Error fetching machines:', error);
+    logger.error('Error fetching machines', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch machines' });
   }
 };
@@ -92,7 +93,7 @@ export const getMachine = async (req: Request, res: Response) => {
 
     res.json(machine);
   } catch (error) {
-    console.error('Error fetching machine:', error);
+    logger.error('Error fetching machine', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch machine' });
   }
 };
@@ -156,7 +157,7 @@ export const createMachine = async (req: Request, res: Response) => {
 
     res.status(201).json(machine);
   } catch (error) {
-    console.error('Error creating machine:', error);
+    logger.error('Error creating machine', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to create machine' });
   }
 };
@@ -250,7 +251,7 @@ export const updateMachine = async (req: Request, res: Response) => {
 
     res.json(machine);
   } catch (error) {
-    console.error('Error updating machine:', error);
+    logger.error('Error updating machine', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to update machine' });
   }
 };
@@ -286,7 +287,7 @@ export const deleteMachine = async (req: Request, res: Response) => {
 
     res.json({ message: 'Machine deleted successfully' });
   } catch (error) {
-    console.error('Error deleting machine:', error);
+    logger.error('Error deleting machine', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to delete machine' });
   }
 };

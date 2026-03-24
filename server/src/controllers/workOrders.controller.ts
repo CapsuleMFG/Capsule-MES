@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { WorkOrder, CreateWorkOrderRequest, UpdateWorkOrderRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Convert database row to WorkOrder object
@@ -77,7 +78,7 @@ export async function getWorkOrders(req: Request, res: Response): Promise<void> 
 
         res.json(workOrders);
     } catch (error) {
-        console.error('Error fetching work orders:', error);
+        logger.error('Error fetching work orders', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch work orders' });
     }
 }
@@ -103,7 +104,7 @@ export async function getWorkOrder(req: Request, res: Response): Promise<void> {
 
         res.json(mapRowToWorkOrder(row));
     } catch (error) {
-        console.error('Error fetching work order:', error);
+        logger.error('Error fetching work order', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch work order' });
     }
 }
@@ -153,7 +154,7 @@ export async function createWorkOrder(req: Request, res: Response): Promise<void
             ]
         );
 
-        console.log('Created work order with ID:', result.lastID);
+        logger.info('Created work order with ID', { data: result.lastID });
 
         const newWo = await queryOne(
             `SELECT wo.*, m.name as assigned_machine_name
@@ -164,14 +165,14 @@ export async function createWorkOrder(req: Request, res: Response): Promise<void
         );
 
         if (!newWo) {
-            console.error('Failed to retrieve newly created work order. ID:', result.lastID);
+            logger.error('Failed to retrieve newly created work order', { id: result.lastID });
             res.status(500).json({ error: 'Work order created but failed to retrieve it' });
             return;
         }
 
         res.status(201).json(mapRowToWorkOrder(newWo));
     } catch (error) {
-        console.error('Error creating work order:', error);
+        logger.error('Error creating work order', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create work order' });
     }
 }
@@ -234,7 +235,7 @@ export async function updateWorkOrder(req: Request, res: Response): Promise<void
         const updated = await queryOne('SELECT * FROM work_orders WHERE id = ?', [woId]);
         res.json(mapRowToWorkOrder(updated));
     } catch (error) {
-        console.error('Error updating work order:', error);
+        logger.error('Error updating work order', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update work order' });
     }
 }
@@ -258,7 +259,7 @@ export async function deleteWorkOrder(req: Request, res: Response): Promise<void
         await execute('DELETE FROM work_orders WHERE id = ?', [woId]);
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting work order:', error);
+        logger.error('Error deleting work order', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete work order' });
     }
 }

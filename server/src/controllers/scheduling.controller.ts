@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute, executeTransactionWithParams } from '../models/database';
+import { logger } from '../lib/logger';
 
 interface ScheduleRow {
   id: number;
@@ -106,7 +107,7 @@ export const getSchedule = async (req: Request, res: Response): Promise<void> =>
 
     res.json(result);
   } catch (error) {
-    console.error('Error fetching schedule:', error);
+    logger.error('Error fetching schedule', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch schedule' });
   }
 };
@@ -140,7 +141,7 @@ export const updatePosition = async (req: Request, res: Response): Promise<void>
 
     res.json({ message: 'Position updated' });
   } catch (error) {
-    console.error('Error updating position:', error);
+    logger.error('Error updating position', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to update position' });
   }
 };
@@ -172,7 +173,7 @@ export const moveEntry = async (req: Request, res: Response): Promise<void> => {
 
     res.json({ message: 'Entry moved' });
   } catch (error) {
-    console.error('Error moving entry:', error);
+    logger.error('Error moving entry', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to move entry' });
   }
 };
@@ -231,7 +232,7 @@ export const updateStatus = async (req: Request, res: Response): Promise<void> =
 
     res.json({ message: 'Status updated' });
   } catch (error) {
-    console.error('Error updating status:', error);
+    logger.error('Error updating status', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to update status' });
   }
 };
@@ -242,7 +243,7 @@ export const generateScheduleEntries = async (req: Request, res: Response): Prom
     await generateEntriesForJob(jobId);
     res.json({ message: 'Schedule entries generated' });
   } catch (error) {
-    console.error('Error generating schedule entries:', error);
+    logger.error('Error generating schedule entries', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to generate schedule entries' });
   }
 };
@@ -272,7 +273,7 @@ export async function generateEntriesForJob(jobId: number): Promise<void> {
 
     for (const step of steps) {
       if (!step.machine_id) {
-        console.warn(`Skipping step "${step.station_name}" — no machine assigned`);
+        logger.warn('Skipping step — no machine assigned', { stationName: step.station_name });
         continue;
       }
 

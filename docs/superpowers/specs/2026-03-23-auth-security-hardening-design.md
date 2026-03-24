@@ -2,13 +2,13 @@
 
 **Date:** 2026-03-23
 **Status:** Approved
-**Scope:** Harden Capsule ERP authentication — rate limiting, kiosk JWT, password strength, password reset, session expiry, dev bypass safety, auth audit logging.
+**Scope:** Harden Capsule MES authentication — rate limiting, kiosk JWT, password strength, password reset, session expiry, dev bypass safety, auth audit logging.
 
 ---
 
 ## Current State
 
-Capsule ERP uses Supabase Auth for user authentication (email/password via GoTrue, JWT tokens). Kiosk stations authenticate via bcrypt-hashed PINs. Role-based access control is enforced server-side via `requireRole()` middleware and client-side via `ProtectedRoute`.
+Capsule MES uses Supabase Auth for user authentication (email/password via GoTrue, JWT tokens). Kiosk stations authenticate via bcrypt-hashed PINs. Role-based access control is enforced server-side via `requireRole()` middleware and client-side via `ProtectedRoute`.
 
 ### What's already solid
 - Supabase Auth handles password hashing (bcrypt via GoTrue)
@@ -55,7 +55,7 @@ Move the login flow from client-side Supabase SDK to an Express API endpoint for
 
 **Frontend change:** `AuthContext.login()` calls `POST /api/auth/login` instead of `supabase.auth.signInWithPassword()` directly. The response contains the tokens which are set into the Supabase client via `supabase.auth.setSession({ access_token, refresh_token })`.
 
-**Note on client-side bypass:** The frontend still exports a Supabase client (`client/src/lib/supabase.ts`) which could theoretically be used from the browser console to call `supabase.auth.signInWithPassword()` directly, bypassing rate limiting and lockout. This is acceptable for an internal manufacturing ERP (physical access required, known user base). The server-side rate limiter and lockout are defense-in-depth, not the sole control — Supabase's own rate limiting also applies.
+**Note on client-side bypass:** The frontend still exports a Supabase client (`client/src/lib/supabase.ts`) which could theoretically be used from the browser console to call `supabase.auth.signInWithPassword()` directly, bypassing rate limiting and lockout. This is acceptable for an internal manufacturing MES (physical access required, known user base). The server-side rate limiter and lockout are defense-in-depth, not the sole control — Supabase's own rate limiting also applies.
 
 **New endpoint:** `POST /api/auth/logout`
 - Added to `publicPaths` in auth middleware — must be accessible even with an expired token (e.g., idle timeout triggers logout after token expiry)
@@ -165,7 +165,7 @@ If either check fails, log a fatal error and call `process.exit(1)`. This is cri
 
 ### 7. Email Verification
 
-No change needed. Admin-created users are auto-confirmed (`email_confirm: true`) which is correct for an internal ERP where admins create accounts for known employees. No self-registration exists.
+No change needed. Admin-created users are auto-confirmed (`email_confirm: true`) which is correct for an internal MES where admins create accounts for known employees. No self-registration exists.
 
 ---
 

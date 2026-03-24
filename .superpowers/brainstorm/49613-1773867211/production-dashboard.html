@@ -1,0 +1,177 @@
+<h2>Production Dashboard Layout</h2>
+<p class="subtitle">The always-on shop floor view — which layout works better?</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#111827;border-radius:8px;padding:16px;font-family:monospace;font-size:11px;color:#9CA3AF;">
+        <!-- Layout A: Command Center -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:8px;text-align:center;">
+            <div style="color:#6B7280;font-size:9px;">ACTIVE JOBS</div>
+            <div style="color:#F3F4F6;font-size:18px;font-weight:bold;">12</div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:8px;text-align:center;">
+            <div style="color:#6B7280;font-size:9px;">PARTS TODAY</div>
+            <div style="color:#F3F4F6;font-size:18px;font-weight:bold;">47</div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:8px;text-align:center;">
+            <div style="color:#6B7280;font-size:9px;">ON-TIME RATE</div>
+            <div style="color:#F3F4F6;font-size:18px;font-weight:bold;">89%</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:8px;">
+            <div style="color:#F3F4F6;font-size:10px;font-weight:bold;margin-bottom:6px;">Machine Status</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">Laser 1</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10B981;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Running</span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">CNC Mill</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10B981;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Running</span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">Press Brake</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Idle</span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">Zund</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#EF4444;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Down</span></span>
+              </div>
+            </div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:8px;">
+            <div style="color:#F3F4F6;font-size:10px;font-weight:bold;margin-bottom:6px;">Job Queue</div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">CAP-2026-041</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10B981;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Active</span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">CAP-2026-038</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#10B981;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Active</span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">CAP-2026-045</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#F59E0B;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Queued</span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="color:#D1D5DB;">CAP-2026-047</span>
+                <span style="display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#EF4444;display:inline-block;"></span><span style="color:#9CA3AF;font-size:9px;">Blocked</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:8px;margin-top:8px;">
+          <div style="color:#F3F4F6;font-size:10px;font-weight:bold;margin-bottom:4px;">Bottlenecks</div>
+          <div style="display:flex;gap:8px;">
+            <div style="background:#7F1D1D;border:1px solid #991B1B;border-radius:4px;padding:4px 6px;color:#FCA5A5;font-size:9px;">Zund down — waiting on part</div>
+            <div style="background:#78350F;border:1px solid #92400E;border-radius:4px;padding:4px 6px;color:#FDE68A;font-size:9px;">CAP-047 materials delayed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A: Command Center</h3>
+      <p>KPI bar on top, machine status + job queue side by side, bottleneck alerts at bottom. Everything on one screen, no scrolling.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#111827;border-radius:8px;padding:16px;font-family:monospace;font-size:11px;color:#9CA3AF;">
+        <!-- Layout B: Machine-Centric -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="color:#F3F4F6;font-size:11px;font-weight:bold;">Laser 1</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>
+            </div>
+            <div style="color:#6B7280;font-size:9px;margin-bottom:2px;">RUNNING</div>
+            <div style="color:#D1D5DB;font-size:10px;">CAP-2026-041</div>
+            <div style="color:#6B7280;font-size:9px;">Panel A — 12/24 parts</div>
+            <div style="background:#374151;border-radius:4px;height:4px;margin-top:6px;"><div style="background:#3B82F6;border-radius:4px;height:4px;width:50%;"></div></div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="color:#F3F4F6;font-size:11px;font-weight:bold;">CNC Mill</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>
+            </div>
+            <div style="color:#6B7280;font-size:9px;margin-bottom:2px;">RUNNING</div>
+            <div style="color:#D1D5DB;font-size:10px;">CAP-2026-038</div>
+            <div style="color:#6B7280;font-size:9px;">Bracket B — 8/16 parts</div>
+            <div style="background:#374151;border-radius:4px;height:4px;margin-top:6px;"><div style="background:#3B82F6;border-radius:4px;height:4px;width:50%;"></div></div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="color:#F3F4F6;font-size:11px;font-weight:bold;">Press Brake</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;display:inline-block;"></span>
+            </div>
+            <div style="color:#6B7280;font-size:9px;margin-bottom:2px;">IDLE</div>
+            <div style="color:#D1D5DB;font-size:10px;">No job assigned</div>
+            <div style="color:#6B7280;font-size:9px;">Next: CAP-2026-045</div>
+            <div style="background:#374151;border-radius:4px;height:4px;margin-top:6px;"><div style="background:#374151;border-radius:4px;height:4px;width:0%;"></div></div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #991B1B;border-radius:6px;padding:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="color:#F3F4F6;font-size:11px;font-weight:bold;">Zund</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block;"></span>
+            </div>
+            <div style="color:#FCA5A5;font-size:9px;margin-bottom:2px;">DOWN</div>
+            <div style="color:#D1D5DB;font-size:10px;">Waiting on blade</div>
+            <div style="color:#6B7280;font-size:9px;">2 jobs blocked</div>
+            <div style="background:#374151;border-radius:4px;height:4px;margin-top:6px;"><div style="background:#EF4444;border-radius:4px;height:4px;width:100%;"></div></div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="color:#F3F4F6;font-size:11px;font-weight:bold;">Howick 1</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>
+            </div>
+            <div style="color:#6B7280;font-size:9px;margin-bottom:2px;">RUNNING</div>
+            <div style="color:#D1D5DB;font-size:10px;">CAP-2026-039</div>
+            <div style="color:#6B7280;font-size:9px;">Frame C — 3/6 parts</div>
+            <div style="background:#374151;border-radius:4px;height:4px;margin-top:6px;"><div style="background:#3B82F6;border-radius:4px;height:4px;width:50%;"></div></div>
+          </div>
+          <div style="background:#1F2937;border:1px solid #374151;border-radius:6px;padding:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span style="color:#F3F4F6;font-size:11px;font-weight:bold;">Howick 2</span>
+              <span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;"></span>
+            </div>
+            <div style="color:#6B7280;font-size:9px;margin-bottom:2px;">RUNNING</div>
+            <div style="color:#D1D5DB;font-size:10px;">CAP-2026-042</div>
+            <div style="color:#6B7280;font-size:9px;">Stud D — 19/30 parts</div>
+            <div style="background:#374151;border-radius:4px;height:4px;margin-top:6px;"><div style="background:#3B82F6;border-radius:4px;height:4px;width:63%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B: Machine-Centric Grid</h3>
+      <p>Each machine gets its own card showing status, current job, part progress, and next-up. Red border on machines that are down. Designed for a TV on the floor — glanceable from across the room.</p>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:24px;">
+  <div class="pros">
+    <h4>Command Center (A)</h4>
+    <ul>
+      <li>More information density — KPIs, queues, bottlenecks all visible</li>
+      <li>Better for managers sitting at a desk</li>
+      <li>Shows the big picture across all dimensions</li>
+    </ul>
+  </div>
+  <div class="cons">
+    <h4>Machine Grid (B)</h4>
+    <ul>
+      <li>More glanceable from across the shop floor</li>
+      <li>Operators immediately see their machine's status</li>
+      <li>Scales naturally as you add machines</li>
+      <li>Problems (red cards) jump out visually</li>
+    </ul>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;text-align:center;">Both can auto-refresh every 15-30 seconds. We can also build both as tabs on the same page.</p>

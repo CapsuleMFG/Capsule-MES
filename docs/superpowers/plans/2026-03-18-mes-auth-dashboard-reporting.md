@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add user authentication with role-based access, a real-time production dashboard, and reporting/CSV export to Capsule ERP.
+**Goal:** Add user authentication with role-based access, a real-time production dashboard, and reporting/CSV export to Capsule MES.
 
 **Architecture:** Three sequential phases. Phase 1 (Auth) adds Supabase Auth with a `profiles` table, JWT middleware, role-gated routes, login page, and user management. Phase 2 (Dashboard) adds a dual-tab production dashboard with Command Center and Machine Grid views. Phase 3 (Reporting) adds CSV export to all tables and a KPI reports page.
 
@@ -1471,7 +1471,7 @@ export default function LoginPage() {
         <div className="bg-white border border-gray-100 rounded-lg p-8">
           <div className="text-center mb-6">
             <h1 className="text-xl font-semibold text-gray-900">CAPSULE</h1>
-            <p className="text-sm text-gray-500 mt-1">Manufacturing ERP</p>
+            <p className="text-sm text-gray-500 mt-1">Manufacturing MES</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import * as XLSX from 'xlsx';
 import type { BomItem, CreateBomItemRequest, UpdateBomItemRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 interface BomRow {
     partNumber: string;
@@ -56,7 +57,7 @@ export async function getBomItems(req: Request, res: Response): Promise<void> {
 
         res.json(bomItems);
     } catch (error) {
-        console.error('Error fetching BOM items:', error);
+        logger.error('Error fetching BOM items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch BOM items' });
     }
 }
@@ -109,9 +110,13 @@ export async function createBomItem(req: Request, res: Response): Promise<void> 
              WHERE bi.id = ?`,
             [result.lastID]
         );
+        if (!newBomItem) {
+            res.status(500).json({ error: 'Failed to retrieve created BOM item' });
+            return;
+        }
         res.status(201).json(mapRowToBomItem(newBomItem));
     } catch (error) {
-        console.error('Error creating BOM item:', error);
+        logger.error('Error creating BOM item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create BOM item' });
     }
 }
@@ -200,7 +205,7 @@ export async function updateBomItem(req: Request, res: Response): Promise<void> 
         );
         res.json(mapRowToBomItem(updated));
     } catch (error) {
-        console.error('Error updating BOM item:', error);
+        logger.error('Error updating BOM item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update BOM item' });
     }
 }
@@ -221,7 +226,7 @@ export async function deleteAllBomItems(req: Request, res: Response): Promise<vo
         await execute('DELETE FROM bom_items WHERE job_id = ?', [jobId]);
         res.json({ message: `Deleted ${items.length} BOM items`, deleted: items.length });
     } catch (error) {
-        console.error('Error deleting all BOM items:', error);
+        logger.error('Error deleting all BOM items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete BOM items' });
     }
 }
@@ -246,7 +251,7 @@ export async function deleteBomItem(req: Request, res: Response): Promise<void> 
         await execute('DELETE FROM bom_items WHERE id = ?', [bomId]);
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting BOM item:', error);
+        logger.error('Error deleting BOM item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete BOM item' });
     }
 }
@@ -289,12 +294,12 @@ export async function importBom(req: Request, res: Response): Promise<void> {
                 return;
             }
 
-            console.log(`[BOM Import] Parsed ${bomItems.length} rows from file`);
+            logger.info('[BOM Import] Parsed rows from file', { count: bomItems.length });
             if (bomItems.length > 0) {
-                console.log('[BOM Import] Sample first item:', bomItems[0]);
+                logger.info('[BOM Import] Sample first item', { data: bomItems[0] });
             }
         } catch (parseError) {
-            console.error('Error parsing file:', parseError);
+            logger.error('Error parsing file', { error: parseError instanceof Error ? parseError.message : parseError });
             res.status(400).json({ error: 'Failed to parse file. Please check the file format.' });
             return;
         }
@@ -310,7 +315,7 @@ export async function importBom(req: Request, res: Response): Promise<void> {
 
         for (const item of bomItems) {
             if (!item.partNumber || !item.quantity || item.quantity <= 0) {
-                console.warn('Skipping invalid BOM item:', item);
+                logger.warn('Skipping invalid BOM item', { data: item });
                 continue;
             }
 
@@ -362,7 +367,7 @@ export async function importBom(req: Request, res: Response): Promise<void> {
                     insertedCount++;
                 }
             } catch (error) {
-                console.error('Error upserting BOM item:', error);
+                logger.error('Error upserting BOM item', { error: error instanceof Error ? error.message : error });
             }
         }
 
@@ -378,7 +383,7 @@ export async function importBom(req: Request, res: Response): Promise<void> {
             updated: updatedCount,
         });
     } catch (error) {
-        console.error('Error importing BOM:', error);
+        logger.error('Error importing BOM', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to import BOM' });
     }
 }
@@ -504,7 +509,7 @@ function parseBomExcel(buffer: Buffer): BomRow[] {
     // Read all data without headers first to find the BOM table
     const allData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-    console.log(`[BOM Excel] Found ${allData.length} total rows in sheet "${sheetName}"`);
+    logger.info('[BOM Excel] Found total rows in sheet', { count: allData.length, sheetName });
 
     // Find the header row by looking for BOM-specific columns
     let headerRowIndex = -1;
@@ -521,13 +526,13 @@ function parseBomExcel(buffer: Buffer): BomRow[] {
         // If we find at least 2 BOM keywords, this is likely the header row
         if (matchCount >= 2) {
             headerRowIndex = i;
-            console.log(`[BOM Excel] Found BOM header row at index ${i}:`, row);
+            logger.info('[BOM Excel] Found BOM header row', { index: i, row });
             break;
         }
     }
 
     if (headerRowIndex === -1) {
-        console.log('[BOM Excel] Could not find BOM header row, using default parsing');
+        logger.info('[BOM Excel] Could not find BOM header row, using default parsing');
         // Fall back to default parsing
         const data: any[] = XLSX.utils.sheet_to_json(worksheet);
         return data.map(row => parseBomRow(row));
@@ -539,12 +544,12 @@ function parseBomExcel(buffer: Buffer): BomRow[] {
         defval: ''
     });
 
-    console.log(`[BOM Excel] Found ${data.length} BOM data rows (starting from row ${headerRowIndex + 1})`);
+    logger.info('[BOM Excel] Found BOM data rows', { count: data.length, startRow: headerRowIndex + 1 });
     if (data.length > 0) {
-        console.log('[BOM Excel] Column names:', Object.keys(data[0]));
-        console.log('[BOM Excel] First row raw data:', data[0]);
+        logger.info('[BOM Excel] Column names', { columns: Object.keys(data[0]) });
+        logger.info('[BOM Excel] First row raw data', { data: data[0] });
         const parsedFirst = parseBomRow(data[0]);
-        console.log('[BOM Excel] First row parsed result:', parsedFirst);
+        logger.info('[BOM Excel] First row parsed result', { data: parsedFirst });
     }
 
     return data.map(row => parseBomRow(row));
@@ -602,7 +607,7 @@ export const exportBomToCsv = async (req: Request, res: Response) => {
         res.setHeader('Content-Disposition', 'attachment; filename=' + '"' + filename + '"');
         res.send(csvContent);
     } catch (error) {
-        console.error('Error exporting BOM to CSV:', error);
+        logger.error('Error exporting BOM to CSV', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: "Failed to export BOM" });
     }
 };

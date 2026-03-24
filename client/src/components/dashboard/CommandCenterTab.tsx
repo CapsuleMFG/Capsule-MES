@@ -1,6 +1,7 @@
 import KpiBar from './KpiBar';
 import JobQueuePanel from './JobQueuePanel';
 import BottleneckAlerts from './BottleneckAlerts';
+import { useOeeMetrics } from '../../hooks/useDowntime';
 import type { ProductionDashboardData, DashboardMachine } from '../../types';
 
 interface CommandCenterTabProps {
@@ -13,10 +14,43 @@ const statusConfig = {
   down: { dot: 'bg-red-500', label: 'Down' },
 };
 
+function getOeeColor(value: number): string {
+  if (value >= 85) return 'text-emerald-400';
+  if (value >= 60) return 'text-amber-400';
+  return 'text-red-400';
+}
+
 export default function CommandCenterTab({ data }: CommandCenterTabProps) {
+  const today = new Date();
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const from = thirtyDaysAgo.toISOString().split('T')[0];
+  const to = today.toISOString().split('T')[0];
+  const { data: oeeData } = useOeeMetrics(from, to);
+
+  const agg = oeeData?.aggregate;
+  const oeeKpis = [
+    { label: 'OEE', value: Number(agg?.oee) || 0 },
+    { label: 'Availability', value: Number(agg?.availability) || 0 },
+    { label: 'Performance', value: Number(agg?.performance) || 0 },
+    { label: 'Quality', value: Number(agg?.quality) || 0 },
+  ];
+
   return (
     <div className="space-y-6">
       <KpiBar kpis={data.kpis} />
+
+      {/* OEE Metrics */}
+      <div className="grid grid-cols-4 gap-4">
+        {oeeKpis.map((kpi) => (
+          <div key={kpi.label} className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+            <p className="text-xs uppercase tracking-wider font-medium text-gray-400">{kpi.label}</p>
+            <p className={`text-2xl font-semibold mt-1 ${getOeeColor(kpi.value)}`}>
+              {kpi.value.toFixed(1)}%
+            </p>
+          </div>
+        ))}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Machine Status */}

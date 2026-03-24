@@ -1,7 +1,7 @@
 {
-  "name": "capsule-erp-server",
+  "name": "capsule-mes-server",
   "version": "1.0.0",
-  "description": "Backend server for Capsule ERP system",
+  "description": "Backend server for Capsule MES system",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

@@ -56,7 +56,7 @@ export default function AuditLogPage() {
         <select
           value={filters.userId || ''}
           onChange={e => setFilter('userId', e.target.value || undefined)}
-          className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-700 bg-white focus:outline-none focus:border-gray-900"
+          className="px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 bg-white focus:ring-2 focus:ring-gray-900 focus:outline-none"
         >
           <option value="">All users</option>
           {profiles?.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -65,7 +65,7 @@ export default function AuditLogPage() {
         <select
           value={filters.action || ''}
           onChange={e => setFilter('action', e.target.value || undefined)}
-          className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-700 bg-white focus:outline-none focus:border-gray-900"
+          className="px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 bg-white focus:ring-2 focus:ring-gray-900 focus:outline-none"
         >
           <option value="">All actions</option>
           <option value="CREATE">Create</option>
@@ -78,26 +78,26 @@ export default function AuditLogPage() {
           placeholder="Table name"
           value={filters.tableName || ''}
           onChange={e => setFilter('tableName', e.target.value || undefined)}
-          className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-700 focus:outline-none focus:border-gray-900"
+          className="px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 bg-white focus:ring-2 focus:ring-gray-900 focus:outline-none"
         />
 
         <input
           type="date"
           value={filters.from || ''}
           onChange={e => setFilter('from', e.target.value || undefined)}
-          className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-700 focus:outline-none focus:border-gray-900"
+          className="px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 bg-white focus:ring-2 focus:ring-gray-900 focus:outline-none"
         />
 
         <input
           type="date"
           value={filters.to || ''}
           onChange={e => setFilter('to', e.target.value || undefined)}
-          className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-700 focus:outline-none focus:border-gray-900"
+          className="px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 bg-white focus:ring-2 focus:ring-gray-900 focus:outline-none"
         />
 
         <button
           onClick={() => setFilters({ page: 1, limit: 50 })}
-          className="px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+          className="px-3 py-2 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50"
         >
           Clear
         </button>
@@ -108,7 +108,7 @@ export default function AuditLogPage() {
 
       {data && (
         <>
-          <div className="bg-white border border-gray-100 rounded-lg overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm ring-1 ring-black/[0.02] overflow-hidden">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
@@ -188,14 +188,14 @@ export default function AuditLogPage() {
               <button
                 onClick={() => setFilters(f => ({ ...f, page: (f.page || 1) - 1 }))}
                 disabled={data.page <= 1}
-                className="px-3 py-1.5 border border-gray-200 rounded text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Previous
               </button>
               <button
                 onClick={() => setFilters(f => ({ ...f, page: (f.page || 1) + 1 }))}
                 disabled={data.page >= data.totalPages}
-                className="px-3 py-1.5 border border-gray-200 rounded text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-3 py-1.5 ring-1 ring-gray-200 rounded-[10px] text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Next
               </button>

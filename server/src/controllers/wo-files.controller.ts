@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { execute, query, queryOne } from '../models/database';
 import * as path from 'path';
 import * as fs from 'fs';
+import { logger } from '../lib/logger';
 
 /**
  * POST /api/jobs/:jobId/work-orders/:woId/files
@@ -59,7 +60,7 @@ export async function uploadWorkOrderFile(req: Request, res: Response): Promise<
             }
         });
     } catch (error) {
-        console.error('Error uploading file:', error);
+        logger.error('Error uploading file', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to upload file' });
     }
 }
@@ -93,7 +94,7 @@ export async function getWorkOrderFiles(req: Request, res: Response): Promise<vo
 
         res.json(files);
     } catch (error) {
-        console.error('Error fetching files:', error);
+        logger.error('Error fetching files', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch files' });
     }
 }
@@ -133,7 +134,7 @@ export async function downloadWorkOrderFile(req: Request, res: Response): Promis
 
         res.download(resolvedPath, fileRecord.original_filename);
     } catch (error) {
-        console.error('Error downloading file:', error);
+        logger.error('Error downloading file', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to download file' });
     }
 }
@@ -157,9 +158,11 @@ export async function deleteWorkOrderFile(req: Request, res: Response): Promise<
             return;
         }
 
-        // Delete file from disk
-        if (fs.existsSync(fileRecord.file_path)) {
-            fs.unlinkSync(fileRecord.file_path);
+        // Delete file from disk — validate path to prevent traversal
+        const uploadsDir = path.resolve(__dirname, '../../uploads');
+        const resolvedPath = path.resolve(fileRecord.file_path);
+        if (resolvedPath.startsWith(uploadsDir + path.sep) && fs.existsSync(resolvedPath)) {
+            fs.unlinkSync(resolvedPath);
         }
 
         // Delete from database
@@ -170,7 +173,7 @@ export async function deleteWorkOrderFile(req: Request, res: Response): Promise<
 
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting file:', error);
+        logger.error('Error deleting file', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete file' });
     }
 }

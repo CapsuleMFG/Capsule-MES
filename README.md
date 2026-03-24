@@ -1,6 +1,6 @@
-# Capsule ERP - Manufacturing ERP System
+# Capsule MES - Manufacturing MES System
 
-A modern, full-stack manufacturing ERP system built for tracking jobs through a 4-stage workflow (Engineering → WO Release → Materials → Production).
+A modern, full-stack manufacturing MES system built for tracking jobs through a 4-stage workflow (Engineering → WO Release → Materials → Production).
 
 ![Tech Stack](https://img.shields.io/badge/React-18-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)

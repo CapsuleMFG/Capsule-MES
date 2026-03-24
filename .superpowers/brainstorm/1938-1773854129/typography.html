@@ -1,0 +1,86 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<h2>Typography</h2>
+<p class="subtitle">The taste-skill bans Inter/Roboto. Pick a font that gives Capsule MES its personality.</p>
+
+<div class="cards">
+  <!-- Geist -->
+  <div class="card" data-choice="geist" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; overflow: hidden;">
+      <div style="background: #F8F9FB; padding: 32px; font-family: 'Geist', system-ui, sans-serif;">
+        <div style="font-size: 32px; font-weight: 700; letter-spacing: -0.04em; color: #111; margin-bottom: 6px;">Dashboard</div>
+        <div style="font-size: 13px; color: #999; margin-bottom: 24px; letter-spacing: 0;">12 active jobs across 5 clients</div>
+        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+          <div style="background: white; border-radius: 14px; padding: 16px; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Active Jobs</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #111;">12</div>
+          </div>
+          <div style="background: white; border-radius: 14px; padding: 16px; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Critical</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #111;">3</div>
+          </div>
+        </div>
+        <div style="font-size: 14px; font-weight: 600; color: #111; margin-bottom: 10px;">CAP-2025-001</div>
+        <div style="font-size: 13px; color: #666;">Lennar Homes — Custom Enclosure Panel Assembly</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Geist</h3>
+      <p>Vercel's own typeface. Geometric, technical, precise. Tight letter-spacing on headlines feels engineered. The taste-skill's top recommendation.</p>
+    </div>
+  </div>
+
+  <!-- Outfit -->
+  <div class="card" data-choice="outfit" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; overflow: hidden;">
+      <div style="background: #F8F9FB; padding: 32px; font-family: 'Outfit', system-ui, sans-serif;">
+        <div style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em; color: #111; margin-bottom: 6px;">Dashboard</div>
+        <div style="font-size: 13px; color: #999; margin-bottom: 24px;">12 active jobs across 5 clients</div>
+        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+          <div style="background: white; border-radius: 14px; padding: 16px; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Active Jobs</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #111;">12</div>
+          </div>
+          <div style="background: white; border-radius: 14px; padding: 16px; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Critical</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #111;">3</div>
+          </div>
+        </div>
+        <div style="font-size: 14px; font-weight: 600; color: #111; margin-bottom: 10px;">CAP-2025-001</div>
+        <div style="font-size: 13px; color: #666;">Lennar Homes — Custom Enclosure Panel Assembly</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Outfit</h3>
+      <p>Geometric sans with softer curves. Friendly but professional. Slightly rounder than Geist — matches the soft structural vibe with generous border-radius.</p>
+    </div>
+  </div>
+
+  <!-- DM Sans -->
+  <div class="card" data-choice="dmsans" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 0; overflow: hidden;">
+      <div style="background: #F8F9FB; padding: 32px; font-family: 'DM Sans', system-ui, sans-serif;">
+        <div style="font-size: 32px; font-weight: 700; letter-spacing: -0.03em; color: #111; margin-bottom: 6px;">Dashboard</div>
+        <div style="font-size: 13px; color: #999; margin-bottom: 24px;">12 active jobs across 5 clients</div>
+        <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+          <div style="background: white; border-radius: 14px; padding: 16px; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Active Jobs</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #111;">12</div>
+          </div>
+          <div style="background: white; border-radius: 14px; padding: 16px; flex: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 6px;">Critical</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; color: #111;">3</div>
+          </div>
+        </div>
+        <div style="font-size: 14px; font-weight: 600; color: #111; margin-bottom: 10px;">CAP-2025-001</div>
+        <div style="font-size: 13px; color: #666;">Lennar Homes — Custom Enclosure Panel Assembly</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — DM Sans</h3>
+      <p>Low-contrast geometric sans by Colophon. Excellent readability at small sizes — good for data-heavy MES tables. Clean without being cold. Popular in modern SaaS tools.</p>
+    </div>
+  </div>
+</div>

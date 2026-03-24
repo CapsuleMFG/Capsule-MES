@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Harden Capsule ERP authentication — server-proxied login with rate limiting/lockout, kiosk JWT auth, password strength enforcement, password reset flow, idle timeout, and dev bypass safety.
+**Goal:** Harden Capsule MES authentication — server-proxied login with rate limiting/lockout, kiosk JWT auth, password strength enforcement, password reset flow, idle timeout, and dev bypass safety.
 
 **Architecture:** Authentication moves from client-side Supabase SDK calls to server-proxied Express endpoints for login/logout/reset, giving the server full control over rate limiting, lockout, and audit logging. Kiosk PIN auth issues signed JWTs instead of trusting raw headers. Frontend adds idle timeout auto-logout.
 

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import * as XLSX from 'xlsx';
 import type { PbomItem, PbomOrderItem, CreatePbomItemRequest, UpdatePbomItemRequest, PbomStatus } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 interface PbomRow {
     description: string;
@@ -168,7 +169,7 @@ export async function getPbomItems(req: Request, res: Response): Promise<void> {
 
         res.json(pbomItems);
     } catch (error) {
-        console.error('Error fetching PBOM items:', error);
+        logger.error('Error fetching PBOM items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch PBOM items' });
     }
 }
@@ -242,9 +243,13 @@ export async function createPbomItem(req: Request, res: Response): Promise<void>
             WHERE p.id = ?`,
             [result.lastID]
         );
+        if (!newPbomItem) {
+            res.status(500).json({ error: 'Failed to retrieve created PBOM item' });
+            return;
+        }
         res.status(201).json(mapRowToPbomItem(newPbomItem));
     } catch (error) {
-        console.error('Error creating PBOM item:', error);
+        logger.error('Error creating PBOM item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create PBOM item' });
     }
 }
@@ -434,7 +439,7 @@ export async function updatePbomItem(req: Request, res: Response): Promise<void>
         );
         res.json(mapRowToPbomItem(updated));
     } catch (error) {
-        console.error('Error updating PBOM item:', error);
+        logger.error('Error updating PBOM item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update PBOM item' });
     }
 }
@@ -475,7 +480,7 @@ export async function deleteAllPbomItems(req: Request, res: Response): Promise<v
         await execute('DELETE FROM pbom_items WHERE job_id = ?', [jobId]);
         res.json({ message: `Deleted ${items.length} PBOM items`, deleted: items.length });
     } catch (error) {
-        console.error('Error deleting all PBOM items:', error);
+        logger.error('Error deleting all PBOM items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete PBOM items' });
     }
 }
@@ -506,7 +511,7 @@ export async function deletePbomItem(req: Request, res: Response): Promise<void>
         await execute('DELETE FROM pbom_items WHERE id = ?', [pbomId]);
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting PBOM item:', error);
+        logger.error('Error deleting PBOM item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete PBOM item' });
     }
 }
@@ -586,7 +591,7 @@ export async function sendToSupplyChain(req: Request, res: Response): Promise<vo
             items: updatedItems.map(mapRowToPbomItem)
         });
     } catch (error) {
-        console.error('Error sending PBOM to Supply Chain:', error);
+        logger.error('Error sending PBOM to Supply Chain', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to send PBOM to Supply Chain' });
     }
 }
@@ -654,7 +659,7 @@ export async function autoMatchPbomToInventory(req: Request, res: Response): Pro
             remainingUnlinked: itemsToMatch.length - matchedCount,
         });
     } catch (error) {
-        console.error('Error auto-matching PBOM to inventory:', error);
+        logger.error('Error auto-matching PBOM to inventory', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to auto-match PBOM items' });
     }
 }
@@ -701,7 +706,7 @@ export async function reallocateAllPbomItems(req: Request, res: Response): Promi
             reallocatedCount,
         });
     } catch (error) {
-        console.error('Error re-allocating PBOM items:', error);
+        logger.error('Error re-allocating PBOM items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to re-allocate PBOM items' });
     }
 }
@@ -744,12 +749,12 @@ export async function importPbom(req: Request, res: Response): Promise<void> {
                 return;
             }
 
-            console.log(`[PBOM Import] Parsed ${pbomItems.length} rows from file`);
+            logger.info('[PBOM Import] Parsed rows from file', { count: pbomItems.length });
             if (pbomItems.length > 0) {
-                console.log('[PBOM Import] Sample first item:', pbomItems[0]);
+                logger.info('[PBOM Import] Sample first item', { data: pbomItems[0] });
             }
         } catch (parseError) {
-            console.error('Error parsing file:', parseError);
+            logger.error('Error parsing file', { error: parseError instanceof Error ? parseError.message : parseError });
             res.status(400).json({ error: 'Failed to parse file. Please check the file format.' });
             return;
         }
@@ -765,7 +770,7 @@ export async function importPbom(req: Request, res: Response): Promise<void> {
 
         for (const item of pbomItems) {
             if (!item.description || !item.qtyRequired || item.qtyRequired <= 0) {
-                console.warn('Skipping invalid PBOM item:', item);
+                logger.warn('Skipping invalid PBOM item', { data: item });
                 continue;
             }
 
@@ -801,7 +806,7 @@ export async function importPbom(req: Request, res: Response): Promise<void> {
                 importedCount++;
                 createdItems.push(item);
             } catch (error) {
-                console.error('Error inserting PBOM item:', error);
+                logger.error('Error inserting PBOM item', { error: error instanceof Error ? error.message : error });
             }
         }
 
@@ -810,7 +815,7 @@ export async function importPbom(req: Request, res: Response): Promise<void> {
             itemsImported: importedCount,
         });
     } catch (error) {
-        console.error('Error importing PBOM:', error);
+        logger.error('Error importing PBOM', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to import PBOM' });
     }
 }
@@ -839,7 +844,7 @@ function parsePbomExcel(buffer: Buffer): PbomRow[] {
     // Read all data without headers first to find the PBOM table
     const allData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-    console.log(`[PBOM Excel] Found ${allData.length} total rows in sheet "${sheetName}"`);
+    logger.info('[PBOM Excel] Found total rows in sheet', { count: allData.length, sheetName });
 
     // Find the header row by looking for PBOM-specific columns
     let headerRowIndex = -1;
@@ -856,13 +861,13 @@ function parsePbomExcel(buffer: Buffer): PbomRow[] {
         // If we find at least 2 PBOM keywords, this is likely the header row
         if (matchCount >= 2) {
             headerRowIndex = i;
-            console.log(`[PBOM Excel] Found PBOM header row at index ${i}:`, row);
+            logger.info('[PBOM Excel] Found PBOM header row', { index: i, row });
             break;
         }
     }
 
     if (headerRowIndex === -1) {
-        console.log('[PBOM Excel] Could not find PBOM header row, using default parsing');
+        logger.info('[PBOM Excel] Could not find PBOM header row, using default parsing');
         // Fall back to default parsing
         const data: any[] = XLSX.utils.sheet_to_json(worksheet);
         return data.map(row => parsePbomRow(row));
@@ -874,12 +879,12 @@ function parsePbomExcel(buffer: Buffer): PbomRow[] {
         defval: ''
     });
 
-    console.log(`[PBOM Excel] Found ${data.length} PBOM data rows (starting from row ${headerRowIndex + 1})`);
+    logger.info('[PBOM Excel] Found PBOM data rows', { count: data.length, startRow: headerRowIndex + 1 });
     if (data.length > 0) {
-        console.log('[PBOM Excel] Column names:', Object.keys(data[0]));
-        console.log('[PBOM Excel] First row raw data:', data[0]);
+        logger.info('[PBOM Excel] Column names', { columns: Object.keys(data[0]) });
+        logger.info('[PBOM Excel] First row raw data', { data: data[0] });
         const parsedFirst = parsePbomRow(data[0]);
-        console.log('[PBOM Excel] First row parsed result:', parsedFirst);
+        logger.info('[PBOM Excel] First row parsed result', { data: parsedFirst });
     }
 
     return data.map(row => parsePbomRow(row));
@@ -1036,7 +1041,7 @@ export async function getAllOrderedPbomItems(req: Request, res: Response): Promi
 
         res.json(items);
     } catch (error) {
-        console.error('Error fetching ordered PBOM items:', error);
+        logger.error('Error fetching ordered PBOM items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch ordered items' });
     }
 }

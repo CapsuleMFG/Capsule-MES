@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
+import { logger } from '../lib/logger';
 
 export interface Engineer {
     id: number;
@@ -31,7 +32,7 @@ export async function getEngineers(req: Request, res: Response): Promise<void> {
         const rows = await query(sql);
         res.json(rows.map(mapRowToEngineer));
     } catch (error) {
-        console.error('Error fetching engineers:', error);
+        logger.error('Error fetching engineers', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch engineers' });
     }
 }
@@ -56,7 +57,7 @@ export async function createEngineer(req: Request, res: Response): Promise<void>
         const engineer = await queryOne('SELECT * FROM engineers WHERE id = ?', [result.lastID]);
         res.status(201).json(mapRowToEngineer(engineer));
     } catch (error) {
-        console.error('Error creating engineer:', error);
+        logger.error('Error creating engineer', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create engineer' });
     }
 }
@@ -92,7 +93,7 @@ export async function updateEngineer(req: Request, res: Response): Promise<void>
         const engineer = await queryOne('SELECT * FROM engineers WHERE id = ?', [id]);
         res.json(mapRowToEngineer(engineer));
     } catch (error) {
-        console.error('Error updating engineer:', error);
+        logger.error('Error updating engineer', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update engineer' });
     }
 }
@@ -113,7 +114,7 @@ export async function deleteEngineer(req: Request, res: Response): Promise<void>
         await execute('DELETE FROM engineers WHERE id = ?', [id]);
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting engineer:', error);
+        logger.error('Error deleting engineer', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete engineer' });
     }
 }

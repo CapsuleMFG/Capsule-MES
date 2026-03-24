@@ -63,7 +63,7 @@ export default function PartDetail() {
     return (
       <div className="text-center text-red-500 p-8">
         <p>Part not found.</p>
-        <Link to="/parts" className="text-blue-500 hover:underline mt-4 inline-block">Back to Parts</Link>
+        <Link to="/parts" className="text-blue-600 hover:underline mt-4 inline-block">Back to Parts</Link>
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function PartDetail() {
         <div className="grid grid-cols-4 gap-4 pt-4 border-t border-gray-100">
           <div>
             <p className="text-sm text-gray-400">Job</p>
-            <Link to={`/jobs/${part.jobId}`} className="text-blue-500 hover:underline font-semibold">
+            <Link to={`/jobs/${part.jobId}`} className="text-blue-600 hover:underline font-semibold">
               {part.jobNumber || `#${part.jobId}`}
             </Link>
           </div>
@@ -129,7 +129,7 @@ export default function PartDetail() {
             {!isCheckedIn ? (
               <button
                 onClick={() => setCheckMode('check-in')}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-[10px] text-sm font-medium active:scale-[0.98] transition-all"
               >
                 <SignIn className="w-4 h-4" />
                 Check In to Next Station
@@ -137,7 +137,7 @@ export default function PartDetail() {
             ) : (
               <button
                 onClick={() => setCheckMode('check-out')}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[10px] text-sm font-medium active:scale-[0.98] transition-all"
               >
                 <SignOut className="w-4 h-4" />
                 Check Out of {openLog?.stationName || 'Station'}

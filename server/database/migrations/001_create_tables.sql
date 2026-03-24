@@ -1,5 +1,5 @@
--- Capsule ERP Database Schema
--- SQLite Database for Manufacturing ERP System
+-- Capsule MES Database Schema
+-- SQLite Database for Manufacturing MES System
 
 -- Clients table
 CREATE TABLE IF NOT EXISTS clients (

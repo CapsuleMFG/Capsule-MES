@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { GlobalInventory, CreateInventoryRequest, UpdateInventoryRequest, DemandDetailItem } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Convert database row to GlobalInventory object
@@ -65,7 +66,7 @@ export async function getInventoryItems(req: Request, res: Response): Promise<vo
 
         res.json(items);
     } catch (error) {
-        console.error('Error fetching inventory items:', error);
+        logger.error('Error fetching inventory items', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch inventory items' });
     }
 }
@@ -85,7 +86,7 @@ export async function getInventoryItem(req: Request, res: Response): Promise<voi
 
         res.json(mapRowToInventory(row));
     } catch (error) {
-        console.error('Error fetching inventory item:', error);
+        logger.error('Error fetching inventory item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch inventory item' });
     }
 }
@@ -175,7 +176,7 @@ export async function createInventoryItem(req: Request, res: Response): Promise<
             availableQty: newItem.available_qty ?? newItem.quantity_on_hand,
         });
     } catch (error: any) {
-        console.error('Error creating inventory item:', error);
+        logger.error('Error creating inventory item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create inventory item' });
     }
 }
@@ -326,7 +327,7 @@ export async function updateInventoryItem(req: Request, res: Response): Promise<
             availableQty: updated.available_qty ?? updated.quantity_on_hand,
         });
     } catch (error) {
-        console.error('Error updating inventory item:', error);
+        logger.error('Error updating inventory item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update inventory item' });
     }
 }
@@ -358,7 +359,7 @@ export async function getAvailableInventory(req: Request, res: Response): Promis
 
         res.json(items);
     } catch (error) {
-        console.error('Error fetching available inventory:', error);
+        logger.error('Error fetching available inventory', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch available inventory' });
     }
 }
@@ -434,7 +435,7 @@ export async function getDemandDetails(req: Request, res: Response): Promise<voi
             needToOrder,
         });
     } catch (error) {
-        console.error('Error fetching demand details:', error);
+        logger.error('Error fetching demand details', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch demand details' });
     }
 }
@@ -533,7 +534,7 @@ export async function massOrder(req: Request, res: Response): Promise<void> {
             purchaseOrderId,
         });
     } catch (error) {
-        console.error('Error processing mass order:', error);
+        logger.error('Error processing mass order', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to process mass order' });
     }
 }
@@ -560,7 +561,7 @@ export async function deleteInventoryItem(req: Request, res: Response): Promise<
         await execute('DELETE FROM global_inventory WHERE id = ?', [id]);
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting inventory item:', error);
+        logger.error('Error deleting inventory item', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete inventory item' });
     }
 }

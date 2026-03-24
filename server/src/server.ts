@@ -74,7 +74,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Global rate limiting
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500, // generous limit for ERP usage
+    max: 500, // generous limit for MES usage
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Too many requests, please try again later' },
@@ -160,7 +160,7 @@ async function startServer() {
         await initializeDatabase();
 
         app.listen(PORT, () => {
-            logger.info(`Capsule ERP server running`, {
+            logger.info(`Capsule MES server running`, {
                 port: PORT,
                 env: process.env.NODE_ENV || 'development',
                 health: `http://localhost:${PORT}/health`,

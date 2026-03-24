@@ -8,7 +8,7 @@
 
 ## Current State
 
-Capsule ERP has global authentication (all API requests require a valid JWT) and role-based access via `requireRole()` middleware on most write endpoints. However, several gaps exist:
+Capsule MES has global authentication (all API requests require a valid JWT) and role-based access via `requireRole()` middleware on most write endpoints. However, several gaps exist:
 
 ### Gaps Identified
 
@@ -126,7 +126,7 @@ Add `requireRole()` to endpoints currently missing it:
 | `route-templates.routes.ts` | `POST /`, `PUT /:id`, `DELETE /:id`, `POST /:id/steps`, `PUT /:id/steps/reorder`, `PUT /:id/steps/:stepId`, `DELETE /:id/steps/:stepId` | admin, manager, engineer |
 | `tracked-parts.routes.ts` | `PUT /:id`, `DELETE /:id` | admin, manager, engineer |
 
-Note: `GET` endpoints for route templates, tracked parts, and station kiosks remain open to all authenticated non-operator users (read access is appropriate for the shared ERP model). Operator access to these is blocked by the operator scope middleware.
+Note: `GET` endpoints for route templates, tracked parts, and station kiosks remain open to all authenticated non-operator users (read access is appropriate for the shared MES model). Operator access to these is blocked by the operator scope middleware.
 
 Note: `POST /tracked-parts/:id/check-in` and `POST /tracked-parts/:id/check-out` remain open — operators need these at their station, and the operator scope middleware validates station ownership.
 

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { JobEngineering, UpdateEngineeringRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Convert database row to JobEngineering object
@@ -48,7 +49,7 @@ export async function getEngineeringStatus(req: Request, res: Response): Promise
 
         res.json(mapRowToEngineering(row));
     } catch (error) {
-        console.error('Error fetching engineering status:', error);
+        logger.error('Error fetching engineering status', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch engineering status' });
     }
 }
@@ -127,7 +128,7 @@ export async function updateEngineeringStatus(req: Request, res: Response): Prom
         const updated = await queryOne('SELECT * FROM job_engineering WHERE id = ?', [existing.id]);
         res.json(mapRowToEngineering(updated));
     } catch (error) {
-        console.error('Error updating engineering status:', error);
+        logger.error('Error updating engineering status', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update engineering status' });
     }
 }

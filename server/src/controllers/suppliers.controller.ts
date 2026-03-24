@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
 import type { Supplier, CreateSupplierRequest, UpdateSupplierRequest } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * Convert database row to Supplier object
@@ -30,7 +31,7 @@ export async function getSuppliers(req: Request, res: Response): Promise<void> {
 
         res.json(suppliers);
     } catch (error) {
-        console.error('Error fetching suppliers:', error);
+        logger.error('Error fetching suppliers', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch suppliers' });
     }
 }
@@ -50,7 +51,7 @@ export async function getSupplier(req: Request, res: Response): Promise<void> {
 
         res.json(mapRowToSupplier(row));
     } catch (error) {
-        console.error('Error fetching supplier:', error);
+        logger.error('Error fetching supplier', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch supplier' });
     }
 }
@@ -84,7 +85,7 @@ export async function createSupplier(req: Request, res: Response): Promise<void>
         const newSupplier = await queryOne('SELECT * FROM suppliers WHERE id = ?', [result.lastID]);
         res.status(201).json(mapRowToSupplier(newSupplier));
     } catch (error) {
-        console.error('Error creating supplier:', error);
+        logger.error('Error creating supplier', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to create supplier' });
     }
 }
@@ -152,7 +153,7 @@ export async function updateSupplier(req: Request, res: Response): Promise<void>
         const updated = await queryOne('SELECT * FROM suppliers WHERE id = ?', [id]);
         res.json(mapRowToSupplier(updated));
     } catch (error) {
-        console.error('Error updating supplier:', error);
+        logger.error('Error updating supplier', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update supplier' });
     }
 }
@@ -173,7 +174,7 @@ export async function deleteSupplier(req: Request, res: Response): Promise<void>
         await execute('DELETE FROM suppliers WHERE id = ?', [id]);
         res.status(204).send();
     } catch (error) {
-        console.error('Error deleting supplier:', error);
+        logger.error('Error deleting supplier', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to delete supplier' });
     }
 }

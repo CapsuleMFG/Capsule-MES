@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useProductionDashboard } from '../hooks/useDashboard';
 import CommandCenterTab from '../components/dashboard/CommandCenterTab';
 import MachineGridTab from '../components/dashboard/MachineGridTab';
+import DowntimeTab from '../components/dashboard/DowntimeTab';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function ProductionDashboard() {
-  const [activeTab, setActiveTab] = useState<'command' | 'grid'>('command');
+  const [activeTab, setActiveTab] = useState<'command' | 'grid' | 'downtime'>('command');
   const refetchInterval = activeTab === 'command' ? 30000 : 15000;
   const { data, isLoading, error } = useProductionDashboard(refetchInterval);
 
@@ -28,6 +29,7 @@ export default function ProductionDashboard() {
   const tabs = [
     { id: 'command' as const, label: 'Command Center' },
     { id: 'grid' as const, label: 'Machine Grid' },
+    { id: 'downtime' as const, label: 'Downtime' },
   ];
 
   return (
@@ -52,8 +54,10 @@ export default function ProductionDashboard() {
 
       {activeTab === 'command' ? (
         <CommandCenterTab data={data} />
-      ) : (
+      ) : activeTab === 'grid' ? (
         <MachineGridTab machines={data.machines} />
+      ) : (
+        <DowntimeTab machines={data.machines.map((m) => ({ id: m.id, name: m.name }))} />
       )}
     </div>
   );

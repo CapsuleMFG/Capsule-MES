@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query, queryOne } from '../models/database';
+import { logger } from '../lib/logger';
 
 interface AuditRow {
   id: number;
@@ -91,7 +92,7 @@ export const getAuditLog = async (req: Request, res: Response): Promise<void> =>
       totalPages: Math.ceil(total / limitNum),
     });
   } catch (error) {
-    console.error('Error fetching audit log:', error);
+    logger.error('Error fetching audit log', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch audit log' });
   }
 };

@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { query, queryOne, execute } from '../models/database';
+import { query, queryOne, execute, executeTransactionWithParams } from '../models/database';
 import type { PurchaseOrder, PurchaseOrderJob } from '../../../shared/types';
 import { autoCompleteStage } from './jobs.controller';
+import { logger } from '../lib/logger';
 
 function mapRowToPurchaseOrder(row: any): PurchaseOrder {
     return {
@@ -110,7 +111,7 @@ export async function getPurchaseOrders(req: Request, res: Response): Promise<vo
 
         res.json(result);
     } catch (error) {
-        console.error('Error fetching purchase orders:', error);
+        logger.error('Error fetching purchase orders', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch purchase orders' });
     }
 }
@@ -194,14 +195,15 @@ export async function updatePurchaseOrder(req: Request, res: Response): Promise<
             res.json({ message: 'Order updated' });
         }
     } catch (error) {
-        console.error('Error updating purchase order:', error);
+        logger.error('Error updating purchase order', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update purchase order' });
     }
 }
 
 /**
  * POST /api/purchase-orders/:id/receive — receive quantity against a PO
- * Distributes to linked PBOM items in SC priority order and updates inventory
+ * Distributes to linked PBOM items in SC priority order and updates inventory.
+ * All mutations are wrapped in a single DB transaction to prevent race conditions.
  */
 export async function receivePurchaseOrder(req: Request, res: Response): Promise<void> {
     try {
@@ -225,13 +227,7 @@ export async function receivePurchaseOrder(req: Request, res: Response): Promise
             const newStatus = newTotalReceived >= po.qty_ordered ? 'Received' :
                               newTotalReceived > 0 ? 'Partial' : 'Ordered';
 
-            // Update PO
-            await execute(
-                `UPDATE purchase_orders SET qty_received = ?, status = ?, updated_at = NOW() WHERE id = ?`,
-                [newTotalReceived, newStatus, id]
-            );
-
-            // Distribute to linked PBOM items in SC priority order
+            // Fetch linked PBOM items (read-only, before transaction)
             const linkedItems = await query(
                 `SELECT p.id, p.qty_ordered, p.qty_received, p.job_id
                  FROM pbom_items p
@@ -241,6 +237,16 @@ export async function receivePurchaseOrder(req: Request, res: Response): Promise
                 [id]
             );
 
+            // Build all mutation statements for the transaction
+            const statements: Array<{ sql: string; params: any[] }> = [];
+
+            // 1. Update PO totals
+            statements.push({
+                sql: `UPDATE purchase_orders SET qty_received = ?, status = ?, updated_at = NOW() WHERE id = ?`,
+                params: [newTotalReceived, newStatus, id],
+            });
+
+            // 2. Distribute to linked PBOM items in SC priority order
             let remaining = qtyReceived;
             for (const item of linkedItems) {
                 if (remaining <= 0) break;
@@ -250,29 +256,32 @@ export async function receivePurchaseOrder(req: Request, res: Response): Promise
                 const newItemReceived = item.qty_received + toReceive;
                 const itemStatus = newItemReceived >= item.qty_ordered ? 'Received' : 'Ordered';
 
-                await execute(
-                    `UPDATE pbom_items SET qty_received = ?, status = ?, updated_at = NOW() WHERE id = ?`,
-                    [newItemReceived, itemStatus, item.id]
-                );
+                statements.push({
+                    sql: `UPDATE pbom_items SET qty_received = ?, status = ?, updated_at = NOW() WHERE id = ?`,
+                    params: [newItemReceived, itemStatus, item.id],
+                });
 
-                // Update allocation to match received
-                await execute(
-                    `UPDATE pbom_items SET qty_allocated = GREATEST(qty_allocated, ?) WHERE id = ?`,
-                    [newItemReceived, item.id]
-                );
+                statements.push({
+                    sql: `UPDATE pbom_items SET qty_allocated = GREATEST(qty_allocated, ?) WHERE id = ?`,
+                    params: [newItemReceived, item.id],
+                });
 
                 remaining -= toReceive;
             }
 
-            // Update inventory quantity_on_hand
-            if (po.inventory_id) {
-                await execute(
-                    `UPDATE global_inventory SET quantity_on_hand = quantity_on_hand + ?, last_restock_date = CURRENT_DATE, updated_at = NOW() WHERE id = ?`,
-                    [qtyReceived, po.inventory_id]
-                );
+            // 3. Update inventory quantity_on_hand (guard against null inventory_id)
+            if (po.inventory_id != null) {
+                statements.push({
+                    sql: `UPDATE global_inventory SET quantity_on_hand = quantity_on_hand + ?, last_restock_date = CURRENT_DATE, updated_at = NOW() WHERE id = ?`,
+                    params: [qtyReceived, po.inventory_id],
+                });
             }
 
+            // Execute all mutations atomically
+            await executeTransactionWithParams(statements);
+
             // Auto-complete Materials stage for each affected job if all PBOM items received
+            // (runs after transaction commit so it reads the committed state)
             const affectedJobIds = [...new Set(linkedItems.map((item: any) => item.job_id))];
             for (const affectedJobId of affectedJobIds) {
                 const pbomCheck = await queryOne<{ total: number; received: number }>(
@@ -303,26 +312,32 @@ export async function receivePurchaseOrder(req: Request, res: Response): Promise
             const newTotal = item.qty_received + qtyReceived;
             const status = newTotal >= item.qty_ordered ? 'Received' : 'Ordered';
 
-            await execute(
-                `UPDATE pbom_items SET qty_received = ?, status = ?, updated_at = NOW() WHERE id = ?`,
-                [newTotal, status, pbomId]
-            );
+            // Build all mutation statements for the transaction
+            const statements: Array<{ sql: string; params: any[] }> = [];
 
-            // Update allocation
-            await execute(
-                `UPDATE pbom_items SET qty_allocated = GREATEST(qty_allocated, ?) WHERE id = ?`,
-                [newTotal, pbomId]
-            );
+            statements.push({
+                sql: `UPDATE pbom_items SET qty_received = ?, status = ?, updated_at = NOW() WHERE id = ?`,
+                params: [newTotal, status, pbomId],
+            });
 
-            // Update inventory if linked
-            if (item.global_inventory_id) {
-                await execute(
-                    `UPDATE global_inventory SET quantity_on_hand = quantity_on_hand + ?, last_restock_date = CURRENT_DATE, updated_at = NOW() WHERE id = ?`,
-                    [qtyReceived, item.global_inventory_id]
-                );
+            statements.push({
+                sql: `UPDATE pbom_items SET qty_allocated = GREATEST(qty_allocated, ?) WHERE id = ?`,
+                params: [newTotal, pbomId],
+            });
+
+            // Update inventory if linked (guard against null inventory_id)
+            if (item.global_inventory_id != null) {
+                statements.push({
+                    sql: `UPDATE global_inventory SET quantity_on_hand = quantity_on_hand + ?, last_restock_date = CURRENT_DATE, updated_at = NOW() WHERE id = ?`,
+                    params: [qtyReceived, item.global_inventory_id],
+                });
             }
 
+            // Execute all mutations atomically
+            await executeTransactionWithParams(statements);
+
             // Auto-complete Materials stage if all PBOM items for this job are received
+            // (runs after transaction commit so it reads the committed state)
             const pbomCheck = await queryOne<{ total: number; received: number }>(
                 `SELECT COUNT(*) as total,
                         SUM(CASE WHEN status = 'Received' THEN 1 ELSE 0 END) as received
@@ -340,7 +355,7 @@ export async function receivePurchaseOrder(req: Request, res: Response): Promise
             });
         }
     } catch (error) {
-        console.error('Error receiving purchase order:', error);
+        logger.error('Error receiving purchase order', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to receive purchase order' });
     }
 }

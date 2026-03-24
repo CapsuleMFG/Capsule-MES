@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query, queryOne } from '../models/database';
+import { logger } from '../lib/logger';
 
 export const getProductionDashboard = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -203,7 +204,7 @@ export const getProductionDashboard = async (req: Request, res: Response): Promi
       bottlenecks,
     });
   } catch (error) {
-    console.error('Error fetching production dashboard:', error);
+    logger.error('Error fetching production dashboard', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to fetch production dashboard data' });
   }
 };
@@ -224,7 +225,7 @@ export const updateMachineStatus = async (req: Request, res: Response): Promise<
 
     res.json({ message: 'Machine status updated' });
   } catch (error) {
-    console.error('Error updating machine status:', error);
+    logger.error('Error updating machine status', { error: error instanceof Error ? error.message : error });
     res.status(500).json({ error: 'Failed to update machine status' });
   }
 };

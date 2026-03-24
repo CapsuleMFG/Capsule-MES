@@ -35,7 +35,7 @@ export default function BomItemsTable({ jobId }: BomItemsTableProps) {
     // Count tracked parts per BOM item
     const partsCountByBomItem = useMemo(() => {
         const counts: Record<number, number> = {};
-        if (trackedParts) {
+        if (Array.isArray(trackedParts)) {
             for (const part of trackedParts) {
                 if (part.bomItemId) {
                     counts[part.bomItemId] = (counts[part.bomItemId] || 0) + 1;

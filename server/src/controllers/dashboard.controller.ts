@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query, queryOne } from '../models/database';
 import type { DashboardMetrics, Job } from '../../../shared/types';
+import { logger } from '../lib/logger';
 
 /**
  * GET /api/dashboard/metrics - Get dashboard metrics
@@ -97,7 +98,7 @@ export async function getDashboardMetrics(req: Request, res: Response): Promise<
 
         res.json(metrics);
     } catch (error) {
-        console.error('Error fetching dashboard metrics:', error);
+        logger.error('Error fetching dashboard metrics', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch dashboard metrics' });
     }
 }

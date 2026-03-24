@@ -29,6 +29,31 @@ const woFileStorage = multer.diskStorage({
 // Configure memory storage for BOM imports (we parse them in memory)
 const memoryStorage = multer.memoryStorage();
 
+/**
+ * Validate file extension matches expected MIME type.
+ * Defense against MIME type spoofing — ensures extension is consistent.
+ */
+const MIME_TO_EXTENSIONS: Record<string, string[]> = {
+    'application/pdf': ['.pdf'],
+    'application/msword': ['.doc'],
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    'application/vnd.ms-excel': ['.xls'],
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+    'text/csv': ['.csv'],
+    'text/plain': ['.txt'],
+    'image/png': ['.png'],
+    'image/jpeg': ['.jpg', '.jpeg'],
+    'image/jpg': ['.jpg', '.jpeg'],
+    'application/octet-stream': ['.xlsx', '.xls', '.csv'], // fallback for some browsers
+};
+
+function extensionMatchesMime(filename: string, mimetype: string): boolean {
+    const ext = path.extname(filename).toLowerCase();
+    const allowedExts = MIME_TO_EXTENSIONS[mimetype];
+    if (!allowedExts) return false;
+    return allowedExts.includes(ext);
+}
+
 // File filter for work order files (accept most document types)
 const woFileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     const allowedMimes = [
@@ -43,7 +68,7 @@ const woFileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilter
         'image/jpg',
     ];
 
-    if (allowedMimes.includes(file.mimetype)) {
+    if (allowedMimes.includes(file.mimetype) && extensionMatchesMime(file.originalname, file.mimetype)) {
         cb(null, true);
     } else {
         cb(new Error('Invalid file type. Allowed types: PDF, Word, Excel, Text, Images'));
@@ -61,7 +86,7 @@ const bomFileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilte
     const allowedExtensions = ['.csv', '.xls', '.xlsx'];
     const ext = path.extname(file.originalname).toLowerCase();
 
-    if (allowedMimes.includes(file.mimetype) || allowedExtensions.includes(ext)) {
+    if ((allowedMimes.includes(file.mimetype) || allowedExtensions.includes(ext)) && extensionMatchesMime(file.originalname, file.mimetype || 'application/octet-stream')) {
         cb(null, true);
     } else {
         cb(new Error('Invalid file type. Only CSV and Excel files are allowed for BOM import.'));

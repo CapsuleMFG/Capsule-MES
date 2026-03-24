@@ -13,10 +13,10 @@ const router = Router();
 // Current user's own profile — no role restriction
 router.get('/me', getMyProfile);
 
-// Admin-only user management
-router.get('/', requireRole('admin'), getProfiles);
-router.get('/:id', requireRole('admin'), getProfile);
-router.post('/', requireRole('admin'), createProfile);
-router.put('/:id', requireRole('admin'), updateProfile);
+// Admin/Manager user management
+router.get('/', requireRole('admin', 'manager'), getProfiles);
+router.get('/:id', requireRole('admin', 'manager'), getProfile);
+router.post('/', requireRole('admin', 'manager'), createProfile);
+router.put('/:id', requireRole('admin', 'manager'), updateProfile);
 
 export default router;

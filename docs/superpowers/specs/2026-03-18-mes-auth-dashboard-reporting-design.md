@@ -8,7 +8,7 @@
 
 ## Context
 
-Capsule ERP is an internal MES for a manufacturing team of 10+ users spanning operators, engineers, production managers, and office staff. The system has a solid foundation (job management, 4-stage workflow, parts tracking, kiosk, supply chain) but lacks user authentication, a real-time production view, and data export capabilities. These three features are the highest priority to make the system deployable.
+Capsule MES is an internal MES for a manufacturing team of 10+ users spanning operators, engineers, production managers, and office staff. The system has a solid foundation (job management, 4-stage workflow, parts tracking, kiosk, supply chain) but lacks user authentication, a real-time production view, and data export capabilities. These three features are the highest priority to make the system deployable.
 
 **Build order:** Auth → Production Dashboard → Reporting/Export
 

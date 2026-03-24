@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { query, queryOne, execute } from '../models/database';
+import { logger } from '../lib/logger';
 
 /**
  * Priority weight for auto-assigning SC priority to new jobs.
@@ -68,7 +69,7 @@ export async function getScPriorities(req: Request, res: Response): Promise<void
 
         res.json(result);
     } catch (error) {
-        console.error('Error fetching SC priorities:', error);
+        logger.error('Error fetching SC priorities', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to fetch SC priorities' });
     }
 }
@@ -102,7 +103,7 @@ export async function updateScPriorities(req: Request, res: Response): Promise<v
             reallocationSummary: summary,
         });
     } catch (error) {
-        console.error('Error updating SC priorities:', error);
+        logger.error('Error updating SC priorities', { error: error instanceof Error ? error.message : error });
         res.status(500).json({ error: 'Failed to update SC priorities' });
     }
 }

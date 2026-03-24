@@ -1,0 +1,93 @@
+<h2>What info should each job card show?</h2>
+<p class="subtitle">These cards need to be compact but give your boss enough info to make scheduling decisions. Pick which layout has the right amount of detail.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px; background:#f9fafb;">
+      <div style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:12px; width:200px; font-size:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-weight:600; color:#111;">CAP-2026-001</span>
+          <span style="background:#fef2f2; color:#dc2626; font-size:10px; padding:2px 6px; border-radius:4px;">Critical</span>
+        </div>
+        <div style="color:#6b7280; font-size:11px;">Marriott Lobby Casework</div>
+        <div style="color:#9ca3af; font-size:10px; margin-top:2px;">Acme Builders</div>
+        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:10px; color:#9ca3af;">
+          <span>Due: Mar 28</span>
+          <span>Step 2/5</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Compact</h3>
+      <p>Job #, priority badge, description, client, due date, route progress. Enough to decide priority.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px; background:#f9fafb;">
+      <div style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:12px; width:200px; font-size:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-weight:600; color:#111;">CAP-2026-001</span>
+          <span style="background:#fef2f2; color:#dc2626; font-size:10px; padding:2px 6px; border-radius:4px;">Critical</span>
+        </div>
+        <div style="color:#6b7280; font-size:11px;">Marriott Lobby Casework</div>
+        <div style="color:#9ca3af; font-size:10px; margin-top:2px;">Acme Builders</div>
+        <div style="margin-top:8px;">
+          <div style="display:flex; gap:3px; align-items:center;">
+            <div style="width:16px; height:4px; background:#10b981; border-radius:2px;" title="Laser ✓"></div>
+            <div style="width:16px; height:4px; background:#f59e0b; border-radius:2px;" title="Brake (current)"></div>
+            <div style="width:16px; height:4px; background:#e5e7eb; border-radius:2px;" title="PEM"></div>
+            <div style="width:16px; height:4px; background:#e5e7eb; border-radius:2px;" title="Paint"></div>
+            <div style="width:16px; height:4px; background:#e5e7eb; border-radius:2px;" title="Powdercoat"></div>
+          </div>
+          <div style="font-size:9px; color:#9ca3af; margin-top:3px;">Laser &#10003; &rarr; <strong style="color:#f59e0b;">Brake</strong> &rarr; PEM &rarr; Paint &rarr; PC</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:10px; color:#9ca3af;">
+          <span>Due: Mar 28</span>
+          <span style="color:#dc2626;">2 days left</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Compact + Route Progress</h3>
+      <p>Same as Compact but adds a visual route progress bar showing completed/current/upcoming steps. At a glance you see where the job is in its full journey.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px; background:#f9fafb;">
+      <div style="background:white; border:1px solid #e5e7eb; border-radius:10px; padding:12px; width:200px; font-size:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-weight:600; color:#111;">CAP-2026-001</span>
+          <span style="background:#fef2f2; color:#dc2626; font-size:10px; padding:2px 6px; border-radius:4px;">Critical</span>
+        </div>
+        <div style="color:#6b7280; font-size:11px;">Marriott Lobby Casework</div>
+        <div style="color:#9ca3af; font-size:10px; margin-top:2px;">Acme Builders &middot; Glide</div>
+        <div style="margin-top:8px;">
+          <div style="display:flex; gap:3px; align-items:center;">
+            <div style="width:16px; height:4px; background:#10b981; border-radius:2px;"></div>
+            <div style="width:16px; height:4px; background:#f59e0b; border-radius:2px;"></div>
+            <div style="width:16px; height:4px; background:#e5e7eb; border-radius:2px;"></div>
+            <div style="width:16px; height:4px; background:#e5e7eb; border-radius:2px;"></div>
+            <div style="width:16px; height:4px; background:#e5e7eb; border-radius:2px;"></div>
+          </div>
+          <div style="font-size:9px; color:#9ca3af; margin-top:3px;">Laser &#10003; &rarr; <strong style="color:#f59e0b;">Brake</strong> &rarr; PEM &rarr; Paint &rarr; PC</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:10px;">
+          <span style="color:#9ca3af;">Due: Mar 28</span>
+          <span style="color:#dc2626;">2 days left</span>
+        </div>
+        <div style="margin-top:6px; padding-top:6px; border-top:1px solid #f3f4f6; font-size:10px; color:#9ca3af;">
+          <div>12 parts &middot; 8 completed &middot; 4 remaining</div>
+          <div style="background:#e5e7eb; height:3px; border-radius:2px; margin-top:3px;">
+            <div style="background:#10b981; height:100%; width:66%; border-radius:2px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Full Detail</h3>
+      <p>Everything: route progress, product line (Glide/Parade), parts completion count with progress bar, due date countdown. Most info but tallest cards.</p>
+    </div>
+  </div>
+</div>

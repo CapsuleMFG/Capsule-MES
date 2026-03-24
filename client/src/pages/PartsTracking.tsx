@@ -87,7 +87,7 @@ export default function PartsTracking() {
             value={trackingIdSearch}
             onChange={(e) => setTrackingIdSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleTrackingLookup()}
-            className="flex-1 bg-gray-50 border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-white ring-1 ring-gray-200 rounded-[10px] px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
             placeholder="Enter QR code, engraved number, or sticker ID..."
           />
           <button
@@ -108,14 +108,14 @@ export default function PartsTracking() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white border border-gray-100 rounded-lg pl-10 pr-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
+            className="w-full bg-white ring-1 ring-gray-200 rounded-[10px] pl-10 pr-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
             placeholder="Search by tracking ID, part number, or description..."
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-white border border-gray-100 rounded-lg px-4 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
+          className="bg-white ring-1 ring-gray-200 rounded-[10px] px-4 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-gray-900 focus:outline-none"
         >
           <option value="">All Statuses</option>
           <option value="Pending">Pending</option>
@@ -150,13 +150,13 @@ export default function PartsTracking() {
               {parts?.map((part) => (
                 <tr key={part.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                   <td className="p-4">
-                    <Link to={`/parts/${part.id}`} className="text-blue-500 hover:underline font-mono">
+                    <Link to={`/parts/${part.id}`} className="text-blue-600 hover:underline font-mono">
                       {part.trackingId || `#${part.id}`}
                     </Link>
                   </td>
                   <td className="p-4 text-gray-900">{part.partNumber || '-'}</td>
                   <td className="p-4">
-                    <Link to={`/jobs/${part.jobId}`} className="text-blue-500 hover:underline">
+                    <Link to={`/jobs/${part.jobId}`} className="text-blue-600 hover:underline">
                       {part.jobNumber || `Job #${part.jobId}`}
                     </Link>
                   </td>

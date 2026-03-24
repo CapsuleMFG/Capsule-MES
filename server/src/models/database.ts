@@ -1,5 +1,6 @@
 import { Pool, PoolClient } from 'pg';
 import * as dotenv from 'dotenv';
+import { logger } from '../lib/logger';
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ const pool = new Pool({
 });
 
 pool.on('error', (err) => {
-    console.error('Unexpected database pool error:', err);
+    logger.error('Unexpected database pool error', { error: err instanceof Error ? err.message : err });
 });
 
 /**
@@ -40,7 +41,7 @@ function ensureReturning(sql: string): string {
 export async function initializeDatabase(): Promise<void> {
     const client = await pool.connect();
     client.release();
-    console.log('✓ Connected to Supabase PostgreSQL');
+    logger.info('✓ Connected to Supabase PostgreSQL');
 }
 
 /**
@@ -59,7 +60,7 @@ export async function query<T = any>(sql: string, params: any[] = []): Promise<T
         const result = await pool.query(converted, params);
         return result.rows as T[];
     } catch (error) {
-        console.error('Query error:', error);
+        logger.error('Query error', { error: error instanceof Error ? error.message : error });
         throw error;
     }
 }
@@ -88,7 +89,7 @@ export async function execute(sql: string, params: any[] = []): Promise<{ change
         const lastID = isInsert ? (result.rows[0]?.id ?? 0) : 0;
         return { changes, lastID };
     } catch (error) {
-        console.error('Execute error:', error);
+        logger.error('Execute error', { error: error instanceof Error ? error.message : error });
         throw error;
     }
 }
@@ -98,16 +99,20 @@ export async function execute(sql: string, params: any[] = []): Promise<{ change
  */
 export async function executeTransaction(sqlStatements: string[]): Promise<void> {
     const client: PoolClient = await pool.connect();
+    let transactionStarted = false;
     try {
         await client.query('BEGIN');
+        transactionStarted = true;
         for (const sql of sqlStatements) {
             const converted = convertPlaceholders(sql);
             await client.query(converted);
         }
         await client.query('COMMIT');
     } catch (error) {
-        await client.query('ROLLBACK');
-        console.error('Transaction error:', error);
+        if (transactionStarted) {
+            try { await client.query('ROLLBACK'); } catch { /* rollback best-effort */ }
+        }
+        logger.error('Transaction error', { error: error instanceof Error ? error.message : error });
         throw error;
     } finally {
         client.release();
@@ -121,16 +126,20 @@ export async function executeTransactionWithParams(
     statements: Array<{ sql: string; params: any[] }>
 ): Promise<void> {
     const client: PoolClient = await pool.connect();
+    let transactionStarted = false;
     try {
         await client.query('BEGIN');
+        transactionStarted = true;
         for (const { sql, params } of statements) {
             const converted = convertPlaceholders(sql);
             await client.query(converted, params);
         }
         await client.query('COMMIT');
     } catch (error) {
-        await client.query('ROLLBACK');
-        console.error('Transaction error:', error);
+        if (transactionStarted) {
+            try { await client.query('ROLLBACK'); } catch { /* rollback best-effort */ }
+        }
+        logger.error('Transaction error', { error: error instanceof Error ? error.message : error });
         throw error;
     } finally {
         client.release();
@@ -148,5 +157,5 @@ export function saveDatabase(): void {
  * Close the connection pool
  */
 export function closeDatabase(): void {
-    pool.end().then(() => console.log('✓ Database pool closed'));
+    pool.end().then(() => logger.info('Database pool closed'));
 }
