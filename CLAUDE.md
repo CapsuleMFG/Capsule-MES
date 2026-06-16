@@ -1,207 +1,123 @@
-# Agent Team — Capsule MES Project Context
+# Capsule MES — Project Context
 
-This file is automatically loaded by all agents (lead and teammates).
-It establishes shared project context, ground rules, and communication conventions.
+Context for any agent working in this repo. Read before making changes.
 
----
-
-## Team Architecture
-
-```
-LEAD (claude-opus-4-6-20251101) — delegate mode, orchestration only
-├── TEAMMATE: Frontend Dev        (claude-sonnet-4-6-20250929)
-├── TEAMMATE: Backend Dev         (claude-sonnet-4-6-20250929)
-├── TEAMMATE: QA / Test Writer    (claude-sonnet-4-6-20250929)
-├── TEAMMATE: Security Reviewer   (claude-sonnet-4-6-20250929)
-├── TEAMMATE: Performance Auditor (claude-sonnet-4-6-20250929)
-├── TEAMMATE: Documentation Lead  (claude-sonnet-4-6-20250929)
-├── TEAMMATE: Data Gatherer       (claude-sonnet-4-6-20250929)
-├── TEAMMATE: Source Validator    (claude-sonnet-4-6-20250929)
-└── TEAMMATE: Insight Synthesizer (claude-sonnet-4-6-20250929)
-```
-
-> **Note:** Not all teammates need to be active at once. The Lead spawns only the
-> teammates relevant to the current task and shuts them down when their work is done.
+> **This file was rewritten on 2026-06-16 to match the actual codebase.** Prior versions
+> described a SQLite/sql.js, 4-stage, dark-theme prototype and a 9-teammate orchestration
+> model — all stale. The current reality is below. For current state and remaining work,
+> see [`docs/COMPLETION_PLAN.md`](docs/COMPLETION_PLAN.md).
 
 ---
 
-## Roles & Responsibilities
+## What this is
 
-### Lead (Opus 4.6)
-- Understands the full task and decomposes it into teammate-level workstreams
-- Spawns only the teammates needed for the current task
-- Operates in **Delegate Mode** — does NOT write code or produce deliverables directly
-- Assigns tasks from the shared task list to specific teammates
-- Reviews teammate outputs and synthesizes the final result
-- Resolves conflicts and re-assigns work if a teammate is blocked
-- Triggers team cleanup when all work is complete
+A full-stack **Manufacturing Execution System** for a ~20-person shop, tracking work
+end-to-end: **Engineering → Supply Chain → Production (stations / machines / parts) →
+Shipping**. Office users log in with email/password; floor operators authenticate at
+station kiosks with a PIN.
 
-### Teammates (Sonnet 4.6)
-- Each owns a specific functional domain (see architecture above)
-- Execute one focused, self-contained task at a time
-- Claim or are assigned tasks from the shared task list
-- Do NOT spawn sub-agents or additional teammates
-- Message the Lead on completion or if blocked
-- Mark tasks complete only when output is verifiable
+## Stack
 
----
+- **Codebase root:** `Capsule-MES/` (was `capsule-erp` — fully renamed).
+- **Frontend** (`client/`, port 5173): React 19 · TypeScript · Vite 7 · Tailwind 3 ·
+  TanStack React Query 5 · React Router 6 · `@dnd-kit` · React Hook Form + Zod · Axios ·
+  Phosphor Icons · Geist font · `@supabase/supabase-js`.
+- **Backend** (`server/`, port 3001): Node 20 · Express · TypeScript · `pg` pool →
+  **Supabase PostgreSQL** · Supabase Auth + custom kiosk JWT · Helmet · CORS ·
+  express-rate-limit · express-validator · Winston · Multer · `xlsx` · `pdf-parse` · bcrypt.
+- **Shared** (`shared/types/`): types shared across client and server.
+- **Deploy:** API → Render (`render.yaml`); client → Vercel (`client/vercel.json`).
 
-## Communication Conventions
+## Data layer (important)
 
-| From → To            | Method                  | Frequency                   |
-|----------------------|-------------------------|-----------------------------|
-| Teammate → Lead      | `message`               | On completion / blocker     |
-| Lead → Teammate      | `message`               | Task assignment / feedback  |
-| Lead → All           | `broadcast` (sparingly) | Critical pivots only        |
-| Any → Any (urgent)   | `message`               | As needed                   |
+- All DB access goes through `server/src/models/database.ts` — a `pg` `Pool` against
+  `DATABASE_URL` (Supabase). Use the exported `query` / `queryOne` / `execute` /
+  `executeTransaction*` helpers. They accept SQLite-style `?` placeholders and rewrite them
+  to `$1, $2, …`; `execute()` auto-appends `RETURNING id` to inserts. `saveDatabase()` is a
+  no-op (legacy).
+- **There is no migration runner.** `server/database/migrations/*.sql` is a historical
+  record — the early files use SQLite syntax and cannot run on Postgres; the live schema was
+  created out-of-band in Supabase. Do **not** assume those files reflect the live schema or
+  that adding one will apply it. Establishing a schema source-of-truth + runner is the first
+  task in the completion plan; until then, schema changes are applied manually in Supabase.
 
-**Broadcast sparingly** — each broadcast costs tokens proportional to team size.
+## Schema map (live tables)
 
----
+- **Jobs/workflow:** `jobs`, `workflow_stages`, `job_workflow_progress`, `clients`,
+  `job_labor` (legacy), `job_materials` (legacy).
+- **Engineering:** `design_milestones`, `engineers`, `job_engineering`, `work_orders`
+  (+ production fields/status), `work_order_files`, `bom_items`, `pbom_items`, `bom_imports`.
+- **Supply chain:** `suppliers`, `global_inventory`, `job_procurement`, `purchase_orders`.
+- **Production / parts tracking:** `tracked_parts` (**the generic unit** — has `part_number`,
+  `description`, `tracking_id`, route + current step, status; *not* pod/panel-specific),
+  `route_templates`, `route_template_steps` (⚠️ `station_name` is **free text**, not a FK —
+  no `stations` table exists), `part_station_logs`, `station_kiosks`, `schedule_entries`.
+- **Machines:** `machines` (+ `is_down`, downtime fields), `machine_downtime_events`.
+- **Shipping:** `shipments` (job-level; `packing_list` JSONB).
+- **Auth/system:** `profiles` (UUID → `auth.users`, role, pin, is_active), `login_attempts`,
+  `audit_log` (append-only CRUD log), `notifications`.
 
-## Task States
+## Auth & roles
 
-All agents use the shared task list with these states:
+- `server/src/middleware/auth.ts` accepts two token types: Supabase Bearer JWT (web users →
+  profile lookup) and a kiosk JWT (`type: 'kiosk'`, verified with `KIOSK_JWT_SECRET`).
+- **Roles:** `admin | manager | engineer | supply_chain | operator` (see `AuthenticatedUser`
+  in `auth.ts`). Enforce with `requireRole(...)` from `middleware/roles.ts`.
+  ⚠️ **Known inconsistency:** the `profiles.role` CHECK constraint in migration 027 lists
+  only `admin|manager|engineer|operator` (no `supply_chain`). Code/UI use 5 roles. Reconcile
+  before relying on it.
+- `middleware/operatorScope.ts` restricts the `operator` role to its own station's
+  tracked-parts and jobs (whitelist + station-name match). Reference data (machines, workflow
+  stages) and notifications are allowed.
+- Public paths: `/api/station-kiosks/auth`, `/api/auth/logout`, `/health`.
+- **Dev bypass:** when `NODE_ENV !== 'production'` and `AUTH_REQUIRED !== 'true'`, the API
+  injects a dev admin user (no login needed). A production startup guard refuses to boot
+  unless `AUTH_REQUIRED=true`.
 
-- `pending` — not yet started
-- `in_progress` — claimed by a teammate (only ONE task per teammate at a time)
-- `completed` — verified and deliverable produced
+## Routes (client)
 
-Tasks with unresolved dependencies remain blocked until dependencies complete.
+- Public: `/login`, `/forgot-password`, `/reset-password`.
+- Kiosk (standalone, no chrome): `/kiosk`, `/kiosk/machine`, `/kiosk/station`.
+- Protected: `/` (Dashboard), `/jobs`, `/jobs/:id`, `/engineering`, `/supply-chain`,
+  `/production`, `/parts`, `/parts/:id`, `/route-templates`, `/station-kiosks`, `/shipping`,
+  `/clients`.
+- Manager/admin only: `/dashboard/production`, `/scheduling`, `/reports`, `/admin/audit-log`.
+  Admin only: `/admin/users`.
+- API routes are mounted under `/api` from `server/src/routes/*`, one file per domain, each
+  backed by a controller in `server/src/controllers/*`.
 
----
+## Conventions & constraints
 
-## File Ownership Rules
+- TypeScript-strict everywhere — avoid `any` without justification.
+- Keep existing REST contracts backward-compatible unless a change is explicitly intended.
+- Live views poll with React Query (`refetchInterval` 10–60s); there is **no realtime
+  subscription layer** (`@supabase/realtime-js` is present but unused).
+- Never commit secrets or `console.log` debug noise. Server logging uses Winston (`lib/logger`).
+- Audit-sensitive writes via `middleware/audit.ts` (`logAudit`) — pass hardcoded table/column
+  names, never user input (identifiers are interpolated).
+- **Definition of done:** `npm run build` passes in both `client/` and `server/`; no TS
+  errors; `cd server && npm test` (vitest) passes; feature works end-to-end against Supabase.
 
-To avoid merge conflicts, each teammate owns specific files/directories:
+## Design System
 
-| Teammate             | Owned Paths                                                   |
-|----------------------|---------------------------------------------------------------|
-| Frontend Dev         | `client/src/components/`, `client/src/pages/`, `client/src/styles/` |
-| Backend Dev          | `server/src/controllers/`, `server/src/models/`, `server/src/routes/`, `server/src/server.ts` |
-| QA / Test Writer     | `client/src/**/*.test.*`, `server/src/**/*.test.*`, any `__tests__/` folders |
-| Security Reviewer    | **Read-only** — no file edits                                 |
-| Performance Auditor  | **Read-only** — no file edits                                 |
-| Documentation Lead   | `README.md`, `docs/`, inline docstrings/comments only        |
-| Data Gatherer        | `outputs/research/data-gathered.md`                          |
-| Source Validator     | `outputs/research/validation-report.md`                      |
-| Insight Synthesizer  | `outputs/research/insights.md`                               |
-
-- Teammates should NOT edit files owned by another teammate
-- If shared file edits are required, the Lead sequences those tasks with explicit dependencies
-- The Lead tracks all file ownership assignments
-
----
-
-## Quality Gates
-
-Before the Lead marks the overall project complete:
-
-1. All teammate tasks must be in `completed` state
-2. Outputs reviewed against the original task scope
-3. No unresolved blockers or open questions
-4. Cross-domain conflicts resolved
-5. Final synthesized output produced
-
----
-
-## Project-Specific Context
-
-- **Project name**: Capsule MES
-- **Codebase root**: `/capsule-erp` (paths are relative to this root)
-- **Primary language / stack**: TypeScript · React 18 · Vite · Node.js · Express · SQLite (sql.js) · Tailwind CSS · React Query
-- **Key constraints**:
-  - No breaking changes to the REST API contracts (existing endpoints must remain backward-compatible)
-  - All frontend code must remain TypeScript-strict (no `any` types without justification)
-  - Database migrations must be additive — do not drop or rename existing columns
-  - All new UI must respect the Rivian-inspired dark theme (see Design System below)
-  - Must pass existing CI checks before a task is marked `completed`
-- **Definition of done**:
-  - Code compiles without errors (`npm run build` passes in both `client/` and `server/`)
-  - No TypeScript type errors
-  - Feature works end-to-end with the SQLite database running
-  - No hardcoded credentials or debug `console.log` statements
-
----
-
-## Codebase Map (Quick Reference)
-
-```
-capsule-erp/
-├── client/                        # React 18 + Vite frontend (port 5173)
-│   └── src/
-│       ├── components/
-│       │   ├── layout/            # AppLayout, Sidebar
-│       │   ├── dashboard/         # Dashboard widgets and metrics
-│       │   ├── jobs/              # Job list, cards, detail tabs
-│       │   └── ui/                # Base UI primitives
-│       ├── pages/                 # Page-level route components
-│       ├── hooks/                 # Custom React hooks
-│       ├── services/              # Axios API service layer
-│       └── types/                 # Shared TypeScript types (client-side)
-│
-├── server/                        # Express + SQLite backend (port 3001)
-│   └── src/
-│       ├── controllers/           # Request handlers
-│       ├── models/                # Database models
-│       ├── routes/                # API route definitions
-│       └── server.ts              # Express app entry point
-│   └── database/
-│       ├── migrations/            # SQL migration files
-│       └── capsule_erp.db         # SQLite database file
-│
-└── shared/                        # Types shared between client and server
-    └── types/
-```
-
----
-
-## API Surface (REST Endpoints)
-
-All endpoints are prefixed with `/api`.
-
-| Resource          | Endpoints                                                             |
-|-------------------|-----------------------------------------------------------------------|
-| Jobs              | `GET /jobs`, `POST /jobs`, `GET /jobs/:id`, `PUT /jobs/:id`, `DELETE /jobs/:id` |
-| Workflow          | `GET /jobs/:id/workflow`, `PUT /jobs/:id/workflow/:stageId`, `GET /workflow/stages` |
-| Materials (BOM)   | `GET /jobs/:id/materials`, `POST /jobs/:id/materials`, `PUT /jobs/:id/materials/:materialId`, `DELETE /jobs/:id/materials/:materialId` |
-| Labor             | `GET /jobs/:id/labor`, `POST /jobs/:id/labor`, `DELETE /jobs/:id/labor/:laborId` |
-| Dashboard         | `GET /dashboard/metrics`                                             |
-| Clients           | `GET /clients`, `POST /clients`, `GET /clients/:id`                  |
-
----
-
-## Design System Reference
-
-> Full spec in `DESIGN_SYSTEM.md`. This is the authoritative source — all agents must follow it.
+> Authoritative spec: [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md). Follow it on every UI change.
 
 **Theme:** Soft Structural Light — white surfaces, generous border-radius, semantic color only.
 
 ### Colors
 
-**Backgrounds:**
-- Page: `bg-gray-100`
-- Cards / panels / sidebar: `bg-white`
-- Hover states: `bg-gray-50`
-- Card outline: `ring-1 ring-black/[0.02]`
-- Dividers: `border-gray-100` · Table rows: `border-gray-50`
+**Backgrounds:** Page `bg-gray-100` · Cards/panels/sidebar `bg-white` · Hover `bg-gray-50` ·
+Card outline `ring-1 ring-black/[0.02]` · Dividers `border-gray-100` · Table rows `border-gray-50`
 
-**Text:**
-- Primary (headings, values): `text-gray-900`
-- Secondary (body, tables): `text-gray-600`
-- Muted (timestamps, hints): `text-gray-400`
-- Disabled: `text-gray-300`
+**Text:** Primary `text-gray-900` · Secondary `text-gray-600` · Muted `text-gray-400` ·
+Disabled `text-gray-300`
 
-**Interactive:**
-- Primary action: `bg-gray-900 text-white` · hover: `bg-gray-800`
-- Links: `text-blue-600` · hover: `text-blue-700`
-- Focus ring: `ring-2 ring-gray-900`
+**Interactive:** Primary action `bg-gray-900 text-white` (hover `bg-gray-800`) ·
+Links `text-blue-600` (hover `text-blue-700`) · Focus ring `ring-2 ring-gray-900`
 
-**Semantic colors (soft-tinted pill badges — never decorative):**
-- Completed / Success: `bg-emerald-50 text-emerald-700`
-- In Progress / Warning: `bg-amber-50 text-amber-700`
-- Blocked / Error: `bg-red-50 text-red-700`
-- Not Started / Neutral: `bg-gray-100 text-gray-500`
+**Semantic (soft-tinted pill badges — never decorative):** Success `bg-emerald-50 text-emerald-700` ·
+Warning/In Progress `bg-amber-50 text-amber-700` · Error/Blocked `bg-red-50 text-red-700` ·
+Neutral/Not Started `bg-gray-100 text-gray-500`
 
 ### Critical Design Rules (enforce on every PR)
 
@@ -215,6 +131,9 @@ All endpoints are prefixed with `/api`.
 8. **No gradient backgrounds**
 9. **No colored borders on cards** — use `ring-1 ring-black/[0.02]`
 10. **Tables always inside a white card container** with `overflow-hidden`
+
+> Known debt: the OEE cards in the Production Dashboard's Command Center tab still use a dark
+> palette (`bg-gray-800`) — they predate the light system and should be migrated.
 
 ### Key Component Patterns
 
@@ -230,56 +149,21 @@ All endpoints are prefixed with `/api`.
 
 ---
 
-## 4-Stage Workflow
+## Workflow stages
 
-Jobs progress through these stages in order:
+Jobs progress through 4 seeded `workflow_stages`, each with status
+`Not Started | In Progress | Completed | Blocked`:
 
-1. **Engineering** — Design and engineering sign-off
-2. **WO Release** — Work order released to floor
-3. **Materials** — BOM materials ordered, received, and issued
-4. **Production** — Active manufacturing
+1. **Engineering** — design milestones, BOM/PBOM
+2. **WO Release** — work order released to the floor
+3. **Materials** — BOM materials ordered, received, issued
+4. **Production** — active manufacturing (scheduling board + kiosk)
 
-Each stage has independent status: `Not Started | In Progress | Completed | Blocked`
-
----
-
-## Cost Awareness
-
-Each active teammate has its own context window. Token costs scale linearly with team size.
-
-- Spawn only the teammates needed — not all 9 at once
-- For typical ERP feature work, start with **Backend Dev + Frontend Dev + QA**
-- For security/perf reviews, add **Security Reviewer** and/or **Performance Auditor**
-- For research tasks (new integrations, MRP planning), use **Data Gatherer → Source Validator → Insight Synthesizer**
-- Prefer `message` over `broadcast`
-- Shut down idle teammates promptly
-- Keep teammate tasks scoped to 1–3 clear deliverables
+**Shipping** exists as its own module/screen (`shipments`), not as a 5th tracked stage.
+**Supply Chain** is an app section (procurement/inventory/POs), parallel to WO Release /
+Materials — not a workflow stage.
 
 ---
 
-## How to Start a Team Session
-
-```bash
-# 1. Navigate to project root
-cd path/to/capsule-erp
-
-# 2. Launch Lead agent
-claude --model claude-opus-4-6-20251101
-
-# 3. Paste this kickoff prompt (customize as needed):
-```
-
-```
-Create an agent team for the following task: [YOUR TASK]
-
-Team structure:
-- You are the Lead. Use claude-opus-4-6-20251101. Stay in Delegate Mode.
-- Read CLAUDE.md for full project context, constraints, and file ownership rules.
-- Spawn only the teammates needed for this task.
-- Use claude-sonnet-4-6-20250929 for all teammates.
-- Switch to Delegate Mode (Shift+Tab) immediately after spawning teammates.
-```
-
----
-
-*This CLAUDE.md is version-controlled. All agents read it at spawn time.*
+*Version-controlled. Keep it accurate — if you change the stack, schema, or routes, update
+this file in the same change.*
