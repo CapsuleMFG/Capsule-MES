@@ -63,8 +63,14 @@ export const operatorScope = async (req: Request, res: Response, next: NextFunct
     }
     const partId = trackedPartMatch[1];
     try {
+      // A part's current station is route_template_steps.station_name for its
+      // current_step_id — tracked_parts has no current_station column. LEFT JOIN
+      // so a part not yet on a step returns null (treated as "not at your station").
       const part = await queryOne<{ current_station: string | null }>(
-        'SELECT current_station FROM tracked_parts WHERE id = $1',
+        `SELECT rts.station_name AS current_station
+         FROM tracked_parts tp
+         LEFT JOIN route_template_steps rts ON rts.id = tp.current_step_id
+         WHERE tp.id = $1`,
         [partId]
       );
       if (!part) {
@@ -93,8 +99,9 @@ export const operatorScope = async (req: Request, res: Response, next: NextFunct
     const jobId = jobMatch[1];
     try {
       const part = await queryOne<{ id: number }>(
-        `SELECT id FROM tracked_parts
-         WHERE job_id = $1 AND LOWER(TRIM(current_station)) = LOWER(TRIM($2))
+        `SELECT tp.id FROM tracked_parts tp
+         JOIN route_template_steps rts ON rts.id = tp.current_step_id
+         WHERE tp.job_id = $1 AND LOWER(TRIM(rts.station_name)) = LOWER(TRIM($2))
          LIMIT 1`,
         [jobId, stationName]
       );
