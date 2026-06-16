@@ -1,344 +1,185 @@
-# Capsule MES - Manufacturing MES System
+# Capsule MES — Manufacturing Execution System
 
-A modern, full-stack manufacturing MES system built for tracking jobs through a 4-stage workflow (Engineering → WO Release → Materials → Production).
+A full-stack MES for tracking work end-to-end across the shop floor: **Engineering →
+Supply Chain → Production (stations / machines / parts) → Shipping**. Built for a small
+team (~20 users) with office logins and PIN-based station kiosks on the floor.
 
-![Tech Stack](https://img.shields.io/badge/React-18-blue)
+![React](https://img.shields.io/badge/React-19-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-20-green)
-![SQLite](https://img.shields.io/badge/SQLite-3-lightgrey)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-blue)
 
-## 🎯 Features
+> **Note on docs:** Earlier revisions of this README described a SQLite/sql.js, 4-stage,
+> dark-theme prototype. That is no longer accurate — the app runs on Supabase PostgreSQL,
+> has full auth, and a light design system. See [`docs/COMPLETION_PLAN.md`](docs/COMPLETION_PLAN.md)
+> for current state and remaining work.
 
-- **Dashboard**: Real-time metrics showing active jobs, critical jobs, material issues, and total labor hours
-- **Job Management**: Create, track, and manage manufacturing jobs with auto-generated job numbers (CAP-YYYY-XXX)
-- **4-Stage Workflow**: Track jobs through Engineering, WO Release, Materials, and Production stages
-- **Material Tracking**: Bill of Materials (BOM) management with status tracking (Needed, Ordered, Received, Issued)
-- **Labor Tracking**: Log and track labor hours by employee, date, and workflow stage
-- **Priority Management**: Critical, High, Medium, and Low priority levels with color-coded badges
-- **Real-time Updates**: React Query integration for optimistic updates and cache management
-- **Dark Theme**: Modern, professional dark theme based on Rivian design system
+## Features
 
-## 🚀 Tech Stack
+- **Jobs & workflow** — jobs with auto-generated numbers (`CAP-YYYY-XXX`), tracked through
+  workflow stages (Engineering, WO Release, Materials, Production) with per-stage status.
+- **Engineering** — design milestones, BOM and production-BOM (PBOM) management, Excel BOM
+  import, work-order PDF upload + parse → auto-create tracked parts, send-to-production.
+- **Supply chain** — procurement, global inventory, suppliers, purchase orders,
+  drag-to-reorder job priorities.
+- **Production & parts tracking** — generic **tracked parts** flowing through **route
+  templates** (ordered station sequences), per-station check-in/out with quality gates and
+  barcode/tracking-ID lookup, scrap/recut handling.
+- **Scheduling board** — drag-and-drop kanban of schedule entries per machine, with
+  position ordering and route-step dependency enforcement.
+- **Machines** — machine registry, status (running / idle / down), downtime events, and OEE.
+- **Station kiosks** — PIN login on floor PCs issuing short-lived JWTs; operators see only
+  their station's queue.
+- **Shipping** — shipments with status workflow (Pending → Packing → Packed → Shipped →
+  Delivered), carrier/tracking, packing list.
+- **Dashboards & reporting** — main metrics dashboard, production dashboard (Command Center
+  + Machine Grid + Downtime), KPI reports with CSV export, audit log viewer.
+- **Auth & admin** — Supabase email/password login, forgot/reset password, idle timeout,
+  rate-limit lockout, role-based access control, user management.
 
-### Frontend
-- **React 18** with TypeScript
-- **Vite** for fast development and building
-- **Tailwind CSS** for styling
-- **React Router** for navigation
-- **React Query** for state management and caching
-- **Axios** for API calls
-- **Headless UI** for accessible components
-- **Lucide React** for icons
+## Tech Stack
 
-### Backend
-- **Node.js** with Express
-- **TypeScript** for type safety
-- **SQLite** (via sql.js) for database
-- **Helmet** for security
-- **CORS** for cross-origin requests
-- **Winston** for logging
+**Frontend** (`client/`, port 5173)
+- React 19 + TypeScript, Vite 7
+- Tailwind CSS 3, Phosphor Icons, Geist font
+- TanStack React Query 5 (data fetching + polling), React Router 6
+- `@dnd-kit` (drag-and-drop), React Hook Form + Zod, Axios, `@supabase/supabase-js`
 
-## 📋 Prerequisites
+**Backend** (`server/`, port 3001)
+- Node.js 20 + Express + TypeScript
+- `pg` connection pool → Supabase **PostgreSQL**
+- Supabase Auth (web logins) + custom kiosk JWT (`jsonwebtoken`)
+- Helmet, CORS, `express-rate-limit`, `express-validator`, Winston, Multer, `xlsx`,
+  `pdf-parse`, `bcrypt`
 
-- Node.js 18+ and npm
-- Git
+**Shared** (`shared/`) — TypeScript types shared between client and server.
 
-## 🛠️ Installation
+## Architecture
 
-### 1. Clone the Repository
+```
+Capsule-MES/
+├── client/      # React 19 + Vite SPA (deployed to Vercel — see client/vercel.json)
+│   └── src/
+│       ├── components/   # layout, ui, auth, feature components
+│       ├── contexts/     # Auth, Kiosk, Toast providers
+│       ├── pages/        # route-level screens (incl. pages/kiosk/*)
+│       ├── hooks/        # React Query hooks (polling 10–60s on live views)
+│       ├── services/     # Axios API client
+│       └── lib/          # supabase client
+├── server/      # Express API (deployed to Render — see render.yaml)
+│   └── src/
+│       ├── controllers/  # request handlers (per domain)
+│       ├── routes/        # route definitions, mounted under /api
+│       ├── middleware/    # auth, roles, operatorScope, audit, validate, upload
+│       ├── models/        # database.ts (pg pool + query helpers)
+│       └── lib/           # supabase admin client, logger, validation, notifications
+│   └── database/migrations/  # historical SQL — see "Database" below
+└── shared/types/
+```
+
+### Roles
+
+Five roles, enforced server-side via `requireRole(...)` and an operator station-scope
+middleware: `admin`, `manager`, `engineer`, `supply_chain`, `operator`. Operators (kiosk)
+are restricted to their own station's parts and jobs. Office roles log in with
+email/password; operators authenticate by station PIN.
+
+## Prerequisites
+
+- Node.js 20+ and npm
+- A Supabase project (PostgreSQL database + Auth)
+
+## Setup
 
 ```bash
-git clone <repository-url>
-cd capsule-erp
+git clone https://github.com/CapsuleMFG/Capsule-MES.git
+cd Capsule-MES
+
+# Backend
+cd server && npm install
+
+# Frontend (in a second terminal)
+cd client && npm install
 ```
 
-### 2. Install Backend Dependencies
+### Environment variables
 
-```bash
-cd server
-npm install
-```
-
-### 3. Install Frontend Dependencies
-
-```bash
-cd ../client
-npm install --legacy-peer-deps
-```
-
-## 🏃 Running the Application
-
-### Start Backend Server (Port 3001)
-
-```bash
-cd server
-npm run dev
-```
-
-The backend will:
-- Initialize the SQLite database
-- Run migrations and seed sample data
-- Start on http://localhost:3001
-- API available at http://localhost:3001/api
-
-### Start Frontend Development Server (Port 5173)
-
-In a new terminal:
-
-```bash
-cd client
-npm run dev
-```
-
-The frontend will be available at http://localhost:5173
-
-## 📊 Sample Data
-
-The database is pre-seeded with:
-- **5 Jobs** (CAP-2025-001 through CAP-2025-005)
-- **5 Clients** (Lennar Homes, DR Horton, Pulte Homes, KB Home, Taylor Morrison)
-- **4 Workflow Stages** (Engineering, WO Release, Materials, Production)
-- **9 Materials** entries
-- **9 Labor** entries
-
-## 🎨 Application Structure
-
-```
-capsule-erp/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   │   ├── layout/    # AppLayout, Sidebar
-│   │   │   ├── dashboard/ # Dashboard components
-│   │   │   ├── jobs/      # Job-related components
-│   │   │   │   └── tabs/  # Job detail tabs
-│   │   │   └── ui/        # Base UI components
-│   │   ├── pages/         # Page components
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── services/      # API service layer
-│   │   └── types/         # TypeScript types
-│   └── package.json
-│
-├── server/                # Node.js backend
-│   ├── src/
-│   │   ├── controllers/   # Request handlers
-│   │   ├── models/        # Database models
-│   │   ├── routes/        # API routes
-│   │   └── server.ts      # Express app
-│   ├── database/
-│   │   ├── migrations/    # SQL migrations
-│   │   └── capsule_erp.db # SQLite database
-│   └── package.json
-│
-└── shared/                # Shared TypeScript types
-    └── types/
-```
-
-## 🔑 Key Features & Usage
-
-### Creating a New Job
-
-1. Click "New Job" button in the header
-2. Fill in the form:
-   - Select a client
-   - Enter description
-   - Set priority (Critical/High/Medium/Low)
-   - Optional: Target date, estimated hours, notes
-3. Click "Create Job"
-4. Job number is auto-generated (e.g., CAP-2025-006)
-
-### Updating Workflow Status
-
-1. Navigate to a job detail page
-2. Click on any workflow stage badge
-3. Update status, assignee, and notes
-4. Status options:
-   - Not Started (gray)
-   - In Progress (yellow)
-   - Completed (green)
-   - Blocked (red)
-
-### Managing Materials
-
-1. Go to job detail page → BOM/Materials tab
-2. Click "Add Material"
-3. Enter material details (name, quantity, unit, supplier)
-4. Update status as materials are ordered/received
-5. Delete materials as needed
-
-### Tracking Labor
-
-1. Go to job detail page → Production tab
-2. Click "Add Labor Entry"
-3. Enter employee name, hours, date, and notes
-4. Labor hours automatically update job's actual hours
-5. View total hours logged at top of tab
-
-## 📡 API Endpoints
-
-### Jobs
-- `GET /api/jobs` - List all jobs (with filters)
-- `POST /api/jobs` - Create new job
-- `GET /api/jobs/:id` - Get job details
-- `PUT /api/jobs/:id` - Update job
-- `DELETE /api/jobs/:id` - Delete job
-
-### Workflow
-- `GET /api/jobs/:id/workflow` - Get workflow progress
-- `PUT /api/jobs/:id/workflow/:stageId` - Update stage status
-- `GET /api/workflow/stages` - Get all workflow stages
-
-### Materials
-- `GET /api/jobs/:id/materials` - Get job materials
-- `POST /api/jobs/:id/materials` - Add material
-- `PUT /api/jobs/:id/materials/:materialId` - Update material
-- `DELETE /api/jobs/:id/materials/:materialId` - Delete material
-
-### Labor
-- `GET /api/jobs/:id/labor` - Get labor entries
-- `POST /api/jobs/:id/labor` - Add labor entry
-- `DELETE /api/jobs/:id/labor/:laborId` - Delete labor entry
-
-### Dashboard
-- `GET /api/dashboard/metrics` - Get dashboard metrics
-
-### Clients
-- `GET /api/clients` - List all clients
-- `POST /api/clients` - Create client
-- `GET /api/clients/:id` - Get client details
-
-## 🎨 Design System
-
-### Colors
-
-**Background:**
-- Primary: `#1C2422` (rivian-black)
-- Secondary: `#2A3230` (rivian-soft-black)
-- Hover: `#353D3B`
-
-**Accent:**
-- Accent Blue: `#2D9CFF`
-
-**Priority:**
-- Critical: `#EF4444` (red)
-- High: `#F97316` (orange)
-- Medium: `#EAB308` (yellow)
-- Low: `#9CA3AF` (gray)
-
-**Workflow Stages:**
-- Engineering: `#3B82F6` (blue)
-- WO Release: `#8B5CF6` (purple)
-- Materials: `#F59E0B` (amber)
-- Production: `#10B981` (green)
-
-**Status:**
-- Not Started: `#6B7280` (gray)
-- In Progress: `#EAB308` (yellow)
-- Completed: `#10B981` (green)
-- Blocked: `#EF4444` (red)
-
-## 🧪 Testing
-
-### Manual Testing Scenarios
-
-**Scenario 1: Create and Track a Job**
-1. Open dashboard - verify metrics
-2. Click "+ New Job"
-3. Fill form and submit
-4. Verify job appears in jobs list with CAP-2025-XXX number
-5. Click job card to open details
-6. Update workflow stages
-7. Verify dashboard metrics update
-
-**Scenario 2: Manage Materials**
-1. Open job detail → Materials tab
-2. Add materials
-3. Update material status from Needed → Ordered → Received
-4. Verify dashboard Material Issues count changes
-5. Delete a material
-
-**Scenario 3: Track Labor**
-1. Open job detail → Production tab
-2. Add labor entries
-3. Verify total hours updates
-4. Verify job actual hours updates on Overview tab
-
-## 🔒 Environment Variables
-
-### Backend (.env)
+**Backend — `server/.env`**
 ```env
 PORT=3001
-DATABASE_PATH=./database/capsule_erp.db
 NODE_ENV=development
-CORS_ORIGIN=http://localhost:5173
+AUTH_REQUIRED=false            # set "true" in production (startup guard enforces it)
+DATABASE_URL=postgresql://...  # Supabase Postgres connection string
+SUPABASE_URL=https://<project>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=...  # server-side admin key (never expose to the client)
+SUPABASE_JWT_SECRET=...
+KIOSK_JWT_SECRET=...           # signs/verifies station-kiosk JWTs
+CORS_ORIGINS=http://localhost:5173
 ```
+> In non-production with `AUTH_REQUIRED` unset/false, the API uses a dev-bypass admin user
+> so you can work without logging in. The production startup guard refuses to boot unless
+> `AUTH_REQUIRED=true`.
 
-### Frontend (.env)
+**Frontend — `client/.env`**
 ```env
 VITE_API_URL=http://localhost:3001/api
+VITE_SUPABASE_URL=https://<project>.supabase.co
+VITE_SUPABASE_ANON_KEY=...     # public anon key
 ```
 
-## 📦 Building for Production
+## Running
 
-### Backend
 ```bash
-cd server
-npm run build
-npm start
+# Backend (port 3001) — API under http://localhost:3001/api
+cd server && npm run dev
+
+# Frontend (port 5173)
+cd client && npm run dev
 ```
 
-### Frontend
+## Database
+
+The schema lives in **Supabase PostgreSQL** and is accessed via a `pg` pool
+(`server/src/models/database.ts`). Key tables: `jobs`, `workflow_stages`, `clients`,
+`work_orders`, `bom_items`, `pbom_items`, `tracked_parts`, `route_templates` /
+`route_template_steps`, `part_station_logs`, `machines`, `machine_downtime_events`,
+`station_kiosks`, `schedule_entries`, `shipments`, `suppliers`, `global_inventory`,
+`purchase_orders`, `job_procurement`, `profiles`, `audit_log`, `notifications`.
+
+> ⚠️ **No migration runner yet.** The files in `server/database/migrations/` are a
+> historical record (the early ones use SQLite syntax and do not run on Postgres); the live
+> schema was created out-of-band in Supabase. There is currently no automated, repeatable
+> way to apply a schema change. Establishing a schema source-of-truth + migration runner is
+> the first foundation task in [`docs/COMPLETION_PLAN.md`](docs/COMPLETION_PLAN.md).
+
+## Screens (routes)
+
+Public: `/login`, `/forgot-password`, `/reset-password`. Kiosk (standalone, PIN):
+`/kiosk`, `/kiosk/machine`, `/kiosk/station`.
+
+Protected app: `/` (Dashboard), `/jobs`, `/jobs/:id`, `/engineering`, `/supply-chain`,
+`/production`, `/parts`, `/parts/:id`, `/route-templates`, `/station-kiosks`, `/shipping`,
+`/clients`. Manager/admin only: `/dashboard/production`, `/scheduling`, `/reports`,
+`/admin/audit-log`. Admin only: `/admin/users`.
+
+## Testing
+
 ```bash
-cd client
-npm run build
-# Serve the dist/ folder with your preferred static file server
+cd server && npm test     # vitest (auth, workflow, route smoke tests)
 ```
 
-## 🐛 Troubleshooting
+## Deployment
 
-**Issue: Frontend not connecting to backend**
-- Ensure backend is running on port 3001
-- Check CORS settings in server/.env
-- Verify VITE_API_URL in client/.env
+- **API** → Render (`render.yaml`). Requires the backend env vars above; `AUTH_REQUIRED`
+  is set to `true`.
+- **Client** → Vercel (`client/vercel.json`).
 
-**Issue: Database errors**
-- Delete server/database/capsule_erp.db
-- Restart server to recreate database with migrations
+## Design System
 
-**Issue: CSS/Tailwind not working**
-- Ensure tailwind.config.js is present
-- Check postcss.config.js exists
-- Restart Vite dev server
+Light **"Soft Structural"** theme — white cards, `bg-gray-100` page, soft-tinted semantic
+pill badges, single primary action color (`bg-gray-900`), Geist font, Phosphor icons. The
+authoritative spec is [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md); follow it on every UI change.
 
-## 📝 License
+## License
 
-MIT License - see LICENSE file for details
-
-## 👥 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## 🎯 Future Enhancements
-
-- [ ] User authentication and authorization
-- [ ] Multi-tenant support
-- [ ] Advanced reporting and analytics
-- [ ] PDF export for work orders
-- [ ] Email notifications
-- [ ] Mobile app
-- [ ] Production scheduling
-- [ ] Capacity planning
-- [ ] MRP (Material Requirements Planning)
-- [ ] Integration with accounting systems
-
-## 📞 Support
-
-For issues and questions, please create an issue in the GitHub repository.
-
----
-
-**Built with ❤️ for modern manufacturing**
+MIT
